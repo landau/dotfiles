@@ -24,8 +24,3 @@ alias hidefiles='defaults write com.apple.finder AppleShowAllFiles false;killall
 export EDITOR=vim
 source ~/.nvm/nvm.sh
 . `brew --prefix`/etc/profile.d/z.sh
-
-
-export JAVA_OPTS="-Xmx5g -Xms5g -Djava.net.preferIPv4Stack=true -Dfile.encoding=UTF8 -XX:MaxPermSize=256m -Xms512m -XX:+CMSClassUnloadingEnabled -XX:+UseConcMarkSweepGC ${JAVA_OPTS}"
-
-export PATH=/usr/local/bin:$PATH
