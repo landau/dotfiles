@@ -1,4 +1,12 @@
-colorscheme desert
+se t_co=256
+set background="dark"
+let g:solarized_termcolors=256
+
+execute pathogen#infect()
+execute pathogen#helptags()
+execute pathogen#incubate()
+
+set guifont=Inconsolata:h14
 set paste
 set number
 set incsearch
@@ -9,7 +17,12 @@ runtime macros/matchit.vim
 set title
 set scrolloff=3
 set ruler
-syntax on
+syntax enable
+
+"let g:solarized_contrast="high"
+"let g:solarized_visibility="high"
+colorscheme solarized
+
 " showmatch: Show the matching bracket for the last ')'?
 set showmatch
 filetype on
@@ -60,10 +73,6 @@ endfunc
 "set list listchars=tab:»-,trail:·,extends:»,precedes:«
 "autocmd vimenter * if !argc() | NERDTree | endif
 
-execute pathogen#infect()
-execute pathogen#helptags()
-"call pathogen#runtime_append_all_bundles()
-execute pathogen#incubate()
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.json,*.log,*/node_modules/*,*/bower_components/*     " MacOSX/Linux
 
@@ -82,3 +91,4 @@ vnoremap > >gv
 
 " Make p in Visual mode replace the selected text with the "" register.
 vnoremap p <Esc>:let current_reg = @"<CR>gvs<C-R>=current_reg<CR><Esc>
+nnoremap <silent> <F5> :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
