@@ -29,11 +29,30 @@ var monMid = '1';
 var monRight = '2';
 
 // ------- Move operation assignments
+var moveScreenOp = S.op('move', {
+  x: 'screenOriginX',
+  y: 'screenOriginY',
+  width: 'windowSizeX',
+  height: 'windowSizeY'
+});
+
+var moveToLap = moveScreenOp.dup({
+  screen: monLap
+});
+
+var moveToMid = moveScreenOp.dup({
+  screen: monMid
+});
+
+var moveToRight = moveScreenOp.dup({
+  screen: monRight
+});
+
 var moveOp = S.op('move', {
-  'x' : 'screenOriginX',
-  'y' : 'screenOriginY',
-  'width' : 'screenSizeX',
-  'height' : 'screenSizeY'
+  x: 'screenOriginX',
+  y: 'screenOriginY',
+  width: 'screenSizeX',
+  height: 'screenSizeY'
 });
 
 var moveLapOp = moveOp.dup({ screen: monLap });
@@ -97,16 +116,23 @@ var moveLapHipChatOp = moveRightHipChatOp.dup({
   height: 'screenSizeY/1.75'
 });
 
+var moveChromeWindow = S.op('corner', {
+  screen: monRight,
+  direction: 'top-right',
+  width: 'screenSizeX/1.5',
+  height: 'screenSizeY'
+});
+
 // ------ Resize ops
 var resizeHalfLeft = S.op('move', {
   height: 'screenSizeY',
   width: 'screenSizeX/2',
-  'x' : '0',
-  'y' : '0'
+  x: '0',
+  y: '0'
 });
 
 var resizeHalfRight = resizeHalfLeft.dup({
-  'x' : 'screenSizeX/2'
+  x: 'screenSizeX/2'
 });
 
 var resizeHalfTop = resizeHalfLeft.dup({
@@ -115,7 +141,16 @@ var resizeHalfTop = resizeHalfLeft.dup({
 });
 
 var resizeHalfBot = resizeHalfTop.dup({
-  'y' : 'screenSizeY/2'
+  y: 'screenSizeY/2'
+});
+
+var resizeMidHalf = resizeHalfLeft.dup({
+  x: '(screenSizeX/4)'
+});
+
+var resizeFull = resizeHalfLeft.dup({
+  height: 'screenSizeY',
+  width: 'screenSizeX'
 });
 
 // ------ Layouts
@@ -137,19 +172,15 @@ var rightLayoutFull = {
   'repeat' : true
 };
 
-var genBrowserLayout = function(regex) {
-  return {
-    'operations' : [function(windowObject) {
-      var title = windowObject.title();
-      if (title !== undefined && title.match(regex)) {
-        windowObject.doOperation(monSam);
-      } else {
-        windowObject.doOperation(lapFull);
-      }
-    }],
-    'ignore-fail' : true,
-    'repeat' : true
-  };
+// This op is for a single chrome window to move to lap monitor
+// looking for twitter
+var moveGoogWithTwitter = function(window) {
+  var title = window.title();
+  if (title !== undefined && title.match(/TweetDeck/)) {
+    window.doOperation(moveLapOp);
+  } else {
+    window.doOperation(moveRightOp);
+  }
 };
 
 var threeMonLayout = S.layout('threeMon', {
@@ -172,9 +203,9 @@ var threeMonLayout = S.layout('threeMon', {
     'repeat-last': true
   },
   'Google Chrome': {
-    operations: [moveLapOp],
+    operations: [moveGoogWithTwitter, moveChromeWindow],
+    'title-order': ['TweetDeck'], // important for order of operations
     'ignore-fail': true,
-    'title-order': [], // TODO move other google windows to monRight
     'repeat-last': true
   },
   iTunes: {
@@ -279,15 +310,17 @@ S.bnda({
   'space:ctrl' : universalLayout,
 
   // Basic Location Bindings
-  '1:ctrl;cmd': moveLapOp,
-  '2:ctrl;cmd': moveMidOp,
-  '3:ctrl;cmd': moveRightOp,
+  '1:ctrl;cmd': moveToLap,
+  '2:ctrl;cmd': moveToMid,
+  '3:ctrl;cmd': moveToRight,
 
   // Resize bindings
+  '6:ctrl;alt': resizeMidHalf,
   '0:ctrl;alt': resizeHalfRight,
   '7:ctrl;alt': resizeHalfLeft,
   '8:ctrl;alt': resizeHalfBot,
   '9:ctrl;alt': resizeHalfTop,
+  '-:ctrl;alt': resizeFull,
 
   // Resize Bindings
   // Sizing
