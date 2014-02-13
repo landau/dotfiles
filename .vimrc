@@ -1,4 +1,4 @@
-se t_co=256
+set t_co=256
 set background="dark"
 let g:solarized_termcolors=256
 
@@ -6,7 +6,7 @@ execute pathogen#infect()
 execute pathogen#helptags()
 execute pathogen#incubate()
 
-set guifont=Inconsolata:h14
+set guifont=Source\ Code\ Pro:h12
 set paste
 set number
 set incsearch
@@ -73,6 +73,13 @@ endfunc
 "set list listchars=tab:»-,trail:·,extends:»,precedes:«
 "autocmd vimenter * if !argc() | NERDTree | endif
 
+" Rainbow parens
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
 
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.json,*.log,*/node_modules/*,*/bower_components/*     " MacOSX/Linux
 

@@ -24,9 +24,16 @@ S.cfga({
 //// Work Monitors
 //var monDell = '1920x1200';
 //var monHp = '1920x1080';
-var monLap = '0';
-var monMid = '1';
-var monRight = '2';
+var monLap, monMid, monRight;
+if (S.screenCount() === 2) {
+  monLap = '-1';
+  monMid = '0';
+  monRight = '1';
+} else {
+  monLap = '0';
+  monMid = '1';
+  monRight = '2';
+}
 
 // ------- Move operation assignments
 var moveScreenOp = S.op('move', {
@@ -72,6 +79,15 @@ var moveMidOpRight = moveMidOpTopRight.dup({ height : 'screenSizeY' });
 var moveMidOpTopLeft = moveMidOpTopLeft.dup({ screen : monMid });
 var moveMidOpBottomLeft = moveMidOpTopLeft.dup({ y : 'screenOriginY+screenSizeY/2' });
 var moveMidOpRight = moveMidOpRight.dup({ screen : monMid });
+
+var moveMidiTerm = moveMidOp.dup({ 
+  width: 'screenSizeX*0.3'
+});
+
+var moveMidMacVim = moveMidOp.dup({ 
+  width: 'screenSizeX*0.80',
+  x: 'screenSizeX*0.20'
+});
 
 var moveRightAdiumOp = S.op('corner', {
   screen: monRight,
@@ -176,7 +192,7 @@ var rightLayoutFull = {
 // looking for twitter
 var moveGoogWithTwitter = function(window) {
   var title = window.title();
-  if (title !== undefined && title.match(/TweetDeck/)) {
+  if (title !== undefined && title.match(/TweetDeck/g)) {
     window.doOperation(moveLapOp);
   } else {
     window.doOperation(moveRightOp);
@@ -198,7 +214,17 @@ var threeMonLayout = S.layout('threeMon', {
     'repeat-last': true
   },
   iTerm: {
-    operations: [moveMidOp],
+    operations: [moveMidiTerm],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  MacVim: {
+    operations: [moveMidMacVim],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  LightTable: {
+    operations: [moveMidMacVim],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -235,6 +261,68 @@ var threeMonLayout = S.layout('threeMon', {
   }
 });
 
+var twoMonLayout = S.layout('twoMon', {
+  '_before_': {},
+  '_after_': {},
+  Adium: {
+    operations: [moveRightAdiumOp],
+    'ignore-fail': true,
+    'title-order': ['Contacts'], // important for order of operations
+    'repeat-last': true
+  },
+  LimeChat: {
+    operations: [moveRightLimeChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  iTerm: {
+    operations: [moveMidiTerm],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  MacVim: {
+    operations: [moveMidMacVim],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  LightTable: {
+    operations: [moveMidMacVim],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Google Chrome': {
+    operations: [moveChromeWindow],
+    'title-order': ['TweetDeck'], // important for order of operations
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  iTunes: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Messages: {
+    operations: [moveRightMessagesOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Calendar: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Mail: {
+    operations: [moveRightOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  HipChat: {
+    operations: [moveRightHipChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  }
+});
+
 var oneMonLayout = S.layout('oneMon', {
   '_before_': {},
   '_after_': {},
@@ -250,6 +338,16 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   iTerm: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  MacVim: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  LightTable: {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -288,10 +386,12 @@ var oneMonLayout = S.layout('oneMon', {
 });
 
 var threeMonOp = S.op('layout', { name: threeMonLayout });
+var twoMonOp = S.op('layout', { name: twoMonLayout });
 var oneMonOp = S.op('layout', { name: oneMonLayout });
 
 // ---- Default layouts
 S.def([monLap, monMid, monRight], threeMonLayout);
+S.def([monMid, monRight], twoMonLayout);
 S.def([monLap], oneMonLayout);
 
 // --- Commands
@@ -299,6 +399,8 @@ S.def([monLap], oneMonLayout);
 var universalLayout = function() {
   if (S.screenCount() === 3) {
     threeMonOp.run();
+  } else if (S.screenCount() === 2) {
+    twoMonOp.run();
   } else if (S.screenCount() === 1) {
     oneMonOp.run();
   }

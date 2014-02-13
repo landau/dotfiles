@@ -11,7 +11,7 @@ ZSH_THEME="minimal"
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
+# alias ohmyzsh="mate ~/.oh-my-zsh"s
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -54,3 +54,19 @@ alias solr="cd ~/Downloads/solr-4.6.0/example/ && java -jar start.jar"
 #alias snow=clear;while :;do echo $LINES $COLUMNS $(($RANDOM%$COLUMNS));sleep 0.1;done|gawk '{a[$3]=0;for(x in a) {o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH ",o,x;printf "\033[%s;%sH*\033[0;0H",a[x],x;}}'
 alias cnpm="npm --reg https://condenast.npmjitsu.co --always-auth=true --strict-ssl=false"
 alias npmr="npm run"
+
+# JSON post curl function
+function jsonpost {
+  curl -X POST -H "Content-Type: application/json" -d $1 $2
+}
+
+# JSON put curl function
+function jsonput {
+  curl -X PUT -H "Content-Type: application/json" -d $1 $2
+}
+
+function httpcodes {
+  node -p "require('http').STATUS_CODES"
+}
+
+
