@@ -48,7 +48,12 @@ plugins=(git node npm nvm github git-extras brew osx python z)
 # Customize to your needs...
 #export PATH=$PATH:/Users/tlandau/.nvm/v0.11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/204838/nvm/v0.8.6/bin:/Users/204838/depot_tools:/Users/tlandau/depot_tools
 
+export PATH=$PATH:/Users/tlandau/.nvm/v0.10.23/bin
+
 source $ZSH/oh-my-zsh.sh
+
+
+cdpath=(~/web ~/work ~/oss)
 
 alias solr="cd ~/Downloads/solr-4.6.0/example/ && java -jar start.jar"
 #alias snow=clear;while :;do echo $LINES $COLUMNS $(($RANDOM%$COLUMNS));sleep 0.1;done|gawk '{a[$3]=0;for(x in a) {o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH ",o,x;printf "\033[%s;%sH*\033[0;0H",a[x],x;}}'
@@ -69,4 +74,11 @@ function httpcodes {
   node -p "require('http').STATUS_CODES"
 }
 
+export EDITOR=vim
+alias showfiles='defaulexects write com.apple.finder AppleShowAllFiles True;killall Finder'
+alias hidefiles='defaults write com.apple.finder AppleShowAllFiles false;killall Finder'
+alias lt='open -a /Applications/LightTable/LightTable.app'
+alias npmre='rm -rf node_modules && npm i'
+alias dash='open dash://'
 
+export CI_MONGO="mongodb://copilot-ci-srv01.conde.io:10650/test"

@@ -13,6 +13,7 @@ S.cfga({
   orderScreensLeftToRight: true
 });
 
+var hyper = 'ctrl;shift;alt;cmd';
 
 // ------- Monitor assignments
 //var monLap = '1440x900';
@@ -26,9 +27,9 @@ S.cfga({
 //var monHp = '1920x1080';
 var monLap, monMid, monRight;
 if (S.screenCount() === 2) {
-  monLap = '-1';
-  monMid = '0';
-  monRight = '1';
+  monLap = '0';
+  monMid = '1';
+  monRight = '-1';
 } else {
   monLap = '0';
   monMid = '1';
@@ -82,6 +83,11 @@ var moveMidOpRight = moveMidOpRight.dup({ screen : monMid });
 
 var moveMidiTerm = moveMidOp.dup({ 
   width: 'screenSizeX*0.3'
+});
+
+var moveMidMidOp = moveMidOp.dup({
+  width: '(screenSizeX/1.5)',
+  x: '(screenSizeX/6)'
 });
 
 var moveMidMacVim = moveMidOp.dup({ 
@@ -223,7 +229,12 @@ var threeMonLayout = S.layout('threeMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  LightTable: {
+  Atom: {
+    operations: [moveMidMacVim],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Light Table': {
     operations: [moveMidMacVim],
     'ignore-fail': true,
     'repeat-last': true
@@ -265,44 +276,53 @@ var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
   Adium: {
-    operations: [moveRightAdiumOp],
+    operations: [moveLapAdiumOp],
     'ignore-fail': true,
     'title-order': ['Contacts'], // important for order of operations
     'repeat-last': true
   },
   LimeChat: {
-    operations: [moveRightLimeChatOp],
+    operations: [moveLapLimeChatOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   iTerm: {
-    operations: [moveMidiTerm],
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   MacVim: {
-    operations: [moveMidMacVim],
+    operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
   },
-  LightTable: {
-    operations: [moveMidMacVim],
+  Atom: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Light Table': {
+    operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   'Google Chrome': {
-    operations: [moveChromeWindow],
-    'title-order': ['TweetDeck'], // important for order of operations
+    operations: [moveMidMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Messages: {
+    operations: [moveLapMessagesOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  HipChat: {
+    operations: [moveLapHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   iTunes: {
     operations: [moveMidOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Messages: {
-    operations: [moveRightMessagesOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -313,11 +333,6 @@ var twoMonLayout = S.layout('twoMon', {
   },
   Mail: {
     operations: [moveRightOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  HipChat: {
-    operations: [moveRightHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
   }
@@ -347,7 +362,12 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  LightTable: {
+  Atom: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Light Table': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -409,7 +429,7 @@ var universalLayout = function() {
 // ------ Key Bindings
 S.bnda({
   // Layout Bindings
-  'space:ctrl' : universalLayout,
+  'esc:ctrl' : universalLayout,
 
   // Basic Location Bindings
   '1:ctrl;cmd': moveToLap,
@@ -445,7 +465,7 @@ S.bnda({
   //'tab:cmd' : S.op('switch'),
 
   // Grid
-  'esc:ctrl' : S.op('grid')
+  'esc:alt' : S.op('grid')
 });
 
 // Log that we're done configuring
