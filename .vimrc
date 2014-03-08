@@ -102,13 +102,28 @@ let g:ctrlp_custom_ignore = {
 
 
 " rainbow
+"  Parentheses colours using Solarized
+let g:rbpt_colorpairs = [
+  \ [ '13', '#6c71c4'],
+  \ [ '5',  '#d33682'],
+  \ [ '1',  '#dc322f'],
+  \ [ '9',  '#cb4b16'],
+  \ [ '3',  '#b58900'],
+  \ [ '2',  '#859900'],
+  \ [ '6',  '#2aa198'],
+  \ [ '4',  '#268bd2'],
+  \ ]
+"au VimEnter * RainbowParenthesesActivate
 au VimEnter * RainbowParenthesesToggle
 au Syntax * RainbowParenthesesLoadRound
 au Syntax * RainbowParenthesesLoadSquare
 au Syntax * RainbowParenthesesLoadBraces
 
-" pressing < or > will let you indent/unident selected lines
+" paredit for all langs
+" disable? let g:paredit_mode = 0
+au FileType * call PareditInitBuffer()
 
+" pressing < or > will let you indent/unident selected lines
 vnoremap < <gv
 vnoremap > >gv
 
