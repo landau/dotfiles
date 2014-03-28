@@ -25,6 +25,8 @@
     undopush = push -f origin HEAD^:master
     # Push to origin
     pom = push origin master
+    # rebase
+    prom = pull --rebase origin master
 
 [apply]
     # Detect whitespace errors when applying a patch
