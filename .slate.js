@@ -81,7 +81,7 @@ var moveMidOpTopLeft = moveMidOpTopLeft.dup({ screen : monMid });
 var moveMidOpBottomLeft = moveMidOpTopLeft.dup({ y : 'screenOriginY+screenSizeY/2' });
 var moveMidOpRight = moveMidOpRight.dup({ screen : monMid });
 
-var moveMidiTerm = moveMidOp.dup({ 
+var moveMidiTerm = moveMidOp.dup({
   width: 'screenSizeX*0.3'
 });
 
@@ -90,7 +90,7 @@ var moveMidMidOp = moveMidOp.dup({
   x: '(screenSizeX/6)'
 });
 
-var moveMidMacVim = moveMidOp.dup({ 
+var moveMidMacVim = moveMidOp.dup({
   width: 'screenSizeX*0.80',
   x: 'screenSizeX*0.20'
 });
@@ -119,7 +119,7 @@ var moveRightHipChatOp = moveRightAdiumOp.dup({
   height: 'screenSizeY/2'
 });
 
-var moveLapAdiumOp = moveRightAdiumOp.dup({ 
+var moveLapAdiumOp = moveRightAdiumOp.dup({
   screen: monLap,
   width: 'screenSizeX/2',
   height: 'screenSizeY/1.25'
@@ -128,11 +128,11 @@ var moveLapAdiumOp = moveRightAdiumOp.dup({
 var moveLapLimeChatOp = moveLapAdiumOp.dup({
 });
 
-var moveLapMessagesOp = moveRightMessagesOp.dup({ 
-  screen: monLap 
+var moveLapMessagesOp = moveRightMessagesOp.dup({
+  screen: monLap
 });
 
-var moveLapHipChatOp = moveRightHipChatOp.dup({ 
+var moveLapHipChatOp = moveRightHipChatOp.dup({
   screen: monLap,
   width: 'screenSizeX/2',
   height: 'screenSizeY/1.75'
@@ -246,7 +246,8 @@ var threeMonLayout = S.layout('threeMon', {
     'repeat-last': true
   },
   iTunes: {
-    operations: [moveMidOp],
+    operations: [resizeHalfRight, resizeHalfLeft],
+    'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -322,7 +323,8 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   iTunes: {
-    operations: [moveMidOp],
+    operations: [resizeHalfRight, resizeHalfLeft],
+    'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
   },

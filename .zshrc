@@ -1,5 +1,6 @@
 # Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
+export PATH=/usr/local/bin:$PATH
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -46,11 +47,11 @@ plugins=(git node npm nvm github git-extras brew osx python z)
 
 
 # Customize to your needs...
-#export PATH=$PATH:/Users/tlandau/.nvm/v0.11.8/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/204838/nvm/v0.8.6/bin:/Users/204838/depot_tools:/Users/tlandau/depot_tools
+#export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/tlandau/nvm/v0.10.26/bin:/Users/tlandau/depot_tools:/Users/tlandau/depot_tools
 
-export PATH=$PATH:/Users/tlandau/.nvm/v0.10.23/bin
-
-source $ZSH/oh-my-zsh.sh
+export PATH=$PATH:/Users/tlandau/.nvm/v0.10.26/bin:/Users/tlandau/.nvm/v0.11.12/bin
+#export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin
+[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh # This loads NVM
 
 
 cdpath=(~/web ~/work ~/oss)
@@ -78,7 +79,12 @@ export EDITOR=vim
 alias showfiles='defaulexects write com.apple.finder AppleShowAllFiles True;killall Finder'
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles false;killall Finder'
 alias lt='open -a /Applications/LightTable/LightTable.app'
-alias npmre='rm -rf node_modules && npm i'
 alias dash='open dash://'
+alias cgit='ctags  -f ./.git/tags .'
+
+alias npmre='rm -rf node_modules && npm i'
+alias npm-pre='npm run pretest'
 
 export CI_MONGO="mongodb://copilot-ci-srv01.conde.io:10650/test"
+
+source $ZSH/oh-my-zsh.sh

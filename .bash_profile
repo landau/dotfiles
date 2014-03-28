@@ -4,4 +4,12 @@ alias showfiles='defaulexects write com.apple.finder AppleShowAllFiles True;kill
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles false;killall Finder'
 
 export EDITOR=vim
-export PATH=$PATH:/Users/tlandau/.nvm/v0.10.23/bin
+
+# {{{
+# Node Completion - Auto-generated, do not touch.
+shopt -s progcomp
+for f in $(command ls ~/.node-completion); do
+  f="$HOME/.node-completion/$f"
+  test -f "$f" && . "$f"
+done
+# }}}

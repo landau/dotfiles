@@ -2,6 +2,11 @@ set t_co=256
 set background="dark"
 let g:solarized_termcolors=256
 
+" powerline shiz
+python from powerline.vim import setup as powerline_setup
+python powerline_setup()
+python del powerline_setup
+
 execute pathogen#infect()
 execute pathogen#helptags()
 execute pathogen#incubate()
@@ -25,23 +30,30 @@ colorscheme solarized
 
 " showmatch: Show the matching bracket for the last ')'?
 set showmatch
+
 filetype on
 filetype plugin on
 filetype indent on
 filetype plugin indent on
+
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+
 " Set backspace config
 set backspace=eol,start,indent
 set ignorecase
 set visualbell t_vb=
 set wildmenu
+
 " Use Vim settings, rather then Vi settings (much better!).
 set nocompatible
+
 " highlight strings inside C comments
 let c_comment_strings=1
 let mapleader = "`"
+
+let g:jsCommand='node'
 
 " for the TOhtml command
 "let html_use_css=1
@@ -58,8 +70,6 @@ set ts=2  " Tab spacing
 set sw=2
 set smarttab
 set expandtab
-" Always  set auto indenting on
-set autoindent
 
 " Set 'comments' to format dashed lists in comments.
 setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
@@ -73,11 +83,9 @@ func! Cwd()
 endfunc
 
 "set list listchars=tab:»-,trail:·,extends:»,precedes:«
-"autocmd vimenter * if !argc() | NERDTree | endif
-
 
 autocmd vimenter * if !argc() | NERDTree | endif
-map <C-n> :NERDTreeToggle<CR>
+map <leader>n :NERDTreeToggle<CR>
 
 augroup MYVIMRC
     au!
@@ -88,8 +96,6 @@ set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.json,*.log,*/node_modules/*,*/bower_c
 
 "let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 
-let g:paredit_electric_return = 0
-
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_custom_ignore = {
   \ 'dir':  '\v[\/]\.(git|hg|svn)',
@@ -99,22 +105,10 @@ let g:ctrlp_custom_ignore = {
 
 
 " clojure-static
-let g:clojure_fuzzy_indent = 1
-let g:clojure_fuzzy_indent_patterns = ['^with', '^def', '^let', '^defn']
-let g:clojure_fuzzy_indent_blacklist = ['-fn$', '\v^with-%(meta|out-str|loading-context)$']
-
-" rainbow
-"  Parentheses colours using Solarized
-"let g:rbpt_colorpairs = [
-"  \ [ '13', '#6c71c4'],
-"  \ [ '5',  '#d33682'],
-"  \ [ '1',  '#dc322f'],
-"  \ [ '9',  '#cb4b16'],
-"  \ [ '3',  '#b58900'],
-"  \ [ '2',  '#859900'],
-"  \ [ '6',  '#2aa198'],
-"  \ [ '4',  '#268bd2'],
-"  \ ]
+let g:paredit_electric_return = 0
+autocmd FileType *.clj setlocal let g:clojure_fuzzy_indent = 1
+autocmd FileType *.clj setlocal let g:clojure_fuzzy_indent_patterns = ['^with', '^def', '^let', '^defn']
+autocmd FileType *.clj setlocal let g:clojure_fuzzy_indent_blacklist = ['-fn$', '\v^with-%(meta|out-str|loading-context)$']
 
 "let g:rbpt_max = 16
 "let g:rbpt_loadcmd_toggle = 0
@@ -132,16 +126,18 @@ augroup END
 nnoremap <silent> <Leader>r :call rainbow_parentheses#toggle()<CR>
 
 " paredit for all langs
-" disable? let g:paredit_mode = 0
-au FileType * call PareditInitBuffer()
+"g:paredit_mode = 0
+autocmd FileType *.js setlocal let g:paredit_mode = 1
+autocmd FileType *.clj setlocal let g:paredit_mode = 1
+au FileType *.clj call PareditInitBuffer()
 
 " pressing < or > will let you indent/unident selected lines
 vnoremap < <gv
 vnoremap > >gv
 
-nmap <leader>t :TagbarToggle<CR>
 
-"folding settings
+" folding settings
+" za zm zr
 set foldmethod=indent   "fold based on indent
 set foldnestmax=10      "deepest fold is 10 levels
 set nofoldenable        "dont fold by default
@@ -152,8 +148,24 @@ vnoremap p <Esc>:let current_reg = @"<CR>gvs<C-R>=current_reg<CR><Esc>
 
 map <leader>e :Eval<CR>
 
+" Handle trailing whitespace, shamelessly taken from http://vimcasts.org/episodes/tidying-whitespace/
+function! <SID>StripTrailingWhitespaces()
+    " Preparation: save last search, and cursor position.
+    let _s=@/
+    let l = line(".")
+    let c = col(".")
+    " Do the business:
+    %s/\s\+$//e
+    " Clean up: restore previous search history, and cursor position
+    let @/=_s
+    call cursor(l, c)
+endfunction
+
 " clear whitespace
 nnoremap <silent> <leader>w :let _s=@/<Bar>:%s/\s\+$//e<Bar>:let @/=_s<Bar>:nohl<CR>
+"nnoremap <silent> <leader>w :call <SID>StripTrailingWhitespaces()
+autocmd BufWritePre *.rb,*.coffee,*.yml,*.haml,*.erb,*.php,*.java,*.py,*.js,*.styl,*.clj,*.cljs :call <SID>StripTrailingWhitespaces() " Run this method on save
 
 " Powerline
+nmap <leader>t :TagbarToggle<CR>
 set laststatus=2 " Always display the statusline in all windows

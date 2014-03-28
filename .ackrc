@@ -1,17 +1,15 @@
---type-set
-less=.less
-
---type-set
-coffee=.coffee
-
---type-set
-dust=.dust
-
---type-set
-py=.py
-
---type-set
-ssp=.ssp
+--type-set=less=.less
+--type-set=coffee=.coffee
+--type-set=dust=.dust
+--type-set=py=.py
+--type-set=markdown=.md,.markdown
+--type-set=stylus=.stylus,.styl
+--type-set=mustache=.mustache
+--type-set=jade=.jade
+--type-set=json=.json
+--type-set=js=.js
+--type-set=clj=.clj
+--type-set=cljs=.cljs
 
 
 --ignore-dir=target
@@ -22,3 +20,4 @@ ssp=.ssp
 --ignore-dir=node_modules
 --ignore-file=ext:*min*
 --sort-files
+
