@@ -84,7 +84,16 @@ alias cgit='ctags  -f ./.git/tags .'
 
 alias npmre='rm -rf node_modules && npm i'
 alias npm-pre='npm run pretest'
+alias nodetst='nodemon --exec "npm tst --silent"'
+
+alias yt='youtube-dl -t'
+alias ytmp3='youtube-dl --audio-format=mp3 -x -t'
+
+alias gitrb='git rebase -i head~'
+
+alias pgres='postgres -D /usr/local/var/postgres'
 
 export CI_MONGO="mongodb://copilot-ci-srv01.conde.io:10650/test"
 
 source $ZSH/oh-my-zsh.sh
+

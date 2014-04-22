@@ -24,7 +24,8 @@
     # Undo a `git push`
     undopush = push -f origin HEAD^:master
     # Push to origin
-    pom = push origin master
+    pm = push origin master
+    pom= push origin master
     # rebase
     prom = pull --rebase origin master
 

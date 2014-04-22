@@ -70,6 +70,7 @@ set ts=2  " Tab spacing
 set sw=2
 set smarttab
 set expandtab
+set colorcolumn=100
 
 " Set 'comments' to format dashed lists in comments.
 setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
@@ -92,13 +93,13 @@ augroup MYVIMRC
     au BufWritePost .vimrc so $MYVIMRC
 augroup END
 
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.json,*.log,*/node_modules/*,*/bower_components/*     " MacOSX/Linux
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.json,*.log,*/node_modules/*,*/target/*     " MacOSX/Linux
 
 "let g:ctrlp_custom_ignore = '\v[\/]\.(git|hg|svn)$'
 
 let g:ctrlp_working_path_mode = 'ra'
 let g:ctrlp_custom_ignore = {
-  \ 'dir':  '\v[\/]\.(git|hg|svn)',
+  \ 'dir':  '\v[\/]\.(git|hg|svn|target)',
   \ 'file': '\v\.(exe|so|dll)$',
   \ 'link': 'some_bad_symbolic_links',
   \ }
