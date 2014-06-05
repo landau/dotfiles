@@ -86,8 +86,8 @@ var moveMidiTerm = moveMidOp.dup({
 });
 
 var moveMidMidOp = moveMidOp.dup({
-  width: '(screenSizeX/1.5)',
-  x: '(screenSizeX/6)'
+  width: '(screenSizeX/1.35)',
+  x: '(screenSizeX/6.75)'
 });
 
 var moveMidMacVim = moveMidOp.dup({
@@ -141,7 +141,7 @@ var moveLapHipChatOp = moveRightHipChatOp.dup({
 var moveChromeWindow = S.op('corner', {
   screen: monRight,
   direction: 'top-right',
-  width: 'screenSizeX/1.5',
+  width: 'screenSizeX/1.35',
   height: 'screenSizeY'
 });
 
@@ -287,6 +287,11 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  Evernote: {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   iTerm: {
     operations: [moveLapOp],
     'ignore-fail': true,
@@ -323,7 +328,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   iTunes: {
-    operations: [resizeHalfRight, resizeHalfLeft],
+    operations: [moveMidOp],
     'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
@@ -351,6 +356,11 @@ var oneMonLayout = S.layout('oneMon', {
   },
   LimeChat: {
     operations: [moveLapLimeChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Evernote: {
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },

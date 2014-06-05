@@ -49,10 +49,11 @@ plugins=(git node npm nvm github git-extras brew osx python z)
 # Customize to your needs...
 #export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/tlandau/nvm/v0.10.26/bin:/Users/tlandau/depot_tools:/Users/tlandau/depot_tools
 
-export PATH=$PATH:/Users/tlandau/.nvm/v0.10.26/bin:/Users/tlandau/.nvm/v0.11.12/bin
-#export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin
+#export PATH=$PATH:/Users/tlandau/.nvm/v0.10.5/bin
 [[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh # This loads NVM
+export PATH=$PATH:/Users/tlandau/.nvm/v0.10.26/bin:/Users/tlandau/.nvm/v0.11.12/bin
 
+export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 
 cdpath=(~/web ~/work ~/oss)
 
@@ -89,11 +90,72 @@ alias nodetst='nodemon --exec "npm tst --silent"'
 alias yt='youtube-dl -t'
 alias ytmp3='youtube-dl --audio-format=mp3 -x -t'
 
-alias gitrb='git rebase -i head~'
+alias grb='git rebase -i head~'
 
 alias pgres='postgres -D /usr/local/var/postgres'
+
+CLJS='/Users/tlandau/oss/clojurescript'
+alias cljsrepl="$CLJS/script/repljs"
 
 export CI_MONGO="mongodb://copilot-ci-srv01.conde.io:10650/test"
 
 source $ZSH/oh-my-zsh.sh
 
+# <--------- Cool Functions by Crouse-------->
+# Cool Functions for your .bashrc file.
+
+# Weather by us zip code - Can be called two ways # weather 50315 # weather "Des Moines"
+weather ()
+{
+declare -a WEATHERARRAY
+WEATHERARRAY=( `lynx -dump "http://www.google.com/search?hl=en&lr=&client=firefox-a&rls=org.mozilla%3Aen-US%3Aofficial&q=weather+${1}&btnG=Search" | grep -A 5 -m 1 "Weather for"`)
+echo ${WEATHERARRAY[@]}
+}
+
+# Stock prices - can be called two ways. # stock novl  (this shows stock pricing)  #stock "novell"  (this way shows stock symbol for novell)
+stock ()
+{
+stockname=`lynx -dump http://finance.yahoo.com/q?s=${1} | grep -i ":${1})" | sed -e 's/Delayed.*$//'`
+stockadvise="${stockname} - delayed quote."
+declare -a STOCKINFO
+STOCKINFO=(` lynx -dump http://finance.yahoo.com/q?s=${1} | egrep -i "Last Trade:|Change:|52wk Range:"`)
+stockdata=`echo ${STOCKINFO[@]}`
+	if [[ ${#stockname} != 0 ]] ;then
+		echo "${stockadvise}"
+		echo "${stockdata}"
+			else
+			stockname2=${1}
+			lookupsymbol=`lynx -dump -nolist http://finance.yahoo.com/lookup?s="${1}" | grep -A 1 -m 1 "Portfolio" | grep -v "Portfolio" | sed 's/\(.*\)Add/\1 /'`
+				if [[ ${#lookupsymbol} != 0 ]] ;then
+				echo "${lookupsymbol}"
+					else
+					echo "Sorry $USER, I can not find ${1}."
+				fi
+	fi
+}
+
+#Translate a Word  - USAGE: translate house spanish  # See dictionary.com for available languages (there are many).
+translate ()
+{
+TRANSLATED=`lynx -dump "http://dictionary.reference.com/browse/${1}" | grep -i -m 1 -w "${2}:" | sed 's/^[ \t]*//;s/[ \t]*$//'`
+if [[ ${#TRANSLATED} != 0 ]] ;then
+	echo "\"${1}\" in ${TRANSLATED}"
+	else
+	echo "Sorry, I can not translate \"${1}\" to ${2}"
+fi
+}
+
+# Define a word - USAGE: define dog
+define ()
+{
+lynx -dump "http://www.google.com/search?hl=en&q=define%3A+${1}&btnG=Google+Search" | grep -m 3 -w "*"  | sed 's/;/ -/g' | cut -d- -f1 > /tmp/templookup.txt
+			if [[ -s  /tmp/templookup.txt ]] ;then	
+				until ! read response
+					do
+					echo "${response}"
+					done < /tmp/templookup.txt
+				else
+					echo "Sorry $USER, I can't find the term \"${1} \""				
+			fi	
+rm -f /tmp/templookup.txt
+}

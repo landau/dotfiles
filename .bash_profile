@@ -5,11 +5,6 @@ alias hidefiles='defaults write com.apple.finder AppleShowAllFiles false;killall
 
 export EDITOR=vim
 
-# {{{
-# Node Completion - Auto-generated, do not touch.
-shopt -s progcomp
-for f in $(command ls ~/.node-completion); do
-  f="$HOME/.node-completion/$f"
-  test -f "$f" && . "$f"
-done
-# }}}
+export MANTA_URL='https://us-east.manta.joyent.com'
+export MANTA_USER='condenast'
+export MANTA_KEY_ID=$(ssh-keygen -l -f $HOME/.ssh/id_rsa.pub | awk '{print $2}')
