@@ -229,6 +229,11 @@ var threeMonLayout = S.layout('threeMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  Emacs: {
+    operations: [moveMidMacVim],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   Atom: {
     operations: [moveMidMacVim],
     'ignore-fail': true,
@@ -302,7 +307,7 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  Atom: {
+  Emacs: {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -374,7 +379,7 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  Atom: {
+  Emacs: {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true

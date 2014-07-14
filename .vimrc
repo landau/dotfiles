@@ -26,7 +26,8 @@ syntax enable
 
 "let g:solarized_contrast="high"
 "let g:solarized_visibility="high"
-colorscheme solarized
+"colorscheme solarized
+colorscheme zenburn
 
 " showmatch: Show the matching bracket for the last ')'?
 set showmatch

@@ -159,3 +159,5 @@ lynx -dump "http://www.google.com/search?hl=en&q=define%3A+${1}&btnG=Google+Sear
 			fi	
 rm -f /tmp/templookup.txt
 }
+alias aquamacs='open /Applications/Aquamacs.app/'
+TERM=xterm-256color
