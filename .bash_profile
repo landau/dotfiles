@@ -8,3 +8,6 @@ export EDITOR=vim
 export MANTA_URL='https://us-east.manta.joyent.com'
 export MANTA_USER='condenast'
 export MANTA_KEY_ID=$(ssh-keygen -l -f $HOME/.ssh/id_rsa.pub | awk '{print $2}')
+
+export NVM_DIR="/Users/tlandau/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm

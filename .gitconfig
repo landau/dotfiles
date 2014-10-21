@@ -16,7 +16,7 @@
     # Switch to a branch, creating it if necessary
     co = checkout
     # Show verbose output about tags, branches or remotes
-    tags = tag -l
+    tags = tag -l -n1
     branches = branch -a
     remotes = remote -v
     # Credit an author on the latest commit
@@ -28,6 +28,12 @@
     pom= push origin master
     # rebase
     prom = pull --rebase origin master
+    # http://haacked.com/archive/2014/07/28/github-flow-aliases/
+    save = !git add -A && git commit -m 'SAVEPOINT'
+    wip = !git add -u && git commit -m 'WIP'
+    undo = reset HEAD~1 --mixed
+    amend = commit -a --amend
+    wipe = !git add -A && git commit -qm 'WIPE SAVEPOINT' && git reset HEAD~1 --hard
 
 [apply]
     # Detect whitespace errors when applying a patch

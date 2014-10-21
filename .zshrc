@@ -49,15 +49,15 @@ plugins=(git node npm nvm github git-extras brew osx python z)
 # Customize to your needs...
 #export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/tlandau/nvm/v0.10.26/bin:/Users/tlandau/depot_tools:/Users/tlandau/depot_tools
 
-#export PATH=$PATH:/Users/tlandau/.nvm/v0.10.5/bin
-[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh # This loads NVM
-export PATH=$PATH:/Users/tlandau/.nvm/v0.10.26/bin:/Users/tlandau/.nvm/v0.11.12/bin
+#[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh # This loads NVM
+#export PATH=$PATH:/Users/tlandau/.nvm/v0.10.30/bin:/Users/tlandau/.nvm/v0.11.12/bin
+source ~/.nvm/nvm.sh
 
 export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 
 cdpath=(~/web ~/work ~/oss)
 
-alias solr="cd ~/Downloads/solr-4.6.0/example/ && java -jar start.jar"
+alias solr="cd ~/work/solr-config && vagrant up solr --provision"
 #alias snow=clear;while :;do echo $LINES $COLUMNS $(($RANDOM%$COLUMNS));sleep 0.1;done|gawk '{a[$3]=0;for(x in a) {o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH ",o,x;printf "\033[%s;%sH*\033[0;0H",a[x],x;}}'
 alias cnpm="npm --reg https://condenast.npmjitsu.co --always-auth=true --strict-ssl=false"
 alias npmr="npm run"
@@ -70,6 +70,11 @@ function jsonpost {
 # JSON put curl function
 function jsonput {
   curl -X PUT -H "Content-Type: application/json" -d $1 $2
+}
+
+function tagrelease {
+  v=$(cat package.json | python -c 'import sys, json; print json.load(sys.stdin)["version"]')
+  git tag $v -m "Release $v"
 }
 
 function httpcodes {

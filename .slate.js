@@ -90,9 +90,27 @@ var moveMidMidOp = moveMidOp.dup({
   x: '(screenSizeX/6.75)'
 });
 
+var moveMidBrowser = moveMidOp.dup({
+  width: '(screenSizeX/1.35)'
+});
+
 var moveMidMacVim = moveMidOp.dup({
   width: 'screenSizeX*0.80',
   x: 'screenSizeX*0.20'
+});
+
+var moveTwitterNextToBrowser = S.op('corner', {
+  screen: monMid,
+  direction: 'top-right',
+  width: 'screenSizeX/3.85',
+  height: 'screenSizeY'
+});
+
+var moveWunderNextToBrowser = S.op('corner', {
+  screen: monMid,
+  direction: 'top-right',
+  width: 'screenSizeX/3.85',
+  height: 'screenSizeY'
 });
 
 var moveRightAdiumOp = S.op('corner', {
@@ -102,9 +120,6 @@ var moveRightAdiumOp = S.op('corner', {
   height: 'screenSizeY/2'
 });
 
-var moveRightLimeChatOp = moveRightAdiumOp.dup({
-});
-
 // Messages app op
 var moveRightMessagesOp = moveRightAdiumOp.dup({
   direction: 'bottom-right',
@@ -112,12 +127,6 @@ var moveRightMessagesOp = moveRightAdiumOp.dup({
   height: 'screenSizeY/2'
 });
 
-// HipChat app op
-var moveRightHipChatOp = moveRightAdiumOp.dup({
-  direction: 'bottom-left',
-  width: 'screenSizeX/2.5',
-  height: 'screenSizeY/2'
-});
 
 var moveLapAdiumOp = moveRightAdiumOp.dup({
   screen: monLap,
@@ -126,16 +135,18 @@ var moveLapAdiumOp = moveRightAdiumOp.dup({
 });
 
 var moveLapLimeChatOp = moveLapAdiumOp.dup({
+  screen: monLap,
+  direction: 'top-right',
+  width: 'screenSizeX/2',
+  height: 'screenSizeY'
 });
 
 var moveLapMessagesOp = moveRightMessagesOp.dup({
   screen: monLap
 });
 
-var moveLapHipChatOp = moveRightHipChatOp.dup({
-  screen: monLap,
-  width: 'screenSizeX/2',
-  height: 'screenSizeY/1.75'
+var moveLapHipChatOp = moveLapLimeChatOp.dup({
+  direction: 'top-left'
 });
 
 var moveChromeWindow = S.op('corner', {
@@ -205,79 +216,6 @@ var moveGoogWithTwitter = function(window) {
   }
 };
 
-var threeMonLayout = S.layout('threeMon', {
-  '_before_': {},
-  '_after_': {},
-  Adium: {
-    operations: [moveRightAdiumOp],
-    'ignore-fail': true,
-    'title-order': ['Contacts'], // important for order of operations
-    'repeat-last': true
-  },
-  LimeChat: {
-    operations: [moveRightLimeChatOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  iTerm: {
-    operations: [moveMidiTerm],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  MacVim: {
-    operations: [moveMidMacVim],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Emacs: {
-    operations: [moveMidMacVim],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Atom: {
-    operations: [moveMidMacVim],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Light Table': {
-    operations: [moveMidMacVim],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Google Chrome': {
-    operations: [moveGoogWithTwitter, moveChromeWindow],
-    'title-order': ['TweetDeck'], // important for order of operations
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  iTunes: {
-    operations: [resizeHalfRight, resizeHalfLeft],
-    'title-order': ['Equalizer'], // important for order of operations
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Messages: {
-    operations: [moveRightMessagesOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Calendar: {
-    operations: [moveLapOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Mail: {
-    operations: [moveRightOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  HipChat: {
-    operations: [moveRightHipChatOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  }
-});
-
 var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
@@ -318,7 +256,17 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   'Google Chrome': {
-    operations: [moveMidMidOp],
+    operations: [moveMidBrowser],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Twitter': {
+    operations: [moveTwitterNextToBrowser],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Wunderlist': {
+    operations: [moveWunderNextToBrowser],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -329,6 +277,12 @@ var twoMonLayout = S.layout('twoMon', {
   },
   HipChat: {
     operations: [moveLapHipChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Amazon Music': {
+    operations: [moveMidOp],
+    'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -395,6 +349,11 @@ var oneMonLayout = S.layout('oneMon', {
     'title-order': [], // TODO move other google windows to monRight
     'repeat-last': true
   },
+  'Amazon Music': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   iTunes: {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -422,21 +381,17 @@ var oneMonLayout = S.layout('oneMon', {
   }
 });
 
-var threeMonOp = S.op('layout', { name: threeMonLayout });
 var twoMonOp = S.op('layout', { name: twoMonLayout });
 var oneMonOp = S.op('layout', { name: oneMonLayout });
 
 // ---- Default layouts
-S.def([monLap, monMid, monRight], threeMonLayout);
 S.def([monMid, monRight], twoMonLayout);
 S.def([monLap], oneMonLayout);
 
 // --- Commands
 
 var universalLayout = function() {
-  if (S.screenCount() === 3) {
-    threeMonOp.run();
-  } else if (S.screenCount() === 2) {
+  if (S.screenCount() === 2) {
     twoMonOp.run();
   } else if (S.screenCount() === 1) {
     oneMonOp.run();
