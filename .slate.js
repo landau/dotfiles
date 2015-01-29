@@ -110,7 +110,7 @@ var moveWunderNextToBrowser = S.op('corner', {
   screen: monMid,
   direction: 'top-right',
   width: 'screenSizeX/3.85',
-  height: 'screenSizeY'
+  height: 'screenSizeY/2'
 });
 
 var moveRightAdiumOp = S.op('corner', {
@@ -121,10 +121,11 @@ var moveRightAdiumOp = S.op('corner', {
 });
 
 // Messages app op
-var moveRightMessagesOp = moveRightAdiumOp.dup({
-  direction: 'bottom-right',
+var moveRightMessagesOp = moveLapOp.dup({
   width: 'screenSizeX/2.5',
-  height: 'screenSizeY/2'
+  height: 'screenSizeY/2',
+  x: 'screenOriginX/2.15',
+  y: 'screenOriginY+433'
 });
 
 
@@ -136,9 +137,10 @@ var moveLapAdiumOp = moveRightAdiumOp.dup({
 
 var moveLapLimeChatOp = moveLapAdiumOp.dup({
   screen: monLap,
-  direction: 'top-right',
+  direction: 'bottom-right',
   width: 'screenSizeX/2',
-  height: 'screenSizeY'
+  height: 'screenSizeY/2'
+
 });
 
 var moveLapMessagesOp = moveRightMessagesOp.dup({
@@ -146,7 +148,8 @@ var moveLapMessagesOp = moveRightMessagesOp.dup({
 });
 
 var moveLapHipChatOp = moveLapLimeChatOp.dup({
-  direction: 'top-left'
+  direction: 'top-left',
+  height: 'screenSizeY'
 });
 
 var moveChromeWindow = S.op('corner', {

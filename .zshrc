@@ -47,18 +47,16 @@ plugins=(git node npm nvm github git-extras brew osx python z)
 
 
 # Customize to your needs...
-#export PATH=$PATH:/Users/tlandau/.nvm/v0.11.12/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/Users/tlandau/nvm/v0.10.26/bin:/Users/tlandau/depot_tools:/Users/tlandau/depot_tools
 
 #[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh # This loads NVM
-#export PATH=$PATH:/Users/tlandau/.nvm/v0.10.30/bin:/Users/tlandau/.nvm/v0.11.12/bin
 source ~/.nvm/nvm.sh
 
 export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 
 cdpath=(~/web ~/work ~/oss)
 
+export PATH=$PATH:/usr/local/bin
 alias solr="cd ~/work/solr-config && vagrant up solr --provision"
-#alias snow=clear;while :;do echo $LINES $COLUMNS $(($RANDOM%$COLUMNS));sleep 0.1;done|gawk '{a[$3]=0;for(x in a) {o=a[x];a[x]=a[x]+1;printf "\033[%s;%sH ",o,x;printf "\033[%s;%sH*\033[0;0H",a[x],x;}}'
 alias cnpm="npm --reg https://condenast.npmjitsu.co --always-auth=true --strict-ssl=false"
 alias npmr="npm run"
 
@@ -166,3 +164,4 @@ rm -f /tmp/templookup.txt
 }
 alias aquamacs='open /Applications/Aquamacs.app/'
 TERM=xterm-256color
+source ~/.oh-my-zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 

@@ -10,6 +10,7 @@
 --type-set=js=.js
 --type-set=clj=.clj
 --type-set=cljs=.cljs
+--type-set=jsx=.jsx
 
 
 --ignore-dir=target
