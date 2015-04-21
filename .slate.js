@@ -135,20 +135,14 @@ var moveLapAdiumOp = moveRightAdiumOp.dup({
   height: 'screenSizeY/1.25'
 });
 
-var moveLapLimeChatOp = moveLapAdiumOp.dup({
-  screen: monLap,
-  direction: 'bottom-right',
-  width: 'screenSizeX/2',
-  height: 'screenSizeY/2'
-
-});
-
 var moveLapMessagesOp = moveRightMessagesOp.dup({
   screen: monLap
 });
 
-var moveLapHipChatOp = moveLapLimeChatOp.dup({
-  direction: 'top-left',
+var moveLapHipChatOp = moveLapAdiumOp.dup({
+  screen: monLap,
+  direction: 'top-right',
+  width: 'screenSizeX/2',
   height: 'screenSizeY'
 });
 
@@ -229,7 +223,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   LimeChat: {
-    operations: [moveLapLimeChatOp],
+    operations: [moveLapHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -317,7 +311,7 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   LimeChat: {
-    operations: [moveLapLimeChatOp],
+    operations: [moveLapHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
   },
