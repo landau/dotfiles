@@ -1,0 +1,43 @@
+"*":
+  "exception-reporting":
+    userId: "28573152-a855-a017-4231-03193cf4e9b2"
+  welcome:
+    showOnStartup: false
+  core:
+    themes: [
+      "atom-dark-ui"
+      "seti-syntax"
+    ]
+    ignoredNames: [
+      ".git"
+      ".DS_Store"
+      "node_modules"
+    ]
+    disabledPackages: [
+      "welcome"
+      "language-csharp"
+      "language-go"
+      "language-java"
+      "language-less"
+      "language-objective-c"
+      "language-perl"
+      "language-ruby-on-rails"
+      "language-sass"
+      "language-toml"
+    ]
+  editor:
+    invisibles: {}
+    fontFamily: "Droid Sans Mono Dotted"
+    fontSize: 11
+  linter:
+    statusBar: "Show error if the cursor is in range"
+  react: {}
+  "linter-jshint": {}
+  "linter-jsxhint": {}
+  "atom-beautify":
+    _analyticsUserId: "a951b4af-5fa4-4bfc-8709-10b698005ae0"
+  tabs: {}
+  whitespace: {}
+  "autocomplete-plus":
+    includeCompletionsFromAllBuffers: true
+    strictMatching: true
