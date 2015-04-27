@@ -247,7 +247,12 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Light Table': {
+  'Atom': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Brackets': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -335,7 +340,12 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Light Table': {
+  'Atom': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Brackets': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true

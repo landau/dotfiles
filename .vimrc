@@ -1,3 +1,54 @@
+set nocompatible              " be iMproved, required
+filetype off                  " required
+
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'gmarik/Vundle.vim'
+
+" GHub plugins
+Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-surround'
+Plugin 'tpope/vim-sensible'
+"Plugin 'powerline/powerline'
+Bundle 'powerline/powerline', {'rtp': 'powerline/bindings/vim/'}
+
+Plugin 'jnurmine/Zenburn'
+Plugin 'altercation/vim-colors-solarized'
+Plugin 'kien/rainbow_parentheses.vim'
+
+Plugin 'scrooloose/syntastic'
+Plugin 'walm/jshint.vim'
+
+Plugin 'tpope/vim-markdown'
+Plugin 'pangloss/vim-javascript'
+Plugin 'mxw/vim-jsx'
+Plugin 'elzr/vim-json'
+Plugin 'tpope/vim-jdaddy' "json manip
+Plugin 'myhere/vim-nodejs-complete'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+
 set t_co=256
 set background="dark"
 let g:solarized_termcolors=256
@@ -6,10 +57,6 @@ let g:solarized_termcolors=256
 python from powerline.vim import setup as powerline_setup
 python powerline_setup()
 python del powerline_setup
-
-execute pathogen#infect()
-execute pathogen#helptags()
-execute pathogen#incubate()
 
 set guifont=Source\ Code\ Pro:h12
 set paste
@@ -32,10 +79,10 @@ colorscheme zenburn
 " showmatch: Show the matching bracket for the last ')'?
 set showmatch
 
-filetype on
-filetype plugin on
-filetype indent on
-filetype plugin indent on
+"filetype off " off for vundle
+"filetype plugin on
+"filetype indent on
+"filetype plugin indent on
 
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
