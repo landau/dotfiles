@@ -3,6 +3,7 @@ ZSH=$HOME/.oh-my-zsh
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 export PATH=$PATH:/usr/local/bin
+export PATH=/Users/tlandau/dev/mongo/bin:$PATH
 export EDITOR=vim
 export LEIN_FAST_TRAMPOLINE=y
 TERM=xterm-256color
@@ -57,6 +58,7 @@ alias cljsbuild="lein trampoline cljsbuild $@"
 alias grb='git rebase -i head~'
 alias showfiles='defauls write com.apple.finder AppleShowAllFiles -boolean true;killall Finder'
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder'
+alias mongod='sudo mongod --fork --logpath /var/log/mongodb.log'
 alias nodet='node-theseus --theseus-verbose'
 alias nodets='nodemon --exec "npm tst --silent"'
 alias npmr="npm run"
@@ -84,7 +86,7 @@ function postphoto {
 
 function tagrelease {
   v=$(cat package.json | python -c 'import sys, json; print json.load(sys.stdin)["version"]')
-  git ca -m "Release $v"
+  git ci -m "Release $v"
   git tag $v -m "Release $v"
 }
 
