@@ -1,6 +1,6 @@
 {
   "name": "autocomplete-html",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "HTML element and attribute autocompletions",
   "main": "./lib/main",
   "license": "MIT",
@@ -27,10 +27,10 @@
     "url": "https://github.com/atom/autocomplete-html/issues"
   },
   "homepage": "https://github.com/atom/autocomplete-html",
-  "_id": "autocomplete-html@0.5.0",
-  "_shasum": "9db8176274c37851db64f716c5b04e6f9f8318c7",
-  "_resolved": "file:../d-115327-416-7hftr3/package.tgz",
-  "_from": "../d-115327-416-7hftr3/package.tgz",
+  "_id": "autocomplete-html@0.6.0",
+  "_shasum": "9890973bed68e880bc042c08df5260cfdabe20a9",
+  "_resolved": "file:../d-11544-64880-1p0youe/package.tgz",
+  "_from": "../d-11544-64880-1p0youe/package.tgz",
   "_atomModuleCache": {
     "version": 1,
     "dependencies": [],

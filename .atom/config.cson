@@ -31,11 +31,15 @@
     fontSize: 11
   linter:
     statusBar: "Show error if the cursor is in range"
+    lintOnChangeInterval: 3000
   react: {}
   "linter-jshint": {}
   "linter-jsxhint": {}
   "atom-beautify":
     _analyticsUserId: "a951b4af-5fa4-4bfc-8709-10b698005ae0"
+    js_brace_style: "expand"
+    js_keep_array_indentation: true
+    js_max_preserve_newlines: 2
   tabs: {}
   whitespace: {}
   "autocomplete-plus":
