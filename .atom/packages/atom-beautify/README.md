@@ -1,8 +1,10 @@
 # [atom-beautify](https://github.com/donaldpipowitch/atom-beautify)
 
 [![Build Status](https://travis-ci.org/Glavin001/atom-beautify.svg?branch=master)](https://travis-ci.org/Glavin001/atom-beautify)
-[![Gitter chat](https://badges.gitter.im/Glavin001/atom-beautify.svg)](https://gitter.im/Glavin001/atom-beautify)
-[![donate](http://img.shields.io/gratipay/Glavin001.svg)](https://gratipay.com/Glavin001/)
+[![Build status](https://ci.appveyor.com/api/projects/status/himnq7tjxl2fdc8u?svg=true)](https://ci.appveyor.com/project/Glavin001/atom-beautify)
+[![Gitter chat](https://img.shields.io/badge/gitter-Glavin001%2Fatom--beautify-1dce73.svg)](https://gitter.im/Glavin001/atom-beautify)
+[![Paypal Donations](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=X2RK5DKN6YXPJ&lc=CA&item_name=Atom%2dBeautify&item_number=atom%2dbeautify&currency_code=CAD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted)
+
 
 > [Beautify](https://github.com/einars/js-beautify)
 HTML (including [Handlebars](http://handlebarsjs.com/)),
@@ -57,6 +59,8 @@ Or Settings/Preferences ➔ Packages ➔ Search for `atom-beautify`
   - Requires [Uncrustify](http://sourceforge.net/projects/uncrustify/)
 - [x] [D](https://github.com/Glavin001/atom-beautify/issues/57)
   - Requires [Uncrustify](http://sourceforge.net/projects/uncrustify/)
+- [x] [Fortran](https://github.com/Glavin001/atom-beautify/issues/300)
+  - Requires [GNU Emacs](http://www.gnu.org/software/emacs/)
 - [x] [Pawn](https://github.com/Glavin001/atom-beautify/issues/57)
   - Requires [Uncrustify](http://sourceforge.net/projects/uncrustify/)
 - [x] [Vala](https://github.com/Glavin001/atom-beautify/issues/57)
@@ -67,7 +71,7 @@ Or Settings/Preferences ➔ Packages ➔ Search for `atom-beautify`
 
 Open the [Command Palette](https://github.com/atom/command-palette), and type `Beautify`.
 
-It will only beautify selected text, if a selection is found - if not, the whole file will be beautified.
+It will only beautify selected text if a selection is found -- if not, the whole file will be beautified.
 
 ### Shortcut
 
@@ -81,41 +85,8 @@ For example:
 
 ```coffeescript
 '.editor':
-  'ctrl-alt-b': 'beautify:beautify-editor'
+  'ctrl-alt-b': 'atom-beautify:beautify-editor'
 ```
-
-### Package Options
-
-Each language and all of their respective beautifier's options
-are fully documented in Atom Beautify Package Settings Panel.
-There are much too many to document them all here.
-Here are a few key options that you may use:
-
-- `beautifyOnSave`  (Default *false*)
-You can also choose to beautify on every file save.
-
-- `beautifyEntireFileOnSave` (Default *true*)
-Beautification will normally only beautify your selected text.
-However, when beautification occurs on save then it will
-be forced to beautify the entire file's contents,
-not just selected text.
-
-- `muteUnsupportedLanguageErrors` (Default *false*)
-Mute only *unsupported language* errors.
-
-- `muteAllErrors` (Default *false*)
-Do not show the *Atom Beautify Error Messages* panel
-for any of the errors occurring while beautifying.
-
-- `analytics`  (Default *true*)
-There is [Segment.io](https://segment.io/),
-which forwards the data to [Google Analytics](http://www.google.com/analytics/),
-to track what languages
-are being used the most and other stats.
-Everything is anonymized and no personal information,
-such as source code, is sent.
-See https://github.com/Glavin001/atom-beautify/issues/47
-for more details.
 
 ## Configuration
 
@@ -126,13 +97,13 @@ Edit your `.jsbeautifyrc` file in any of the following locations:
 - Same directory as current file
 - Project root  
 `atom-beautify` will recursively look up from the current file's directory to find `.jsbeautifyrc`.
-- Your User's Home directory
+- Your user's home directory
 
 **Note**: *Comments are supported in `.jsbeautifyrc` thanks to [strip-json-comments](https://github.com/sindresorhus/strip-json-comments).*
 
-See examples of both way inside [`examples/`](https://github.com/donaldpipowitch/atom-beautify/tree/master/examples)
+See examples of both ways inside [`examples/`](https://github.com/donaldpipowitch/atom-beautify/tree/master/examples)
 
-Option table is available at the [js-beautify repo](https://github.com/beautify-web/js-beautify#options).
+See [all supported options in the documentation at  `docs/options.md`](https://github.com/Glavin001/atom-beautify/blob/master/docs/options.md).
 
 ### Simple
 

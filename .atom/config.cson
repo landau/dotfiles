@@ -28,10 +28,10 @@
   editor:
     invisibles: {}
     fontFamily: "Droid Sans Mono Dotted"
-    fontSize: 11
+    fontSize: 10
   linter:
     statusBar: "Show error if the cursor is in range"
-    lintOnChangeInterval: 3000
+    lintOnChangeInterval: 1500
   react: {}
   "linter-jshint": {}
   "linter-jsxhint": {}
@@ -45,3 +45,5 @@
   "autocomplete-plus":
     includeCompletionsFromAllBuffers: true
     strictMatching: true
+  minimap:
+    absoluteMode: true

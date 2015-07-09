@@ -1,7 +1,7 @@
 {CompositeDisposable, Disposable} = require 'atom'
 
 contentCheckRegex = null
-defaultDetectReactFilePattern = '/((require\\([\'"]react(?:-native)?[\'"]\\)))|(import\\s+\\w+\\s+from\\s+[\'"]react(?:-native)?[\'"])/'
+defaultDetectReactFilePattern = '/((require\\([\'"]react(?:(-native|\\/addons))?[\'"]\\)))|(import\\s+\\w+\\s+from\\s+[\'"]react(?:(-native|\\/addons))?[\'"])/'
 autoCompleteTagStartRegex = /(<)([a-zA-Z0-9\.:$_]+)/g
 autoCompleteTagCloseRegex = /(<\/)([^>]+)(>)/g
 
@@ -125,7 +125,7 @@ class AtomReact
     HTMLtoJSX = require './htmltojsx'
     converter = new HTMLtoJSX(createClass: false)
 
-    editor = atom.workspace.getActiveEditor()
+    editor = atom.workspace.getActiveTextEditor()
 
     return if not @isReactEnabledForEditor editor
 
@@ -149,7 +149,7 @@ class AtomReact
     jsxformat = require 'jsxformat'
     _ = require 'lodash'
 
-    editor = atom.workspace.getActiveEditor()
+    editor = atom.workspace.getActiveTextEditor()
 
     return if not @isReactEnabledForEditor editor
 

@@ -21,12 +21,16 @@ apm install minimap
 
 Below is the list of available plugins so far:
 
+  * [Auto-Hide](https://atom.io/packages/minimap-autohide)
+  * [Bookmarks](https://atom.io/packages/minimap-bookmarks)
+  * [Code Glance](https://atom.io/packages/minimap-codeglance)
   * [Find And Replace](https://atom.io/packages/minimap-find-and-replace)
   * [Git Diff](https://atom.io/packages/minimap-git-diff)
-  * [Color Highlight](https://atom.io/packages/minimap-color-highlight)
+  * [Hide on inactive panes](https://atom.io/packages/minimap-hide)
   * [Highlight Selected](https://atom.io/packages/minimap-highlight-selected)
+  * [Linter](https://atom.io/packages/minimap-linter)
+  * [Pigments](https://atom.io/packages/minimap-pigments)
   * [Selection](https://atom.io/packages/minimap-selection)
-  * [Bookmarks](https://atom.io/packages/minimap-bookmarks)
 
 ### Settings
 
@@ -43,6 +47,8 @@ Below is the list of available plugins so far:
 * `Scroll Animation`: Enable animations when scrolling the editor by clicking on the Minimap.
 * `Scroll Animation Duration`: Duration of the scroll animation when clicking on the Minimap.
 * `Use Hardware Acceleration`: If checked the Minimap scroll is done using a `translate3d` transform, otherwise the `translate` transform is used. (default=true)
+* `Absolute Mode`: When enabled the minimap uses an absolute positioning, letting the editor's content flow below the minimap.
+  Note that this setting will do nothing if `Display Minimap On Left` is also enabled.
 
 For instance the following result is obtained by setting a `Char Height` of `1px`:
 
@@ -62,11 +68,17 @@ Customizing Key Bindings:
 
 #### Plugin Generation Command
 
-Use the `Minimap: Generate Plugin` command available in the command palette or add a binding to the `minimap:generate-plugin` event:
+Use the `Minimap: Generate Javascript Plugin`, `Minimap: Generate Coffee Plugin` or `Minimap: Generate Babel Plugin` commands, available in the command palette, to generate a new minimap plugin package.
+
+- `Minimap: Generate Javascript Plugin`: Will generate a vanilla JavaScript package.
+- `Minimap: Generate Coffee Plugin`: Will generate a CoffeeScript package.
+- `Minimap: Generate Babel Plugin`: Will generate a ES6 package that uses babel-js.
+
+You can also specify a keybinding for these commands:
 
 ```cson
 'atom-workspace':
-  'ctrl-alt-cmd-m': 'minimap:generate-plugin'
+  'ctrl-alt-cmd-m': 'minimap:generate-plugin-javascript'
 ```
 
 #### Plugins Controls
@@ -136,7 +148,6 @@ Another non-trivial change is the list of available decoration's type. At the ti
 If you want to hide the default editor scrollbar, edit your `style.less` (Open Your Stylesheet) and use the following snippet:
 
 ```css
-atom-text-editor .vertical-scrollbar,
 atom-text-editor::shadow .vertical-scrollbar {
   opacity: 0;
   width: 0;
@@ -145,18 +156,20 @@ atom-text-editor::shadow .vertical-scrollbar {
 
 #### Changing the Minimap's background
 
+![minimap-custom-background](https://github.com/atom-minimap/minimap/blob/master/minimap-custom-background.png?raw=true)
+
 ```css
-atom-text-editor::shadow atom-text-editor-minimap,
-atom-text-editor atom-text-editor-minimap {
-  background: rgba(255,255,255, 0.1);
+atom-text-editor::shadow atom-text-editor-minimap {
+  background: green;
 }
 ```
 
 #### Changing the color of the Minimap's `visible-area`
 
+![minimap-custom-background](https://github.com/atom-minimap/minimap/blob/master/minimap-custom-visible-area.png?raw=true)
+
 ```css
-atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area,
-atom-text-editor atom-text-editor-minimap::shadow .minimap-visible-area {
+atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area {
   background-color: green;
   opacity: .5;
 }
@@ -164,9 +177,10 @@ atom-text-editor atom-text-editor-minimap::shadow .minimap-visible-area {
 
 #### Changing the color of the Minimap's `scroll-indicator`
 
+![minimap-custom-background](https://github.com/atom-minimap/minimap/blob/master/minimap-custom-scroll-indicator.png?raw=true)
+
 ```css
-atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-scroll-indicator,
-atom-text-editor atom-text-editor-minimap::shadow .minimap-scroll-indicator {
+atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-scroll-indicator {
   background-color: green;
 }
 ```

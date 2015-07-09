@@ -59,8 +59,7 @@ alias grb='git rebase -i head~'
 alias showfiles='defauls write com.apple.finder AppleShowAllFiles -boolean true;killall Finder'
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder'
 alias mongod='sudo mongod --fork --logpath /var/log/mongodb.log'
-alias nodet='node-theseus --theseus-verbose'
-alias nodets='nodemon --exec "npm tst --silent"'
+alias nodet='nodemon --exec "npm tst --silent"'
 alias npmr="npm run"
 alias npmre='rm -rf node_modules && npm i'
 alias pgres='postgres -D /usr/local/var/postgres'
@@ -87,12 +86,59 @@ function postphoto {
 function tagrelease {
   v=$(cat package.json | python -c 'import sys, json; print json.load(sys.stdin)["version"]')
   git ci -m "Release $v"
-  git tag $v -m "Release $v"
+  git tag $v -a -m "Release $v"
 }
 
 function httpcodes {
-  node -p "require('http').STATUS_CODES"
+  cmd="require('http').STATUS_CODES"
+  if [ "$#" -eq "0" ]; then
+    node -p $cmd
+  else
+    node -p $cmd | grep $1
+  fi
 }
+
+function tojson {
+  python -m json.tool $1
+}
+
+function versions {
+  npm view $1 versions
+}
+
+function setversion {
+  json=$(node -p "var j = require('./package.json'); j.version = '$1'; JSON.stringify(j, null, '  ');")
+  echo $json > package.json
+}
+
+function setdep {
+  json=$(node -p "var j = require('./package.json'); j.dependencies['$1'] = '$2'; JSON.stringify(j, null, '  ');" )
+  echo $json > package.json
+}
+
+function pkgupdate {
+  VERSION=$1
+  
+  shift
+  for i in "$@"; do
+    module=`echo $i | cut -d \@ -f 1`
+    ver=`echo $i | cut -d \@ -f 2`
+    setdep $module $ver
+  done
+  
+  git add package.json 
+  git ci -m "use $(echo $@)"
+
+  # TODO exit if
+  if [ $? -ne 0 ]; then
+    echo "Failed to commit"
+  else
+    setversion $VERSION
+    git add package.json
+    tagrelease
+  fi
+}
+
 
 # <--------- Cool Functions by Crouse-------->
 # Cool Functions for your .bashrc file.

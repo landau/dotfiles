@@ -44,6 +44,7 @@ class MinimapElement extends HTMLElement
       'minimap.displayMinimapOnLeft': (displayMinimapOnLeft) =>
         swapPosition = @minimap? and displayMinimapOnLeft isnt @displayMinimapOnLeft
         @displayMinimapOnLeft = displayMinimapOnLeft
+        @classList.toggle('left', displayMinimapOnLeft and @absoluteMode)
 
         @swapMinimapPosition() if swapPosition
 
@@ -72,6 +73,10 @@ class MinimapElement extends HTMLElement
 
       'minimap.useHardwareAcceleration': (@useHardwareAcceleration) =>
         @requestUpdate() if @attached
+
+      'minimap.absoluteMode': (@absoluteMode) =>
+        @classList.toggle('absolute', @absoluteMode)
+        @classList.toggle('left', @displayMinimapOnLeft and @absoluteMode)
 
   # Internal: DOM callback invoked when a new {MinimapElement} is attached
   # to the DOM.
@@ -511,7 +516,7 @@ class MinimapElement extends HTMLElement
   startDrag: ({which, pageY}) ->
     # if which is 2
     #   @middleMousePressedOverCanvas({pageY})
-
+    return if @minimap.isDestroyed()
     return if which isnt 1 and which isnt 2
     {top} = @visibleArea.getBoundingClientRect()
     {top: offsetTop} = @getBoundingClientRect()
@@ -541,6 +546,7 @@ class MinimapElement extends HTMLElement
   #           offsetTop - The {MinimapElement} offset at the moment of the
   #                       drag start.
   drag: (e, initial) ->
+    return if @minimap.isDestroyed()
     return if e.which isnt 1 and e.which isnt 2
     y = e.pageY - initial.offsetTop - initial.dragOffset
 
@@ -557,6 +563,7 @@ class MinimapElement extends HTMLElement
   #           offsetTop - The {MinimapElement} offset at the moment of the
   #                       drag start.
   endDrag: (e, initial) ->
+    return if @minimap.isDestroyed()
     @dragSubscription.dispose()
 
   #     ######   ######   ######

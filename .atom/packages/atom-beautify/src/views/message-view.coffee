@@ -1,4 +1,4 @@
-{$, $$, $$$, View} = require "atom"
+{$, $$, $$$, View} = require "atom-space-pen-views"
 
 module.exports =
 class MessageView extends View
@@ -59,7 +59,7 @@ class MessageView extends View
   destroy: ->
 
   addMessage: (message) =>
-    @messages.push(message);
+    @messages.push(message)
     @refresh()
 
   clearMessages: =>

@@ -394,10 +394,65 @@
     }
   ],
 
-  "anchors": [
+  "anchors & aliases": [
+    {
+      "yaml":   "&str world",
+      "result": "world"
+    },
+    {
+      "yaml":   "&map { hello: world }",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "&seq [ hello, world ]",
+      "result": ["hello", "world"]
+    },
+    {
+      "yaml":   "a: &str hello\n*str: world",
+      "result": {"a": "hello", "hello": "world"}
+    },
+    {
+      "yaml":   "&str hello: *str",
+      "result": {"hello": "hello"}
+    },
+    {
+      "yaml":   "[ &str hello, *str ]",
+      "result": ["hello", "hello"]
+    },
     {
       "yaml":   "---\nhr:\n  - Mark McGwire\n  # Following node labeled SS\n  - &SS Sammy Sosa\nrbi:\n  - *SS # Subsequent occurrence\n  - Ken Griffey",
       "result": {"hr": ["Mark McGwire", "Sammy Sosa"], "rbi": ["Sammy Sosa", "Ken Griffey"]}
+    }
+  ],
+
+  "merging": [
+    {
+      "yaml":   "'<<': { hello: world }",
+      "result": {"<<": {"hello": "world"}}
+    },
+    {
+      "yaml":   "!!merge '<<': { hello: world }",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "<<: { hello: world }",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "<<: [ { hello: world }, { hello: something else } ]",
+      "result": {"hello": "world"}
+    },
+    {
+      "yaml":   "- &map { hello: world }\n- { <<: *map }",
+      "result": [{"hello": "world"}, {"hello": "world"}]
+    },
+    {
+      "yaml":   "- &seq [ { hello: world }, { hello: something else } ]\n- { <<: *seq }",
+      "result": [[{"hello": "world"}, {"hello": "something else"}], {"hello": "world"}]
+    },
+    {
+      "yaml":   "- &map1 { hello: world }\n- &map2 { hello: something else }\n- { <<: [ *map1, *map2 ] }",
+      "result": [{"hello": "world"}, {"hello": "something else"}, {"hello": "world"}]
     }
   ],
 

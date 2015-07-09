@@ -1,5 +1,4 @@
-{View} = require 'space-pen'
-{TextEditorView} = require 'atom-space-pen-views'
+{View, TextEditorView} = require 'atom-space-pen-views'
 
 module.exports =
 class LoadingView extends View
@@ -25,11 +24,11 @@ class LoadingView extends View
                   outlet: 'body'
                   =>
                     @div =>
-                        @span
-                          class: 'text-center loading loading-spinner-large inline-block'
-                        @div
-                          class: ''
-                          'Beautification in progress.'
+                      @span
+                        class: 'text-center loading loading-spinner-large inline-block'
+                      @div
+                        class: ''
+                        'Beautification in progress.'
 
   hide: (event, element) =>
     @detach()

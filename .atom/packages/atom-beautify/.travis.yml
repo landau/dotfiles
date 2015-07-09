@@ -1,5 +1,10 @@
 language: objective-c
 
+osx_image: beta-xcode6.2
+
+git:
+  depth: 10
+
 notifications:
   webhooks:
     urls:
@@ -14,7 +19,7 @@ notifications:
 script: sh build-package.sh
 
 env:
-    - APM_TEST_PACKAGES="language-typescript language-marko language-tss"
+    - APM_TEST_PACKAGES="language-marko language-tss language-html-swig"
 
 cache:
     - pip
