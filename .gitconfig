@@ -28,6 +28,8 @@
     pom= push origin master
     # rebase
     prom = pull --rebase origin master
+    # rebase from elswhere
+    pro = pull --rebase origin
     # http://haacked.com/archive/2014/07/28/github-flow-aliases/
     save = !git add -A && git commit -m 'SAVEPOINT'
     wip = !git add -u && git commit -m 'WIP'
@@ -85,7 +87,8 @@
 [url "git://gist.github.com/"]
     insteadOf = "gist:"
 [push]
-	default = matching
+	#default = matching
+	default = simple
 [credential]
 	helper = osxkeychain
 [user]
