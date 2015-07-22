@@ -3,7 +3,7 @@ path = require 'path'
 {TextEditor} = require 'atom'
 Minimap = require '../lib/minimap'
 MinimapElement = require '../lib/minimap-element'
-{mousemove, mousedown, mouseup, mousewheel} = require './helpers/events'
+{mousemove, mousedown, mouseup, mousewheel, touchstart, touchmove} = require './helpers/events'
 stylesheetPath = path.resolve __dirname, '..', 'styles', 'minimap.less'
 stylesheet = atom.themes.loadStylesheet(stylesheetPath)
 
@@ -491,6 +491,34 @@ describe 'MinimapElement', ->
 
           expect(minimapElement.drag).not.toHaveBeenCalled()
 
+      describe 'dragging the visible area using touch events', ->
+        [visibleArea, originalTop] = []
+
+        beforeEach ->
+          visibleArea = minimapElement.visibleArea
+          {top: originalTop, left} = visibleArea.getBoundingClientRect()
+
+          touchstart(visibleArea, x: left + 10, y: originalTop + 10)
+          touchmove(visibleArea, x: left + 10, y: originalTop + 50)
+
+          nextAnimationFrame()
+
+        afterEach ->
+          minimapElement.endDrag()
+
+        it 'scrolls the editor so that the visible area was moved down by 40 pixels', ->
+          {top} = visibleArea.getBoundingClientRect()
+          expect(top).toBeCloseTo(originalTop + 40, -1)
+
+        it 'stops the drag gesture when the mouse is released outside the minimap', ->
+          {top, left} = visibleArea.getBoundingClientRect()
+          mouseup(jasmineContent, x: left - 10, y: top + 80)
+
+          spyOn(minimapElement, 'drag')
+          touchmove(visibleArea, x: left + 10, y: top + 50)
+
+          expect(minimapElement.drag).not.toHaveBeenCalled()
+
       describe 'when the minimap cannot scroll', ->
         [visibleArea, originalTop] = []
 
@@ -644,7 +672,7 @@ describe 'MinimapElement', ->
     describe 'when minimap.displayMinimapOnLeft setting is true', ->
       it 'moves the attached minimap to the left', ->
         atom.config.set 'minimap.displayMinimapOnLeft', true
-        expect(Array::indexOf.call(editorElement.shadowRoot.children, minimapElement)).toEqual(0)
+        expect(minimapElement.classList.contains('left')).toBeTruthy()
 
       describe 'when the minimap is not attached yet', ->
         beforeEach ->
@@ -663,7 +691,7 @@ describe 'MinimapElement', ->
           minimapElement.attach()
 
         it 'moves the attached minimap to the left', ->
-          expect(Array::indexOf.call(editorElement.shadowRoot.children, minimapElement)).toEqual(0)
+          expect(minimapElement.classList.contains('left')).toBeTruthy()
 
     describe 'when minimap.adjustMinimapWidthToSoftWrap is true', ->
       [minimapWidth] = []
@@ -920,7 +948,6 @@ describe 'MinimapElement', ->
         describe 'when the displayMinimapOnLeft setting is enabled', ->
           beforeEach ->
             atom.config.set('minimap.displayMinimapOnLeft', true)
-            nextAnimationFrame()
 
           it 'adjusts the size of the control div to fit in the minimap', ->
             expect(controls.clientWidth).toEqual(minimapElement.canvas.clientWidth / devicePixelRatio)

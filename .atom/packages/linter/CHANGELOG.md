@@ -1,5 +1,23 @@
 # Upcoming
 
+* Fixed a marker leak with bubbles, which would make editor slower over time.
+* Remove an oudated config (`statusIconPosition`).
+* Invalidate Range when a range is removed from buffer.
+
+# 1.2.3
+
+* Fix a bug where panel won't be hidden even with no errors.
+
+# 1.2.2
+
+* Fix a bug where count wont be updated on render.
+
+# 1.2.1
+
+* Fix a bug with legacy Linter API
+
+# 1.2.0
+
 * Fix a bug when Error Panel won't collapse even when there's no errors with File as Active Tab
 * Speed Improvements
 * Remove the "Default Error Tab" config option in favor of storing the currently selected tab in the package state.

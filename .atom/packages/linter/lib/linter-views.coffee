@@ -32,7 +32,7 @@ class LinterViews
     @subscriptions.add atom.workspace.onDidChangeActivePaneItem (paneItem) =>
       isTextEditor = paneItem?.getPath?
       @bottomContainer.setVisibility(isTextEditor)
-      @panel.visibility = @panel.visibility and isTextEditor
+      @panel.panelVisibility = atom.config.get('linter.showErrorPanel') and isTextEditor
     @subscriptions.add @linter.onDidChangeMessages =>
       @render()
     @subscriptions.add @bottomContainer.onDidChangeTab =>
@@ -46,6 +46,7 @@ class LinterViews
     @renderPanelMessages()
     @renderPanelMarkers()
     @renderBubble()
+    @renderCount()
 
   renderBubble: (point) ->
     @removeBubble()
@@ -56,13 +57,11 @@ class LinterViews
     point = point || activeEditor.getCursorBufferPosition()
     for message in @messagesLine
       continue unless message.range?.containsPoint point
-      @bubble = activeEditor.decorateMarker(
-        activeEditor.markBufferRange([point, point], {invalidate: 'never'})
-        {
-          type: 'overlay',
-          position: 'tail',
-          item: @renderBubbleContent(message)
-        }
+      @bubble = activeEditor.markBufferRange([point, point], {invalidate: 'inside'})
+      activeEditor.decorateMarker(@bubble,
+        type: 'overlay',
+        position: 'tail',
+        item: @renderBubbleContent(message)
       )
       break
 
@@ -99,7 +98,7 @@ class LinterViews
     return unless activeEditor
     @messages.forEach (message) =>
       return unless message.currentFile
-      @markers.push marker = activeEditor.markBufferRange message.range, {invalidate: 'never'}
+      @markers.push marker = activeEditor.markBufferRange message.range, {invalidate: 'inside'}
       activeEditor.decorateMarker(
         marker, type: 'line-number', class: "linter-highlight #{message.class}"
       )
@@ -111,8 +110,9 @@ class LinterViews
     @messagesLine = @linter.messages.getActiveFileMessagesForActiveRow()
     if @ignoredMessageTypes.length
       @messagesLine = @messagesLine.filter (message) => @ignoredMessageTypes.indexOf(message.type) is -1
-    @renderCount()
-    @renderPanelMessages() if render
+    if render
+      @renderCount()
+      @renderPanelMessages()
 
   attachBottom: (statusBar) ->
     @bottomBar = statusBar.addLeftTile
