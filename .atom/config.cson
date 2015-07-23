@@ -31,7 +31,10 @@
     fontSize: 10
   linter:
     statusBar: "Show error if the cursor is in range"
-    lintOnChangeInterval: 1500
+    lintOnChangeInterval: 2000
+    showErrorTabLine: true
+    showErrorTabProject: false
+    showErrorTabFile: false
   react: {}
   "linter-jshint": {}
   "linter-jsxhint": {}
