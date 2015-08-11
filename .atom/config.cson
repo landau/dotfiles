@@ -6,7 +6,7 @@
   core:
     themes: [
       "atom-dark-ui"
-      "seti-syntax"
+      "atom-material-syntax"
     ]
     ignoredNames: [
       ".git"
@@ -29,12 +29,15 @@
     invisibles: {}
     fontFamily: "Droid Sans Mono Dotted"
     fontSize: 10
+    lineHeight: 1.4
+    preferredLineLength: 120
   linter:
     statusBar: "Show error if the cursor is in range"
     lintOnChangeInterval: 2000
     showErrorTabLine: true
     showErrorTabProject: false
     showErrorTabFile: false
+    showErrorPanel: false
   react: {}
   "linter-jshint": {}
   "linter-jsxhint": {}
@@ -50,3 +53,4 @@
     strictMatching: true
   minimap:
     absoluteMode: true
+  "one-light-ui": {}

@@ -1,3 +1,17 @@
+<a name="v4.12.2"></a>
+# v4.12.2 (2015-08-03)
+
+## :bug: Bug Fixes
+
+- Fix visibility changes not properly watched when a tab become active ([806dd4bd](https://github.com/atom-minimap/minimap/commit/806dd4bd1bc0769ed78d19e303d1476b04e8ae0b))
+
+<a name="v4.12.1"></a>
+# v4.12.1 (2015-07-27)
+
+## :bug: Bug Fixes
+
+- Fix error raised if some invisibles are undefined ([ee633703](https://github.com/atom-minimap/minimap/commit/ee6337034aae1c5b1330e553227b7d8e39410fc5), [#368](https://github.com/atom-minimap/minimap/issues/368))
+
 <a name="v4.12.0"></a>
 # v4.12.0 (2015-07-16)
 

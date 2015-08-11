@@ -45,6 +45,9 @@
   'node require':
     'prefix': 'req'
     'body': 'var $1 = require(\'$2\');$3'
+  'lodash require':
+    'prefix': 'lodash'
+    'body': 'var _ = require(\'lodash\');$1'
   'use strict':
     'prefix': 'us'
     'body': """
