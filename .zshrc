@@ -48,7 +48,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git node npm nvm github git-extras brew osx python z)
+plugins=(git nyan node npm nvm github git-extras brew osx python z web-search)
 
 cdpath=(~/web ~/work ~/oss)
 
@@ -58,8 +58,10 @@ alias cljsbuild="lein trampoline cljsbuild $@"
 alias grb='git rebase -i head~'
 alias showfiles='defauls write com.apple.finder AppleShowAllFiles -boolean true;killall Finder'
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder'
+alias trash='rm -rf ~/.Trash/*'
 alias mongod='sudo mongod --fork --logpath /var/log/mongodb.log'
 alias nodet='nodemon --exec "npm tst --silent"'
+alias nodeyun="nodemon -x 'node . | ./node_modules/.bin/bunyan'"
 alias npmr="npm run"
 alias npmre='rm -rf node_modules && npm i'
 alias pgres='postgres -D /usr/local/var/postgres'
@@ -96,6 +98,15 @@ function httpcodes {
   else
     node -p $cmd | grep $1
   fi
+}
+
+function validateyaml {
+  name=$1
+  if [ "$#" -eq 0 ]; then
+    name="*"
+  fi
+
+  find . -name $name".yaml" -print -exec ruby -e "require 'yaml'; YAML.parse(File.open('{}'))" \;
 }
 
 function tojson {
@@ -137,6 +148,14 @@ function pkgupdate {
     git add package.json
     tagrelease
   fi
+}
+
+function sc {
+  osascript -e 'tell application id "com.apple.ScreenSaver.Engine" to launch'
+}
+
+function slp {
+ osascript -e 'tell application "Finder" to sleep'
 }
 
 

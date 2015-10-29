@@ -288,6 +288,12 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  'Spotify': {
+    operations: [moveLapOp],
+    'title-order': ['Equalizer'], // important for order of operations
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   iTunes: {
     operations: [moveMidOp],
     'title-order': ['Equalizer'], // important for order of operations
@@ -358,6 +364,12 @@ var oneMonLayout = S.layout('oneMon', {
   },
   'Amazon Music': {
     operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Spotify': {
+    operations: [moveLapOp],
+    'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
   },
