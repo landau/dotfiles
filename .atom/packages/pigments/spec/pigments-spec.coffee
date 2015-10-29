@@ -66,7 +66,7 @@ describe "Pigments", ->
         spy = jasmine.createSpy('did-create-color-buffer')
         service.observeColorBuffers(spy)
 
-      it 'calls the callback for every existing color buffers', ->
+      it 'calls the callback for every existing color buffer', ->
         expect(spy).toHaveBeenCalled()
         expect(spy.calls.length).toEqual(1)
 
@@ -103,3 +103,15 @@ describe "Pigments", ->
 
     it 'destroys the color buffer element that were added to the DOM', ->
       expect(editorElement.shadowRoot.querySelector('pigments-markers')).not.toExist()
+
+  describe 'pigments:project-settings', ->
+    item = null
+    beforeEach ->
+      atom.commands.dispatch(workspaceElement, 'pigments:project-settings')
+
+      waitsFor ->
+        item = atom.workspace.getActivePaneItem()
+        item?
+
+    it 'opens a settings view in the active pane', ->
+      item.matches('pigments-color-project')

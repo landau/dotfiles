@@ -115,8 +115,8 @@ module.exports = getRegistry: (context) ->
     @hex = hexa
 
   # #6f34
-  registry.createExpression 'css_hexa_4', "(#{namePrefixes})#(#{hexadecimal}{4})(?![\\d\\w])", (match, expression, context) ->
-    [_, _, hexa] = match
+  registry.createExpression 'css_hexa_4', "(?:#{namePrefixes})#(#{hexadecimal}{4})(?![\\d\\w])", (match, expression, context) ->
+    [_, hexa] = match
     colorAsInt = context.readInt(hexa, 16)
 
     @colorExpression = "##{hexa}"
@@ -126,8 +126,8 @@ module.exports = getRegistry: (context) ->
     @alpha = ((colorAsInt & 0xf) * 17) / 255
 
   # #38e
-  registry.createExpression 'css_hexa_3', "(#{namePrefixes})#(#{hexadecimal}{3})(?![\\d\\w])", (match, expression, context) ->
-    [_, _, hexa] = match
+  registry.createExpression 'css_hexa_3', "(?:#{namePrefixes})#(#{hexadecimal}{3})(?![\\d\\w])", (match, expression, context) ->
+    [_, hexa] = match
     colorAsInt = context.readInt(hexa, 16)
 
     @colorExpression = "##{hexa}"
@@ -157,7 +157,7 @@ module.exports = getRegistry: (context) ->
       (#{intOrPercent}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,r,_,_,g,_,_,b] = match
+    [_,r,g,b] = match
 
     @red = context.readIntOrPercent(r)
     @green = context.readIntOrPercent(g)
@@ -176,7 +176,7 @@ module.exports = getRegistry: (context) ->
       (#{float}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,r,_,_,g,_,_,b,_,_,a] = match
+    [_,r,g,b,a] = match
 
     @red = context.readIntOrPercent(r)
     @green = context.readIntOrPercent(g)
@@ -205,12 +205,12 @@ module.exports = getRegistry: (context) ->
     hsl#{ps}\\s*
       (#{int}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,h,_,s,_,l] = match
+    [_,h,s,l] = match
 
     hsl = [
       context.readInt(h)
@@ -228,14 +228,14 @@ module.exports = getRegistry: (context) ->
     hsla#{ps}\\s*
       (#{int}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
       (#{float}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,h,_,s,_,l,_,a] = match
+    [_,h,s,l,a] = match
 
     hsl = [
       context.readInt(h)
@@ -250,15 +250,15 @@ module.exports = getRegistry: (context) ->
 
   # hsv(210,70%,90%)
   registry.createExpression 'hsv', strip("
-    hsv#{ps}\\s*
+    (?:hsv|hsb)#{ps}\\s*
       (#{int}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,h,_,s,_,v] = match
+    [_,h,s,v] = match
 
     hsv = [
       context.readInt(h)
@@ -273,17 +273,17 @@ module.exports = getRegistry: (context) ->
 
   # hsva(210,70%,90%,0.7)
   registry.createExpression 'hsva', strip("
-    hsva#{ps}\\s*
+    (?:hsva|hsba)#{ps}\\s*
       (#{int}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
       (#{float}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_,h,_,s,_,v,_,a] = match
+    [_,h,s,v,a] = match
 
     hsv = [
       context.readInt(h)
@@ -322,13 +322,13 @@ module.exports = getRegistry: (context) ->
     hwb#{ps}\\s*
       (#{int}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
+      (#{optionalPercent}|#{variables})
       #{comma}
-      (#{percent}|#{variables})
-      (#{comma}(#{float}|#{variables}))?
+      (#{optionalPercent}|#{variables})
+      (?:#{comma}(#{float}|#{variables}))?
     #{pe}
   "), (match, expression, context) ->
-    [_,h,_,w,_,b,_,_,a] = match
+    [_,h,w,b,a] = match
 
     @hwb = [
       context.readInt(h)
@@ -341,11 +341,11 @@ module.exports = getRegistry: (context) ->
   # The priority is set to 1 to make sure that it appears before named colors
   registry.createExpression 'gray', strip("
     gray#{ps}\\s*
-      (#{percent}|#{variables})
-      (#{comma}(#{float}|#{variables}))?
+      (#{optionalPercent}|#{variables})
+      (?:#{comma}(#{float}|#{variables}))?
     #{pe}"), 1, (match, expression, context) ->
 
-    [_,p,_,_,a] = match
+    [_,p,a] = match
 
     p = context.readFloat(p) / 100 * 255
     @rgb = [p, p, p]
@@ -353,10 +353,10 @@ module.exports = getRegistry: (context) ->
 
   # dodgerblue
   colors = Object.keys(SVGColors.allCases)
-  colorRegexp = "(#{namePrefixes})(#{colors.join('|')})(?!\\s*[-\\.:=\\(])\\b"
+  colorRegexp = "(?:#{namePrefixes})(#{colors.join('|')})(?!\\s*[-\\.:=\\(])\\b"
 
   registry.createExpression 'named_colors', colorRegexp, (match, expression, context) ->
-    [_,_,name] = match
+    [_,name] = match
 
     @colorExpression = @name = name
     @hex = SVGColors.allCases[name].replace('#','')
@@ -410,8 +410,9 @@ module.exports = getRegistry: (context) ->
     @alpha = baseColor.alpha
 
   # fade(#ffffff, 0.5)
+  # alpha(#ffffff, 0.5)
   registry.createExpression 'fade', strip("
-    fade#{ps}
+    (?:fade|alpha)#{ps}
       (#{notQuote})
       #{comma}
       (#{floatOrPercent}|#{variables})
@@ -431,13 +432,13 @@ module.exports = getRegistry: (context) ->
   # transparentize(#ffffff, 50%)
   # fadeout(#ffffff, 0.5)
   registry.createExpression 'transparentize', strip("
-    (transparentize|fadeout)#{ps}
+    (?:transparentize|fadeout|fade-out|fade_out)#{ps}
       (#{notQuote})
       #{comma}
       (#{floatOrPercent}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_, _, subexpr, amount] = match
+    [_, subexpr, amount] = match
 
     amount = context.readFloatOrPercent(amount)
     baseColor = context.readColor(subexpr)
@@ -450,14 +451,15 @@ module.exports = getRegistry: (context) ->
   # opacify(0x78ffffff, 0.5)
   # opacify(0x78ffffff, 50%)
   # fadein(0x78ffffff, 0.5)
+  # alpha(0x78ffffff, 0.5)
   registry.createExpression 'opacify', strip("
-    (opacify|fadein)#{ps}
+    (?:opacify|fadein|fade-in|fade_in)#{ps}
       (#{notQuote})
       #{comma}
       (#{floatOrPercent}|#{variables})
     #{pe}
   "), (match, expression, context) ->
-    [_, _, subexpr, amount] = match
+    [_, subexpr, amount] = match
 
     amount = context.readFloatOrPercent(amount)
     baseColor = context.readColor(subexpr)
@@ -466,6 +468,106 @@ module.exports = getRegistry: (context) ->
 
     @rgb = baseColor.rgb
     @alpha = clamp(baseColor.alpha + amount)
+
+  # red(#000,255)
+  # green(#000,255)
+  # blue(#000,255)
+  registry.createExpression 'stylus_component_functions', strip("
+    (red|green|blue)#{ps}
+      (#{notQuote})
+      #{comma}
+      (#{int}|#{variables})
+    #{pe}
+  "), (match, expression, context) ->
+    [_, channel, subexpr, amount] = match
+
+    amount = context.readInt(amount)
+    baseColor = context.readColor(subexpr)
+
+    return @invalid = true if isInvalid(baseColor)
+    return @invalid = true if isNaN(amount)
+
+    @[channel] = amount
+
+  # transparentify(#808080)
+  registry.createExpression 'transparentify', strip("
+    transparentify#{ps}
+    (#{notQuote})
+    #{pe}
+  "), (match, expression, context) ->
+    [_, expr] = match
+
+    [top, bottom, alpha] = split(expr)
+
+    top = context.readColor(top)
+    bottom = context.readColor(bottom)
+    alpha = context.readFloatOrPercent(alpha)
+
+    return @invalid = true if isInvalid(top)
+    return @invalid = true if bottom? and isInvalid(bottom)
+
+    bottom ?= new Color(255,255,255,1)
+    alpha = undefined if isNaN(alpha)
+
+    bestAlpha = ['red','green','blue'].map((channel) ->
+      res = (top[channel] - (bottom[channel])) / ((if 0 < top[channel] - (bottom[channel]) then 255 else 0) - (bottom[channel]))
+      res
+    ).sort((a, b) -> a < b)[0]
+
+    processChannel = (channel) ->
+      if bestAlpha is 0
+        bottom[channel]
+      else
+        bottom[channel] + (top[channel] - (bottom[channel])) / bestAlpha
+
+    bestAlpha = alpha if alpha?
+    bestAlpha = Math.max(Math.min(bestAlpha, 1), 0)
+
+    @red = processChannel('red')
+    @green = processChannel('green')
+    @blue = processChannel('blue')
+    @alpha = Math.round(bestAlpha * 100) / 100
+
+  # hue(#855, 60deg)
+  registry.createExpression 'hue', strip("
+    hue#{ps}
+      (#{notQuote})
+      #{comma}
+      (#{int}deg|#{variables})
+    #{pe}
+  "), (match, expression, context) ->
+    [_, subexpr, amount] = match
+
+    amount = context.readFloat(amount)
+    baseColor = context.readColor(subexpr)
+
+    return @invalid = true if isInvalid(baseColor)
+    return @invalid = true if isNaN(amount)
+
+    [h,s,l] = baseColor.hsl
+
+    @hsl = [amount % 360, s, l]
+    @alpha = baseColor.alpha
+
+  # saturation(#855, 60deg)
+  # lightness(#855, 60deg)
+  registry.createExpression 'stylus_sl_component_functions', strip("
+    (saturation|lightness)#{ps}
+      (#{notQuote})
+      #{comma}
+      (#{intOrPercent}|#{variables})
+    #{pe}
+  "), (match, expression, context) ->
+    [_, channel, subexpr, amount] = match
+
+    amount = context.readInt(amount)
+    baseColor = context.readColor(subexpr)
+
+    return @invalid = true if isInvalid(baseColor)
+    return @invalid = true if isNaN(amount)
+
+    baseColor[channel] = amount
+    @rgba = baseColor.rgba
 
   # adjust-hue(#855, 60deg)
   registry.createExpression 'adjust-hue', strip("
@@ -592,8 +694,8 @@ module.exports = getRegistry: (context) ->
 
   # grayscale(red)
   # greyscale(red)
-  registry.createExpression 'grayscale', "gr(a|e)yscale#{ps}(#{notQuote})#{pe}", (match, expression, context) ->
-    [_, _, subexpr] = match
+  registry.createExpression 'grayscale', "gr(?:a|e)yscale#{ps}(#{notQuote})#{pe}", (match, expression, context) ->
+    [_, subexpr] = match
 
     baseColor = context.readColor(subexpr)
 
@@ -631,11 +733,12 @@ module.exports = getRegistry: (context) ->
     @alpha = baseColor.alpha
 
   # spin(green, 20)
+  # spin(green, 20deg)
   registry.createExpression 'spin', strip("
     spin#{ps}
       (#{notQuote})
       #{comma}
-      (-?#{int}|#{variables})
+      (-?(#{int})(deg)?|#{variables})
     #{pe}
   "), (match, expression, context) ->
     [_, subexpr, angle] = match
@@ -694,9 +797,9 @@ module.exports = getRegistry: (context) ->
     {@rgb} = contrast(baseColor)
 
   # color(green tint(50%))
-  registry.createExpression 'css_color_function', "(#{namePrefixes})(color#{ps}(#{notQuote})#{pe})", (match, expression, context) ->
+  registry.createExpression 'css_color_function', "(?:#{namePrefixes})(color#{ps}(#{notQuote})#{pe})", (match, expression, context) ->
     try
-      [_,_,expr] = match
+      [_,expr] = match
       rgba = cssColor.convert(expr)
       @rgba = context.readColor(rgba).rgba
       @colorExpression = expr
@@ -810,11 +913,158 @@ module.exports = getRegistry: (context) ->
   # negation(#f00, #00F)
   blendMethod registry, 'negation', BlendModes.NEGATION
 
+  # Color(50,120,200,255)
+  registry.createExpression 'lua_rgba', strip("
+    Color#{ps}\\s*
+      (#{int}|#{variables})
+      #{comma}
+      (#{int}|#{variables})
+      #{comma}
+      (#{int}|#{variables})
+      #{comma}
+      (#{int}|#{variables})
+    #{pe}
+  "), (match, expression, context) ->
+    [_,r,g,b,a] = match
+
+    @red = context.readInt(r)
+    @green = context.readInt(g)
+    @blue = context.readInt(b)
+    @alpha = context.readInt(a) / 255
+
+  ##    ######## ##       ##     ##
+  ##    ##       ##       ###   ###
+  ##    ##       ##       #### ####
+  ##    ######   ##       ## ### ##
+  ##    ##       ##       ##     ##
+  ##    ##       ##       ##     ##
+  ##    ######## ######## ##     ##
+
+  # rgba 50 120 200 1
+  registry.createExpression 'elm_rgba', strip("
+    rgba\\s+
+      (#{int}|#{variables})
+      \\s+
+      (#{int}|#{variables})
+      \\s+
+      (#{int}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+  "), (match, expression, context) ->
+    [_,r,g,b,a] = match
+
+    @red = context.readInt(r)
+    @green = context.readInt(g)
+    @blue = context.readInt(b)
+    @alpha = context.readFloat(a)
+
+  # rgb 50 120 200
+  registry.createExpression 'elm_rgb', strip("
+    rgb\\s+
+      (#{int}|#{variables})
+      \\s+
+      (#{int}|#{variables})
+      \\s+
+      (#{int}|#{variables})
+  "), (match, expression, context) ->
+    [_,r,g,b] = match
+
+    @red = context.readInt(r)
+    @green = context.readInt(g)
+    @blue = context.readInt(b)
+
+  elmAngle = "(?:#{float}|\\(degrees\\s+(?:#{int}|#{variables})\\))"
+  elmDegreesRegexp = new RegExp("\\(degrees\\s+(#{int}|#{variables})\\)")
+
+  # hsl 210 50 50
+  registry.createExpression 'elm_hsl', strip("
+    hsl\\s+
+      (#{elmAngle}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+  "), (match, expression, context) ->
+    [_,h,s,l] = match
+
+    if m = elmDegreesRegexp.exec(h)
+      h = context.readInt(m[1])
+    else
+      h = context.readFloat(h) * 180 / Math.PI
+
+    hsl = [
+      h
+      context.readFloat(s)
+      context.readFloat(l)
+    ]
+
+    return @invalid = true if hsl.some (v) -> not v? or isNaN(v)
+
+    @hsl = hsl
+    @alpha = 1
+
+  # hsla 210 50 50 0.7
+  registry.createExpression 'elm_hsla', strip("
+    hsla\\s+
+      (#{elmAngle}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+      \\s+
+      (#{float}|#{variables})
+  "), (match, expression, context) ->
+    [_,h,s,l,a] = match
+
+    if m = elmDegreesRegexp.exec(h)
+      h = context.readInt(m[1])
+    else
+      h = context.readFloat(h) * 180 / Math.PI
+
+    hsl = [
+      h
+      context.readFloat(s)
+      context.readFloat(l)
+    ]
+
+    return @invalid = true if hsl.some (v) -> not v? or isNaN(v)
+
+    @hsl = hsl
+    @alpha = context.readFloat(a)
+
+  # grayscale 1
+  registry.createExpression 'elm_grayscale', "gr(?:a|e)yscale\\s+(#{float}|#{variables})", (match, expression, context) ->
+    [_,amount] = match
+    amount = Math.floor(255 - context.readFloat(amount) * 255)
+    @rgb = [amount, amount, amount]
+
+  registry.createExpression 'elm_complement', strip("
+    complement\\s+(#{notQuote})
+  "), (match, expression, context) ->
+    [_, subexpr] = match
+
+    baseColor = context.readColor(subexpr)
+
+    return @invalid = true if isInvalid(baseColor)
+
+    [h,s,l] = baseColor.hsl
+
+    @hsl = [(h + 180) % 360, s, l]
+    @alpha = baseColor.alpha
+
+  ##    ##     ##    ###    ########   ######
+  ##    ##     ##   ## ##   ##     ## ##    ##
+  ##    ##     ##  ##   ##  ##     ## ##
+  ##    ##     ## ##     ## ########   ######
+  ##     ##   ##  ######### ##   ##         ##
+  ##      ## ##   ##     ## ##    ##  ##    ##
+  ##       ###    ##     ## ##     ##  ######
+
   if context?.hasColorVariables()
     paletteRegexpString = createVariableRegExpString(context.getColorVariables())
 
     registry.createExpression 'variables', paletteRegexpString, 1, (match, expression, context) ->
-      [_,_,name] = match
+      [_,name] = match
       baseColor = context.readColor(name)
       @colorExpression = name
       @variables = baseColor?.variables

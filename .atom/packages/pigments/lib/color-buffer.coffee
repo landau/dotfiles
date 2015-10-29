@@ -16,7 +16,8 @@ class ColorBuffer
 
     @subscriptions.add @editor.onDidDestroy => @destroy()
     @subscriptions.add @editor.displayBuffer.onDidTokenize =>
-      @getColorMarkers()?.forEach (marker) -> marker.checkMarkerScope()
+      @getColorMarkers()?.forEach (marker) ->
+        marker.checkMarkerScope(true)
 
     @subscriptions.add @editor.onDidChange =>
       @terminateRunningTask() if @initialized and @variableInitialized
@@ -40,15 +41,10 @@ class ColorBuffer
       return unless @variableInitialized
       @scanBufferForColors().then (results) => @updateColorMarkers(results)
 
+    @subscriptions.add @project.onDidChangeIgnoredScopes =>
+      @updateIgnoredScopes()
+
     @subscriptions.add atom.config.observe 'pigments.delayBeforeScan', (@delayBeforeScan=0) =>
-
-    @subscriptions.add atom.config.observe 'pigments.ignoredScopes', (ignoredScopes=[]) =>
-      @ignoredScopes = ignoredScopes.map (scope) ->
-        try new RegExp(scope)
-      .filter (re) -> re?
-
-      @getColorMarkers()?.forEach (marker) -> marker.checkMarkerScope(true)
-      @emitter.emit 'did-update-color-markers', {created: [], destroyed: []}
 
     # Needed to clean the serialized markers from previous versions
     @editor.findMarkers(type: 'pigments-variable').forEach (m) -> m.destroy()
@@ -57,6 +53,7 @@ class ColorBuffer
       @restoreMarkersState(colorMarkers)
       @cleanUnusedTextEditorMarkers()
 
+    @updateIgnoredScopes()
     @initialize()
 
   onDidUpdateColorMarkers: (callback) ->
@@ -159,6 +156,17 @@ class ColorBuffer
     @project.isIgnoredPath(p) or not atom.project.contains(p)
 
   isDestroyed: -> @destroyed
+
+  getPath: -> @editor.getPath()
+
+  updateIgnoredScopes: ->
+    @ignoredScopes = @project.getIgnoredScopes().map (scope) ->
+      try new RegExp(scope)
+    .filter (re) -> re?
+
+    @getColorMarkers()?.forEach (marker) -> marker.checkMarkerScope(true)
+    @emitter.emit 'did-update-color-markers', {created: [], destroyed: []}
+
 
   ##    ##     ##    ###    ########   ######
   ##    ##     ##   ## ##   ##     ## ##    ##
@@ -327,26 +335,6 @@ class ColorBuffer
       @colorMarkersByMarkerId[marker.id]
     .filter (marker) -> marker?
 
-  colorMarkerForMouseEvent: (event) ->
-    position = @screenPositionForMouseEvent(event)
-    bufferPosition = @displayBuffer.bufferPositionForScreenPosition(position)
-
-    @getColorMarkerAtBufferPosition(bufferPosition)
-
-  screenPositionForMouseEvent: (event) ->
-    pixelPosition = @pixelPositionForMouseEvent(event)
-    @editor.screenPositionForPixelPosition(pixelPosition)
-
-  pixelPositionForMouseEvent: (event) ->
-    {clientX, clientY} = event
-
-    editorElement = atom.views.getView(@editor)
-    rootElement = editorElement.shadowRoot ? editorElement
-    {top, left} = rootElement.querySelector('.lines').getBoundingClientRect()
-    top = clientY - top + @editor.getScrollTop()
-    left = clientX - left + @editor.getScrollLeft()
-    {top, left}
-
   findValidColorMarkers: (properties) ->
     @findColorMarkers(properties).filter (marker) =>
       marker? and marker.color?.isValid() and not marker?.isIgnored()
@@ -369,6 +357,7 @@ class ColorBuffer
 
     config =
       buffer: @editor.getText()
+      bufferPath: @getPath()
       variables: variables
       colorVariables: variables.filter (v) -> v.isColor
 

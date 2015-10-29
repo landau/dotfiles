@@ -9,6 +9,12 @@ describe 'ColorSearch', ->
       '**/*.styl'
       '**/*.less'
     ]
+    atom.config.set 'pigments.extendedSearchNames', [
+      '**/*.css'
+    ]
+    atom.config.set 'pigments.ignoredNames', [
+      'project/vendor/**'
+    ]
 
     waitsForPromise -> atom.packages.activatePackage('pigments').then (pkg) ->
       pigments = pkg.mainModule
@@ -18,21 +24,16 @@ describe 'ColorSearch', ->
 
   describe 'when created with basic options', ->
     beforeEach ->
-      search = new ColorSearch
-        sourceNames: atom.config.get 'pigments.sourceNames'
-        ignoredNames: [
-          'project/vendor/**'
-        ]
-        context: project.getContext()
+      search = project.findAllColors()
 
     it 'dispatches a did-complete-search when finalizing its search', ->
       spy = jasmine.createSpy('did-complete-search')
       search.onDidCompleteSearch(spy)
       search.search()
       waitsFor -> spy.callCount > 0
-      runs -> expect(spy.argsForCall[0][0].length).toEqual(22)
+      runs -> expect(spy.argsForCall[0][0].length).toEqual(24)
 
-    it 'dispatches a did-find-matches event for every files', ->
+    it 'dispatches a did-find-matches event for every file', ->
       completeSpy = jasmine.createSpy('did-complete-search')
       findSpy = jasmine.createSpy('did-find-matches')
       search.onDidCompleteSearch(completeSpy)
@@ -40,5 +41,5 @@ describe 'ColorSearch', ->
       search.search()
       waitsFor -> completeSpy.callCount > 0
       runs ->
-        expect(findSpy.callCount).toEqual(5)
+        expect(findSpy.callCount).toEqual(6)
         expect(findSpy.argsForCall[0][0].matches.length).toEqual(3)

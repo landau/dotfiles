@@ -1,6 +1,6 @@
 {debounce} = require 'underscore-plus'
-{CompositeDisposable, Disposable} = require 'event-kit'
-{EventsDelegation} = require 'atom-utils'
+{CompositeDisposable, Disposable} = require 'atom'
+{EventsDelegation, AncestorsMethods} = require 'atom-utils'
 DOMStylesReader = require './mixins/dom-styles-reader'
 CanvasDrawer = require './mixins/canvas-drawer'
 
@@ -22,6 +22,7 @@ class MinimapElement extends HTMLElement
   DOMStylesReader.includeInto(this)
   CanvasDrawer.includeInto(this)
   EventsDelegation.includeInto(this)
+  AncestorsMethods.includeInto(this)
 
   ### Public ###
 
@@ -45,7 +46,7 @@ class MinimapElement extends HTMLElement
         swapPosition = @minimap? and displayMinimapOnLeft isnt @displayMinimapOnLeft
         @displayMinimapOnLeft = displayMinimapOnLeft
 
-        @swapMinimapPosition()
+        @updateMinimapFlexPosition()
 
       'minimap.minimapScrollIndicator': (@minimapScrollIndicator) =>
         if @minimapScrollIndicator and not @scrollIndicator?
@@ -88,7 +89,9 @@ class MinimapElement extends HTMLElement
   attachedCallback: ->
     @subscriptions.add atom.views.pollDocument => @pollDOM()
     @measureHeightAndWidth()
+    @updateMinimapFlexPosition()
     @attached = true
+    @attachedToTextEditor = @parentNode is @getTextEditorElementRoot()
 
     # Uses of `atom.styles.onDidAddStyleElement` instead of
     # `atom.themes.onDidChangeActiveThemes`.
@@ -121,34 +124,20 @@ class MinimapElement extends HTMLElement
   #
   # The position at which the element is attached is defined by the
   # `displayMinimapOnLeft` setting.
-  attach: ->
+  attach: (parent) ->
     return if @attached
-    @getTextEditorElementRoot().appendChild(this)
-    @swapMinimapPosition()
-    @attached = true
-
-  # Attaches the {MinimapElement} to the left of the target {TextEditorElement}.
-  attachToLeft: ->
-    @classList.add('left')
-
-  # Attaches the {MinimapElement} to the right of the target
-  # {TextEditorElement}.
-  attachToRight: ->
-    @classList.remove('left')
-
-  # Swaps the {MinimapElement} position based on the value of the
-  # `displayMinimapOnLeft` setting.
-  swapMinimapPosition: ->
-    if @displayMinimapOnLeft
-      @attachToLeft()
-    else
-      @attachToRight()
+    (parent ? @getTextEditorElementRoot()).appendChild(this)
 
   # Detaches the {MinimapElement} from the DOM.
   detach: ->
     return unless @attached
     return unless @parentNode?
     @parentNode.removeChild(this)
+
+  # Toggles the minimap left/right position based on the value of the
+  # `displayMinimapOnLeft` setting.
+  updateMinimapFlexPosition: ->
+    @classList.toggle('left', @displayMinimapOnLeft)
 
   # Destroys this {MinimapElement}.
   destroy: ->
@@ -302,9 +291,18 @@ class MinimapElement extends HTMLElement
     @subscriptions.add @minimap.onDidDestroy => @destroy()
     @subscriptions.add @minimap.onDidChangeConfig =>
       @requestForcedUpdate() if @attached
+    @subscriptions.add @minimap.onDidChangeStandAlone =>
+      if @minimap.isStandAlone()
+        @setAttribute('stand-alone', true)
+      else
+        @removeAttribute('stand-alone')
+      @requestUpdate()
     @subscriptions.add @minimap.onDidChange (change) =>
       @pendingChanges.push(change)
       @requestUpdate()
+
+    @setAttribute('stand-alone', true) if @minimap.isStandAlone()
+    @minimap.setScreenHeightAndWidth(@height, @width) if @width? and @height?
 
     @minimap
 
@@ -345,7 +343,6 @@ class MinimapElement extends HTMLElement
     visibleAreaTop = @minimap.getTextEditorScaledScrollTop() - @minimap.getScrollTop()
     visibleWidth = Math.min(@canvas.width / devicePixelRatio, @width)
 
-
     @applyStyles @visibleArea,
       width: visibleWidth + 'px'
       height: @minimap.getTextEditorScaledHeight() + 'px'
@@ -364,9 +361,9 @@ class MinimapElement extends HTMLElement
       @initializeScrollIndicator()
 
     if @scrollIndicator?
-      editorHeight = @getTextEditor().getHeight()
-      indicatorHeight = editorHeight * (editorHeight / @minimap.getHeight())
-      indicatorScroll = (editorHeight - indicatorHeight) * @minimap.getCapedTextEditorScrollRatio()
+      minimapScreenHeight = @minimap.getScreenHeight()
+      indicatorHeight = minimapScreenHeight * (minimapScreenHeight / @minimap.getHeight())
+      indicatorScroll = (minimapScreenHeight - indicatorHeight) * @minimap.getCapedTextEditorScrollRatio()
 
       @applyStyles @scrollIndicator,
         height: indicatorHeight + 'px'
@@ -414,11 +411,15 @@ class MinimapElement extends HTMLElement
   # forceUpdate - A {Boolean} that forces the update even when no changes were
   #               detected.
   measureHeightAndWidth: (visibilityChanged, forceUpdate=true) ->
+    return unless @minimap?
+
     wasResized = @width isnt @clientWidth or @height isnt @clientHeight
 
     @height = @clientHeight
     @width = @clientWidth
     canvasWidth = @width
+
+    @minimap.setScreenHeightAndWidth(@height, @width) if @minimap?
 
     @requestForcedUpdate() if wasResized or visibilityChanged or forceUpdate
 
@@ -464,6 +465,7 @@ class MinimapElement extends HTMLElement
   #
   # event - The {Event} object.
   mousePressedOverCanvas: (e) ->
+    return if @minimap.isStandAlone()
     if e.which is 1
       @leftMousePressedOverCanvas(e)
     else if e.which is 2
@@ -479,16 +481,16 @@ class MinimapElement extends HTMLElement
 
     textEditor = @minimap.getTextEditor()
 
-    scrollTop = row * textEditor.getLineHeightInPixels() - textEditor.getHeight() / 2
+    scrollTop = row * textEditor.getLineHeightInPixels() - @minimap.getTextEditorHeight() / 2
 
     if atom.config.get('minimap.scrollAnimation')
-      from = textEditor.getScrollTop()
+      from = @minimap.getTextEditorScrollTop()
       to = scrollTop
-      step = (now) -> textEditor.setScrollTop(now)
+      step = (now) => @minimap.setTextEditorScrollTop(now)
       duration = atom.config.get('minimap.scrollAnimationDuration')
       @animate(from: from, to: to, duration: duration, step: step)
     else
-      textEditor.setScrollTop(scrollTop)
+      @minimap.setTextEditorScrollTop(scrollTop)
 
   middleMousePressedOverCanvas: ({pageY}) ->
     {top: offsetTop} = @getBoundingClientRect()
@@ -497,7 +499,7 @@ class MinimapElement extends HTMLElement
     ratio = y /
       (@minimap.getVisibleHeight() - @minimap.getTextEditorScaledHeight())
 
-    @minimap.textEditor.setScrollTop(
+    @minimap.setTextEditorScrollTop(
       ratio * @minimap.getTextEditorMaxScrollTop())
 
   # Internal: A method that relays the `mousewheel` events received by
@@ -566,7 +568,7 @@ class MinimapElement extends HTMLElement
 
     ratio = y / (@minimap.getVisibleHeight() - @minimap.getTextEditorScaledHeight())
 
-    @minimap.textEditor.setScrollTop(ratio * @minimap.getTextEditorMaxScrollTop())
+    @minimap.setTextEditorScrollTop(ratio * @minimap.getTextEditorMaxScrollTop())
 
   # Internal: The method that ends the drag gesture.
   #

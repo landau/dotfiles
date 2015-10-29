@@ -49,18 +49,20 @@ class ColorMarkerElement extends HTMLElement
 
     @appendChild(region) for region in regions if regions?
     if cls?
-      classes = cls.split(' ')
-      @classList.add(cls) for cls in classes
+      @className = cls
+    else
+      @className = ''
 
     if style?
       @style[k] = v for k,v of style
     else
       @style.cssText = ''
 
-    @lastMarkerScreenRange = @colorMarker.marker.getScreenRange()
+    @lastMarkerScreenRange = @colorMarker.getScreenRange()
 
   checkScreenRange: ->
-    unless @lastMarkerScreenRange.isEqual(@colorMarker.marker.getScreenRange())
+    return unless @colorMarker?
+    unless @lastMarkerScreenRange.isEqual(@colorMarker.getScreenRange())
       @render()
 
   isReleased: -> @released

@@ -1,0 +1,382 @@
+b41db15e4f2dd1448c456e97bbb411c8f58087ca	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+b41db15e4f2dd1448c456e97bbb411c8f58087ca	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+e86efc1bfedcc420e18cc72139d846a30cf4d90f	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+c36c758fd09230c01590aa667436b3f791bb960a	not-for-merge	tag 'v1.0.2' of git://github.com/pipobscure/fsevents
+e86efc1bfedcc420e18cc72139d846a30cf4d90f	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+c36c758fd09230c01590aa667436b3f791bb960a	not-for-merge	tag 'v1.0.2' of git://github.com/pipobscure/fsevents
+e86efc1bfedcc420e18cc72139d846a30cf4d90f	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+c36c758fd09230c01590aa667436b3f791bb960a	not-for-merge	tag 'v1.0.2' of git://github.com/pipobscure/fsevents
+e86efc1bfedcc420e18cc72139d846a30cf4d90f	not-for-merge	branch 'master' of git://github.com/pipobscure/fsevents
+0f1488ba0acfbac8dd75bf07230d6b6d6073fa59	not-for-merge	branch 'pre-gyp-test' of git://github.com/pipobscure/fsevents
+791eac9fe36c17c6a6fbae23d768735cd7f66d00	not-for-merge	'refs/pull/15/head' of git://github.com/pipobscure/fsevents
+050501e32d35bca4eac34a0ef48052257ec68e48	not-for-merge	'refs/pull/20/head' of git://github.com/pipobscure/fsevents
+3cfdf5211bfbef52fa7cfee4bc4f48ed20ad1515	not-for-merge	'refs/pull/20/merge' of git://github.com/pipobscure/fsevents
+d40516660ab78b22f58f8eabd2c6ef7237cb0ee9	not-for-merge	'refs/pull/22/head' of git://github.com/pipobscure/fsevents
+b40cf15c4ee507608e1b5a86b99d12bcbbd59948	not-for-merge	'refs/pull/22/merge' of git://github.com/pipobscure/fsevents
+ca65a472b57377de012975fccc2c76ec71c71535	not-for-merge	'refs/pull/26/head' of git://github.com/pipobscure/fsevents
+7c31b69d31afd85f5730acb046ac1cfabfb7f047	not-for-merge	'refs/pull/27/head' of git://github.com/pipobscure/fsevents
+015326834d0853333e97df1b8ac6d57e2a97da84	not-for-merge	'refs/pull/30/head' of git://github.com/pipobscure/fsevents
+e85b3934bc938273843a9eeeb2c3899a1e99de33	not-for-merge	'refs/pull/30/merge' of git://github.com/pipobscure/fsevents
+5ee1dfa9fd870729c2e3e856040cdb72081d8c7e	not-for-merge	'refs/pull/32/head' of git://github.com/pipobscure/fsevents
+cf5a0d16277b7d6e401607017bbcf21c85539491	not-for-merge	'refs/pull/32/merge' of git://github.com/pipobscure/fsevents
+6b88d013faed6b0fc20a58756e12143a713e709f	not-for-merge	'refs/pull/38/head' of git://github.com/pipobscure/fsevents
+1bd87f962e4fb13326205a6c443569d5fcc0bb7c	not-for-merge	'refs/pull/39/head' of git://github.com/pipobscure/fsevents
+99c02b8efa656ef76cabcbff238f17b3ef5bb894	not-for-merge	'refs/pull/45/head' of git://github.com/pipobscure/fsevents
+2bc9f7d402249335eca575246c1db841d82d0bab	not-for-merge	'refs/pull/46/head' of git://github.com/pipobscure/fsevents
+931469743a084291af341689eb81b97040eb23db	not-for-merge	'refs/pull/47/head' of git://github.com/pipobscure/fsevents
+77836dab587486561e067ab6c9e1aa6c5232875a	not-for-merge	'refs/pull/48/head' of git://github.com/pipobscure/fsevents
+08655749ffedd811d8dc1b552cc77f23ad481d4d	not-for-merge	'refs/pull/48/merge' of git://github.com/pipobscure/fsevents
+00be07c2fec231aead7b9e58a6915f6018e81088	not-for-merge	'refs/pull/51/head' of git://github.com/pipobscure/fsevents
+566590f22dbde72bf876732f8d3513449b0cc50e	not-for-merge	'refs/pull/53/head' of git://github.com/pipobscure/fsevents
+55a24a00581b4beb5e8566b0600a669bca530de2	not-for-merge	'refs/pull/54/head' of git://github.com/pipobscure/fsevents
+1e040b69887631543f11f6ea203da41ab0eb2567	not-for-merge	'refs/pull/58/head' of git://github.com/pipobscure/fsevents
+c20d8fbaddbd8026457b906a41479277a2f99ffe	not-for-merge	'refs/pull/59/head' of git://github.com/pipobscure/fsevents
+5f897abdcfc184c3013d4f6a892456cea72971d3	not-for-merge	'refs/pull/60/head' of git://github.com/pipobscure/fsevents
+dba401daf6e6708b0542c6af305400b9607a931a	not-for-merge	'refs/pull/61/head' of git://github.com/pipobscure/fsevents
+0a3eaf81fe0882a25d19c7a2b9e63dd9c1897e82	not-for-merge	'refs/pull/61/merge' of git://github.com/pipobscure/fsevents
+f0fe031a3cc6f4964a11d9a1873a59183a10904d	not-for-merge	'refs/pull/64/head' of git://github.com/pipobscure/fsevents
+513a7e1d23364c7949c08ccd68b0e20d91dfc781	not-for-merge	'refs/pull/65/head' of git://github.com/pipobscure/fsevents
+bc525d99ec08bccfdc50dc63da0cdb5d3cb6cbab	not-for-merge	'refs/pull/65/merge' of git://github.com/pipobscure/fsevents
+172cc05832c30cf851a1717b167381a0eb0808b2	not-for-merge	'refs/pull/66/head' of git://github.com/pipobscure/fsevents
+50b018d1794aacdafc86ce435e515697b5bc9a21	not-for-merge	'refs/pull/66/merge' of git://github.com/pipobscure/fsevents
+9bb1e275d41ba7408dcc5a9b619d2f7f922067af	not-for-merge	'refs/pull/67/head' of git://github.com/pipobscure/fsevents
+352cd1c35b2df5f1dbda7fa47729654bc3e36910	not-for-merge	'refs/pull/69/head' of git://github.com/pipobscure/fsevents
+70bf27cc63970368db87be2d022cc33571d64636	not-for-merge	'refs/pull/7/head' of git://github.com/pipobscure/fsevents
+b3b1e077abb0442d2722c84a5990fc4b4a7d5ea7	not-for-merge	'refs/pull/7/merge' of git://github.com/pipobscure/fsevents
+74ab3f1e61748750cbac06ca5671a3d28360abed	not-for-merge	'refs/pull/70/head' of git://github.com/pipobscure/fsevents
+d229c543bad68638eb22545c2f9a07eb658d1ed0	not-for-merge	'refs/pull/72/head' of git://github.com/pipobscure/fsevents
+c7ef9b54168a8603b0bd63ab026821a503f865fc	not-for-merge	'refs/pull/74/head' of git://github.com/pipobscure/fsevents
+24dc612898292687e1eefb3629c329f9d4143219	not-for-merge	'refs/pull/76/head' of git://github.com/pipobscure/fsevents
+add73e3b510d1bbbb8bffd2e39a56493f74bce24	not-for-merge	'refs/pull/76/merge' of git://github.com/pipobscure/fsevents
+8e066fa9dc6357fff5c7e3a8ec3bad6277880d9d	not-for-merge	'refs/pull/77/head' of git://github.com/pipobscure/fsevents
+8a77e89b7d1d24d54f6525ba0c42973135e49d35	not-for-merge	'refs/pull/79/head' of git://github.com/pipobscure/fsevents
+217328da57c3cef17e9a4aeeb3ab9eeadb56ca2b	not-for-merge	'refs/pull/84/head' of git://github.com/pipobscure/fsevents
+88287b3ae33600ee2d8234ddb6aea722ed7cfbac	not-for-merge	'refs/pull/86/head' of git://github.com/pipobscure/fsevents
+9e75cfb8c079a3cb448b9c55deedc6243096e45e	not-for-merge	'refs/pull/86/merge' of git://github.com/pipobscure/fsevents
+7b9c73595132cfda009707876197b8f31ef34fcd	not-for-merge	'refs/pull/89/head' of git://github.com/pipobscure/fsevents
+df72b917e9141d45fbca4cbe169a8aa3a9cd296c	not-for-merge	'refs/pull/9/head' of git://github.com/pipobscure/fsevents
+501ef37370b82e13a0eeeb1d7efccbf998d65576	not-for-merge	'refs/pull/9/merge' of git://github.com/pipobscure/fsevents
+76763937fa1e4a247828c7f9b689d3ea54d5c0ae	not-for-merge	'refs/pull/90/head' of git://github.com/pipobscure/fsevents
+3f19b20cd1df84af2dbf6f31e3b5e97c9ba09152	not-for-merge	tag 'v0.2.0' of git://github.com/pipobscure/fsevents
+2687237a86900d7c2d8a308020b9b14171a11f12	not-for-merge	tag 'v0.3.0' of git://github.com/pipobscure/fsevents
+5b75a29c61a92a110f6fcd98b29775e1d66ed87d	not-for-merge	tag 'v0.3.1' of git://github.com/pipobscure/fsevents
+fa0bff05ffed1f8c779d5593d2ecde972d3d934e	not-for-merge	tag 'v0.3.2' of git://github.com/pipobscure/fsevents
+9180318ce8a0d49c6103c5d110b7e8cc7bc993b4	not-for-merge	tag 'v0.3.3' of git://github.com/pipobscure/fsevents
+f73786d4aa84aafa76ee804eb11e4e11bd679c9a	not-for-merge	tag 'v0.3.4' of git://github.com/pipobscure/fsevents
+67a0064d674c583817c6e88bbc4f5aaa9dd9e05f	not-for-merge	tag 'v0.3.5' of git://github.com/pipobscure/fsevents
+402982e850a4e2d58805ae67373f55a0a84e64cf	not-for-merge	tag 'v0.3.6' of git://github.com/pipobscure/fsevents
+375f602e236c6f64e5ebdeb6bc39a0437a0ffef3	not-for-merge	tag 'v0.3.7' of git://github.com/pipobscure/fsevents
+f24d1478198676908c646b5b2b4975786dd2954b	not-for-merge	tag 'v0.3.8' of git://github.com/pipobscure/fsevents
+f60e26d23d6bb77eeaf75b34abd0fe526a8d3de0	not-for-merge	tag 'v1.0.0' of git://github.com/pipobscure/fsevents
+abe6c36acbb600f18a613edfcd288962c1fab263	not-for-merge	tag 'v1.0.1' of git://github.com/pipobscure/fsevents
+c36c758fd09230c01590aa667436b3f791bb960a	not-for-merge	tag 'v1.0.2' of git://github.com/pipobscure/fsevents

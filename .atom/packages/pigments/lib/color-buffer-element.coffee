@@ -41,14 +41,22 @@ class ColorBufferElement extends HTMLElement
     @subscriptions.add @colorBuffer.onDidUpdateColorMarkers => @updateMarkers()
     @subscriptions.add @colorBuffer.onDidDestroy => @destroy()
 
-    @subscriptions.add @editor.onDidChangeScrollLeft (@editorScrollLeft) =>
+    scrollLeftListener = (@editorScrollLeft) => @updateScroll()
+    scrollTopListener = (@editorScrollTop) =>
       @updateScroll()
-    @subscriptions.add @editor.onDidChangeScrollTop (@editorScrollTop) =>
-      @updateScroll()
-      @updateMarkers()
+      requestAnimationFrame => @updateMarkers()
+
+    if @editorElement.onDidChangeScrollLeft?
+      @subscriptions.add @editorElement.onDidChangeScrollLeft(scrollLeftListener)
+      @subscriptions.add @editorElement.onDidChangeScrollTop(scrollTopListener)
+    else
+      @subscriptions.add @editor.onDidChangeScrollLeft(scrollLeftListener)
+      @subscriptions.add @editor.onDidChangeScrollTop(scrollTopListener)
 
     @subscriptions.add @editor.onDidChange =>
-      @usedMarkers.forEach (marker) -> marker.checkScreenRange()
+      @usedMarkers.forEach (marker) ->
+        marker.colorMarker?.invalidateScreenRangeCache()
+        marker.checkScreenRange()
 
     @subscriptions.add @editor.onDidAddCursor =>
       @requestSelectionUpdate()
@@ -79,6 +87,7 @@ class ColorBufferElement extends HTMLElement
 
   attach: ->
     return if @parentNode?
+    return unless @editorElement?
     @getEditorRoot().querySelector('.lines')?.appendChild(this)
 
   detach: ->
@@ -123,8 +132,9 @@ class ColorBufferElement extends HTMLElement
     for marker in @displayedMarkers
       view = @viewsByMarkers.get(marker)
       if view?
-        view.style.display = ''
-        @hideMarkerIfInSelection(marker, view)
+        view.classList.remove('hidden')
+        view.classList.remove('in-fold')
+        @hideMarkerIfInSelectionOrFold(marker, view)
       else
         console.warn "A color marker was found in the displayed markers array without an associated view", marker
 
@@ -132,7 +142,7 @@ class ColorBufferElement extends HTMLElement
     return if @editor.isDestroyed()
 
     markers = @colorBuffer.findValidColorMarkers({
-      intersectsScreenRowRange: @editor.displayBuffer.getVisibleRowRange()
+      intersectsScreenRowRange: @editorElement.getVisibleRowRange?() ? @editor.displayBuffer.getVisibleRowRange?()
     })
 
     for m in @displayedMarkers when m not in markers
@@ -157,7 +167,7 @@ class ColorBufferElement extends HTMLElement
 
     view.setModel(marker)
 
-    @hideMarkerIfInSelection(marker, view)
+    @hideMarkerIfInSelectionOrFold(marker, view)
     @usedMarkers.push(view)
     @viewsByMarkers.set(marker, view)
     view
@@ -182,17 +192,45 @@ class ColorBufferElement extends HTMLElement
     @usedMarkers = []
     @unusedMarkers = []
 
-  hideMarkerIfInSelection: (marker, view) ->
+  hideMarkerIfInSelectionOrFold: (marker, view) ->
     selections = @editor.getSelections()
 
     for selection in selections
       range = selection.getScreenRange()
-      markerRange = marker.marker?.getScreenRange()
+      markerRange = marker.getScreenRange()
 
       continue unless markerRange? and range?
 
-      if markerRange.intersectsWith(range)
-        view.style.display = 'none'
+      view.classList.add('hidden') if markerRange.intersectsWith(range)
+      view.classList.add('in-fold') if  @editor.isFoldedAtBufferRow(marker.getBufferRange().start.row)
+
+  colorMarkerForMouseEvent: (event) ->
+    position = @screenPositionForMouseEvent(event)
+    bufferPosition = @colorBuffer.displayBuffer.bufferPositionForScreenPosition(position)
+
+    @colorBuffer.getColorMarkerAtBufferPosition(bufferPosition)
+
+  screenPositionForMouseEvent: (event) ->
+    pixelPosition = @pixelPositionForMouseEvent(event)
+
+    if @editorElement.screenPositionForPixelPosition?
+      @editorElement.screenPositionForPixelPosition(pixelPosition)
+    else
+      @editor.screenPositionForPixelPosition(pixelPosition)
+
+  pixelPositionForMouseEvent: (event) ->
+    {clientX, clientY} = event
+
+    scrollTarget = if @editorElement.getScrollTop?
+      @editorElement
+    else
+      @editor
+
+    rootElement = @editorElement.shadowRoot ? @editorElement
+    {top, left} = rootElement.querySelector('.lines').getBoundingClientRect()
+    top = clientY - top + scrollTarget.getScrollTop()
+    left = clientX - left + scrollTarget.getScrollLeft()
+    {top, left}
 
 module.exports = ColorBufferElement =
 document.registerElement 'pigments-markers', {

@@ -178,7 +178,7 @@ class VariablesCollection
       results
     else
       results = @updateDependencies(results)
-      @deleteVariableReferences(v) for v in destroyed
+      @deleteVariableReferences(v) for v in destroyed when v?
       @emitChangeEvent(results)
 
   deleteVariablesForPaths: (paths) -> @removeMany(@getVariablesForPaths(paths))
@@ -191,12 +191,11 @@ class VariablesCollection
 
     a = @variableNames
     a.splice(a.indexOf(variable.name), 1)
-
     @removeDependencies(variable.name, dependencies)
 
     delete @dependencyGraph[variable.name]
 
-  getContext: -> new ColorContext(@variables, @colorVariables)
+  getContext: -> new ColorContext({@variables, @colorVariables})
 
   updateVariable: (previousVariable, variable, batch) ->
     previousDependencies = @getVariableDependencies(previousVariable)
@@ -230,7 +229,6 @@ class VariablesCollection
     @variablesByPath[variable.path] ?= []
     @variablesByPath[variable.path].push(variable)
 
-    @evaluateVariableColor(variable)
     @buildDependencyGraph(variable)
 
   createVariable: (variable, batch) ->
@@ -313,7 +311,7 @@ class VariablesCollection
     dependencies = []
     dependencies.push(variable.value) if variable.value in @variableNames
 
-    if variable.color?.variables.length > 0
+    if variable.color?.variables?.length > 0
       variables = variable.color.variables
 
       for v in variables

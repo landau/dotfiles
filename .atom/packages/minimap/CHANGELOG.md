@@ -1,3 +1,69 @@
+<a name="v4.15.0"></a>
+# v4.15.0 (2015-10-22)
+
+## :sparkles: Features
+
+- Implement a new adapter layer to handle differences between stable and beta ([0d93666e](https://github.com/atom-minimap/minimap/commit/0d93666eea59159047459d246d815b3eb501633d))
+
+
+<a name="v4.14.0"></a>
+# v4.14.0 (2015-10-17)
+
+## :bug: Bug Fixes
+
+- Fix all remaining depracations in specs and element ([a0e418d9](https://github.com/atom-minimap/minimap/commit/a0e418d967ae6d03a8599e570af4195cdcb69eb9))
+- Fix access to private API removed in latest master ([cf37f604](https://github.com/atom-minimap/minimap/commit/cf37f6041c2fb2a303ed43ec426223c2bb2a22a2), [#387](https://github.com/atom-minimap/minimap/issues/387))
+
+## :arrow_up: Dependencies Update
+
+- Bump minimum engine version ([a705ac6c](https://github.com/atom-minimap/minimap/commit/a705ac6cf32829b11c48145085d3396f010dee44))
+
+<a name="v4.13.4"></a>
+# v4.13.4 (2015-09-25)
+
+## :bug: Bug Fixes
+
+- Use provided text editor ([e2883013](https://github.com/atom-minimap/minimap/commit/e2883013edf707205a94b7aabf3f063f7ae42149))
+
+<a name="4.13.3"></a>
+# 4.13.3 (2015-09-08)
+
+## :bug: Bug Fixes
+
+- Use cache when reading DOM for color when highlighting is disabled ([b9ae0f54](https://github.com/atom-minimap/minimap/commit/b9ae0f54f571d025eaefdf99ce94bdc66ebc89c1), [#384](https://github.com/atom-minimap/minimap/issues/384))
+
+<a name="v4.13.2"></a>
+# v4.13.2 (2015-08-27)
+
+## :bug: Bug Fixes
+
+- Prevent any measuring when there's no minimap model ([892b7aaa](https://github.com/atom-minimap/minimap/commit/892b7aaadd51f28db166e376795d08fa568d1919), [#376](https://github.com/atom-minimap/minimap/issues/376))
+
+<a name="v4.13.1"></a>
+# v4.13.1 (2015-08-20)
+
+## :bug: Bug Fixes
+
+- Prevent setting size of an undefined model ([a3ce4127](https://github.com/atom-minimap/minimap/commit/a3ce4127efd11d0d114e3edf782edc8307c3564b), [#373](https://github.com/atom-minimap/minimap/issues/373))
+
+<a name="v4.13.0"></a>
+# v4.13.0 (2015-08-19)
+
+## :sparkles: Features
+
+- Add a `setStandAlone` method on minimaps and dispatch a dedicated event on change ([1e3e5f7b](https://github.com/atom-minimap/minimap/commit/1e3e5f7babc82574e3181d21e7aa0ef0e5376fb5))
+- Implement independent scroll top for stand-alone minimap ([6afdac4c](https://github.com/atom-minimap/minimap/commit/6afdac4c519096aa98548ec301c453e6eb1d8991))
+- Add `standAloneMinimapForEditor` method in API ([8970216c](https://github.com/atom-minimap/minimap/commit/8970216cb046360d3cfa54aabcb1608964a667da))
+- Add stand-alone mode in minimap ([5560408e](https://github.com/atom-minimap/minimap/commit/5560408ed1a9e40caaade197ea6abbcbf2da6b7e))  <br>In stand-alone mode the minimap can operate using a fixed width and height.
+- Add a flag in minimap element to know whether it has been attached to a text editor or not ([5f37e22c](https://github.com/atom-minimap/minimap/commit/5f37e22cc5ed9527689fa832a667fed59ffe2fb3))
+
+<a name="v4.12.3"></a>
+# v4.12.3 (2015-08-12)
+
+## :racehorse: Performances
+
+- Speed up scrolling with lots of decorations ([7b495e9f](https://github.com/atom-minimap/minimap/commit/7b495e9f259d02aa02bb7c223a33138cc8c0f8cc))
+
 <a name="v4.12.2"></a>
 # v4.12.2 (2015-08-03)
 

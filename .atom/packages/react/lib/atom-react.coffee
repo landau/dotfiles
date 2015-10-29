@@ -1,7 +1,7 @@
 {CompositeDisposable, Disposable} = require 'atom'
 
 contentCheckRegex = null
-defaultDetectReactFilePattern = '/((require\\([\'"]react(?:(-native|\\/addons))?[\'"]\\)))|(import\\s+\\w+\\s+from\\s+[\'"]react(?:(-native|\\/addons))?[\'"])/'
+defaultDetectReactFilePattern = '/((require\\([\'"]react(?:(-native|\\/addons))?[\'"]\\)))|(import\\s+[\\w{},\\s]+\\s+from\\s+[\'"]react(?:(-native|\\/addons))?[\'"])/'
 autoCompleteTagStartRegex = /(<)([a-zA-Z0-9\.:$_]+)/g
 autoCompleteTagCloseRegex = /(<\/)([^>]+)(>)/g
 
@@ -213,6 +213,9 @@ class AtomReact
     return if not @isReactEnabledForEditor(editor) or editor != atom.workspace.getActiveTextEditor()
 
     if eventObj?.newText is '>' and !eventObj.oldText
+      # auto closing multiple cursors is a little bit tricky so lets disable it for now
+      return if editor.getCursorBufferPositions().length > 1;
+
       tokenizedLine = editor.displayBuffer?.tokenizedBuffer?.tokenizedLineForRow(eventObj.newRange.end.row)
       return if not tokenizedLine?
 

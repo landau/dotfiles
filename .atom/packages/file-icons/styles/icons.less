@@ -9,6 +9,7 @@
 .database-icon  { .octicons; content: "\f096"; }
 .gear-icon      { .octicons; content: "\f02f"; }
 .github-icon    { .octicons; content: "\f00a"; }
+.graph-icon     { .octicons; content: "\f043"; }
 .package-icon   { .octicons; content: "\f0c4"; }
 .ruby-icon      { .octicons; content: "\f047"; }
 .secret-icon    { .octicons; content: "\f08c"; }
@@ -21,10 +22,10 @@
 .binary-icon    { .octicons; content: "\f094"; }
 .config-icon    { .octicons; content: "\f07c"; }
 
-.c-icon       { .octicons; content: "\f010"; }
-.h-icon       { .octicons; content: "\f010"; }
-.cpp-icon     { .octicons; content: "\f010"; }
-.objc-icon    { .octicons; content: "\f010"; font-size: medium; }
+// .c-icon       { .octicons; content: "\f010"; }
+// .h-icon       { .octicons; content: "\f010"; }
+// .cpp-icon     { .octicons; content: "\f010"; }
+// .objc-icon    { .octicons; content: "\f010"; font-size: medium; }
 
 // FontAwesome icons, looks better on small font-size,
 // from: http://fortawesome.github.io/Font-Awesome/cheatsheet/
@@ -45,20 +46,26 @@
 
 .mf { font-family: "FontMfizz"; font-size: small; text-align: center;  }
 
-.js-icon      { .mf; content: "\f148"; font-size: medium; }
-.python-icon  { .mf; content: "\f109"; }
-// .c-icon       { .mf; content: "\f10e"; }
-// .cpp-icon     { .mf; content: "\f101"; }
-// .objc-icon    { .mf; content: "\f105"; font-size: medium; }
-.csharp-icon  { .mf; content: "\f134"; }
-.perl-icon    { .mf; content: "\f117"; }
-.php-icon     { .mf; content: "\f14a"; font-size: medium; }
-.java-icon    { .mf; content: "\f142"; font-size: medium; }
-.scala-icon   { .mf; content: "\f115"; font-size: medium; }
-.haskell-icon { .mf; content: "\f130"; }
+.js-icon              { .mf; content: "\f128"; font-size: medium; }
+.python-icon          { .mf; content: "\f14c"; }
+.objc-icon            { .mf; content: "\f13e"; font-size: medium; }
+.c-icon               { .mf; content: "\f106"; }
+.h-icon               { .mf; content: "\f010"; }
+.cpp-icon             { .mf; content: "\f10b"; }
+.csharp-icon          { .mf; content: "\f10c"; }
+.perl-icon            { .mf; content: "\f142"; }
+.php-icon             { .mf; content: "\f147"; font-size: medium; }
+.java-icon            { .mf; content: "\f125"; font-size: medium; }
+.scala-icon           { .mf; content: "\f154"; font-size: medium; }
+.haskell-icon         { .mf; content: "\f121"; }
 .templatetoolkit-icon { .mf; content: "TT"; }
-.sql-icon { .mf; content: "\f124"; }
-
+.sql-icon             { .mf; content: "\f10e"; }
+.svg-icon             { .mf; content: "\f15c"; }
+.elixir-icon          { .mf; content: '\f113'; }
+.apache-icon          { .mf; content: '\f102'; }
+.debian-icon          { .mf; content: '\f111'; }
+.red-hat-icon         { .mf; content: '\f14e'; }
+.osx-icon             { .mf; content: '\f141'; }
 
 // Icomoon icons, from http://icomoon.io
 
@@ -68,7 +75,6 @@
 .gulp-icon          { .icomoon; content: "\e610"; }
 .hbs-mustache-icon  { .icomoon; content: "\e60f"; }
 .npm-icon           { .icomoon; content: "\e616"; }
-.sass-icon          { .icomoon; content: "\e603"; }
 
 // Dev icons, from http://vorillaz.github.io/devicons/
 
@@ -81,10 +87,11 @@
 .rust-icon          { .devicons; content: "\e6a8"; }
 .travis-icon        { .devicons; content: "\e67e"; font-size: medium; }
 .windows-icon       { .devicons; content: "\e60f"; }
-.elixir-icon        { .devicons; content: '\e6b1'; }
 .erlang-icon        { .devicons; content: '\e6b1'; }
 .dlang-icon         { .devicons; content: "\e6af"; }
 .fsharp-icon        { .devicons; content: "\e6a7"; left: 1px; }
+.sass-icon          { .devicons; content: "\e64b"; top: 0; }
+.meteor-icon        { .devicons; content: "\e6a5"; font-size: x-large; left: -2px; }
 
 .composer-icon      {
   .devicons;
@@ -115,11 +122,11 @@
 // .npm-icon           { .devicons; content: "\e616"; }
 // .sass-icon          { .devicons; content: "\e603"; }
 
-.docker { font-family: "fontcustom"; font-size: large; text-align: center; top: 3px; }
+.docker             { font-family: "fontcustom"; font-size: large; text-align: center; top: 3px; }
 .docker-icon        { .docker; content: "\f100"; }
 
-.tex { font-family: "tex"; font-size: 8px; text-align: center;  }
-.tex-icon         { .tex; content: "\e600"; }
+.tex                { font-family: "tex"; font-size: 8px; text-align: center;  }
+.tex-icon           { .tex; content: "\e600"; }
 .bibtex-icon        { .tex; content: "\e601"; top: -1px }
 
 .git-icon           {
@@ -134,16 +141,20 @@
 
 // IconsXD, from http://icomoon.io XD
 
-.icons-xd { font-family: "iconsxd"; font-size: 18px; text-align: center; top: 3px; }
+.icons-xd   { font-family: "iconsxd"; font-size: 18px; text-align: center; top: 3px; }
 
-.ionic-icon         { .icons-xd; content: "\f14b"; }
-.haml-icon         { .icons-xd; content: "\f15b"; font-size: 15px; }
-.node-icon           { .icons-xd; content: "\f17b"; }
-.nginx-icon           { .icons-xd; content: "\f146b"; font-size: 15px; }
+.ionic-icon { .icons-xd; content: "\f14b"; }
+.haml-icon  { .icons-xd; content: "\f15b"; font-size: 15px; }
+.node-icon  { .icons-xd; content: "\f17b"; }
+.nginx-icon { .icons-xd; content: "\f146b"; font-size: 15px; }
 
 // File Icons, custom
 
 .file-icons { font-family: "file-icons"; font-size: large; text-align: center; top: 3px; }
 
-.jsx-icon { .file-icons; content: "\f101" }
 .react-icon { .file-icons; content: "\f100" }
+.jsx-icon   { .file-icons; content: "\f101" }
+.elm-icon   { .file-icons; content: "\f102" }
+.boot-icon  { .file-icons; content: "\f103" }
+.cljs-icon  { .file-icons; content: "\f104" }
+.lein-icon  { .file-icons; content: "\f105" }

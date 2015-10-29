@@ -64,7 +64,7 @@ class CanvasDrawer extends Mixin
   #
   # Returns a {String}.
   getDefaultColor: ->
-    color = @retrieveStyleFromDom(['.editor'], 'color', false, false)
+    color = @retrieveStyleFromDom(['.editor'], 'color', false, true)
     @transparentize(color, @getTextOpacity())
 
   # Returns the text color for the passed-in `token` object.
@@ -146,7 +146,7 @@ class CanvasDrawer extends Mixin
     charWidth = @minimap.getCharWidth() * devicePixelRatio
     canvasWidth = @canvas.width
     displayCodeHighlights = @displayCodeHighlights
-    decorations = @minimap.decorationsForScreenRowRangeByTypeThenRows(firstRow, lastRow)
+    decorations = @minimap.decorationsByTypeThenRows(firstRow, lastRow)
 
     line = lines[0]
 

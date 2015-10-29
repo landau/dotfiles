@@ -1,0 +1,27 @@
+'context-menu':
+  'atom-text-editor': [
+    {
+      'label': 'Show Tasks - iMDone'
+      'command': 'imdone-atom:tasks'
+    }
+  ],
+  '.tree-view.full-menu': [
+    {
+      'label': 'Show Tasks - iMDone'
+      'command': 'imdone-atom:tasks'
+    }
+  ]
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'iMDone'
+      'submenu': [
+        {
+          'label': 'Show Tasks'
+          'command': 'imdone-atom:tasks'
+        }
+      ]
+    ]
+  }
+]
