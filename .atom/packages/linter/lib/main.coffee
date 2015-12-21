@@ -92,6 +92,12 @@ module.exports =
       type: 'boolean'
       default: true
       order: 5
+    displayLinterStatus:
+      title: 'Display Linter Status Info in Status Bar'
+      description: 'The `No Issues` or `X Issues` widget'
+      type: 'boolean'
+      default: true
+      order: 5
     showErrorTabLine:
       title: 'Show "Line" Tab in the Status Bar'
       type: 'boolean'
@@ -143,6 +149,9 @@ module.exports =
 
   provideLinter: ->
     @instance
+
+  provideIndie: ->
+    @instance?.indieLinters
 
   deactivate: ->
     @instance?.deactivate()

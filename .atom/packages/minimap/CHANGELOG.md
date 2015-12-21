@@ -1,3 +1,91 @@
+<a name="v4.18.0"></a>
+# v4.18.0 (2015-12-11)
+
+## :racehorse: Performances
+
+- Add a CanvasLayer class to handle onscreen/offscreen canvases ([b339e73e](https://github.com/atom-minimap/minimap/commit/b339e73ebbae0a93279bd002d046b069578cf282))<br/>
+  Render is now separate into three layers to reduce accesses to line tokens.
+
+## :bug: Bug Fixes
+
+- Fix over-blurring of the Minimap for device with a float for pixel raio ([77f3b38f9](https://github.com/atom-minimap/minimap/commit/77f3b38f99f3a3998ea3ef6d3a72d38e2186caf5))
+
+
+## :arrow_up: Dependencies Update
+
+- Bump atom-utils version ([d42fe50d](https://github.com/atom-minimap/minimap/commit/d42fe50d083ba4212f2f5295f01b34a910de1560))
+
+<a name="v4.17.0"></a>
+# v4.17.0 (2015-12-08)
+
+:sparkles: **Starting with this version, the Minimap is now totally written in ES6 with Babel** :sparkles:
+
+We're also using the decorator feature from ES7 for mixin inclusion and custom elements registration.
+
+## :sparkles: Features
+
+- Add a element decorator to handle creating custom elements ([f1823116](https://github.com/atom-minimap/minimap/commit/f18231168b8b63298390d1e4000577e329aa18b4))
+- Add a helper function to generate decorators for mixin inclusion ([d2ed7591](https://github.com/atom-minimap/minimap/commit/d2ed759189fa43ece70cc96f6f2d1bde8fe6a8d8))
+- Add new dependency to support ES7 features linter and docs ([dc758103](https://github.com/atom-minimap/minimap/commit/dc75810314e153f992b7fd1a38863bde7ee67893))
+- Add esdoc to generate documentation for es6 version ([68142570](https://github.com/atom-minimap/minimap/commit/681425707d7398f979ba988f605a1030ed6a04dd))
+- Add standard linter for es6 conversion ([f0bb6561](https://github.com/atom-minimap/minimap/commit/f0bb6561cdafa2f4447a558b673787bf0c91f552))
+- Use new Babel-friendly space-pen DSL ([e4be4483](https://github.com/atom-minimap/minimap/commit/e4be4483b2d7b9d0ef99d955052c357f4efaec69))
+
+## :racehorse: Performances
+
+- Avoid reading directly from the line's token property ([e8235235](https://github.com/atom-minimap/minimap/commit/e823523526a3502dc8e781bf67a8bebd1a51f1d1))
+
+## :arrow_up: Dependencies Update
+
+- Bump atom-utils version ([b15fce7a](https://github.com/atom-minimap/minimap/commit/b15fce7a7f106d70c316721e06f21bb5eb56fe9b))
+
+<a name="v4.16.2"></a>
+# v4.16.2 (2015-11-24)
+
+## :bug: Bug Fixes
+
+- Prevent stand alone minimap to have width, height and flex properties ([fd7a9dd0](https://github.com/atom-minimap/minimap/commit/fd7a9dd003aa0c113ee0bc84165da49449c0dcb1))
+- Prevent generation of a returned array in drawLineDecorations method ([04fdd35c](https://github.com/atom-minimap/minimap/commit/04fdd35c01752ac0b1a13b280f2880ed72f8c14f))
+
+<a name="v4.16.1"></a>
+# v4.16.1 (2015-11-18)
+
+## :bug: Bug Fixes
+
+- Store minimap locally in update to prevent racing conditions ([8a7179f3](https://github.com/atom-minimap/minimap/commit/8a7179f3949c3eb57dc38f4978eb3a1557813121))
+
+## :racehorse: Performances
+
+- Implement a basic cache of editor dimension during update ([5aeb5ce3](https://github.com/atom-minimap/minimap/commit/5aeb5ce3905d51fa70862720ec0acd191d06f719))
+
+<a name="v4.16.0"></a>
+# v4.16.0 (2015-11-01)
+
+## :sparkles: Features
+
+- Implement new custom elements registration to allow updates ([f5ab5e36](https://github.com/atom-minimap/minimap/commit/f5ab5e36b85cb39b43c9f4f66737f3aacdddebbc))
+- Implement removing unused elements in stand-alone minimap ([72e7a90e](https://github.com/atom-minimap/minimap/commit/72e7a90e9ec18b78acc7a5ca96ac27298008b4e1))
+- Add custom render settings on a per-minimal basis ([4eed31af](https://github.com/atom-minimap/minimap/commit/4eed31afd1908c1b4a4ed0a3f42ef5b5165c9db7))
+
+## :arrow_up: Dependencies Update
+
+- Bump atom-utils version ([b4fc2d94](https://github.com/atom-minimap/minimap/commit/b4fc2d94ed6bdeedf8cb53068a7e8b716c3c6b84))
+
+<a name="v4.15.2"></a>
+# v4.15.2 (2015-10-31)
+
+## :bug: Bug Fixes
+
+- Fix minimap broken with changes in flex box behaviour ([0c9389d8](https://github.com/atom-minimap/minimap/commit/0c9389d8141de337dec32724f85ec9d58271124d))
+- Fix deprecations in tests ([3bb81d39](https://github.com/atom-minimap/minimap/commit/3bb81d39261271347dfb4bd58873879b0262659d))
+
+<a name="v4.15.1"></a>
+# v4.15.1 (2015-10-30)
+
+## :bug: Bug Fixes
+
+- Fix unusual issue if an invisible char is not a string ([f261d5ad](https://github.com/atom-minimap/minimap/commit/f261d5ad3396455d4c0beb1ce4f98520c51cb9a5), [#397](https://github.com/atom-minimap/minimap/issues/397))
+
 <a name="v4.15.0"></a>
 # v4.15.0 (2015-10-22)
 

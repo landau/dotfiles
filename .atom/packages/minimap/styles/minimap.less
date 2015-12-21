@@ -6,21 +6,25 @@ atom-notifications:empty {
 
 atom-text-editor::shadow .editor--private {
   order: 2;
+  flex: 1 0 0;
 }
 
 atom-text-editor::shadow, atom-text-editor, html {
   atom-text-editor-minimap {
     display: block;
-    width: 10%;
-    height: 100%;
     overflow: hidden;
     position: relative;
-    order: 2;
-
     -webkit-user-select: none;
 
-    &.left {
-      order: 1;
+    &:not([stand-alone]) {
+      height: 100%;
+      order: 3;
+      width: 10%;
+      flex: 0 0 10%;
+
+      &.left {
+        order: 1;
+      }
     }
 
     &.absolute {
@@ -36,12 +40,6 @@ atom-text-editor::shadow, atom-text-editor, html {
 
       .open-minimap-quick-settings {
         right: 16px;
-      }
-    }
-
-    &[stand-alone]::shadow {
-      .minimap-visible-area, .open-minimap-quick-settings {
-        display: none;
       }
     }
 
@@ -137,6 +135,11 @@ minimap-quick-settings {
     li:hover {
       background: @background-color-highlight;
     }
+  }
+
+  .select-list.popover-list ol.list-group {
+    overflow: visible;
+    max-height: none;
   }
 
   .btn-group {

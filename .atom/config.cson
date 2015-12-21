@@ -28,9 +28,9 @@
   editor:
     invisibles: {}
     fontFamily: "Droid Sans Mono Dotted"
-    fontSize: 10
     lineHeight: 1.4
     preferredLineLength: 120
+    fontSize: 10
   linter:
     statusBar: "Show error if the cursor is in range"
     lintOnChangeInterval: 2000

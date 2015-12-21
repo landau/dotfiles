@@ -5,8 +5,7 @@ temp = require 'temp'
 {SERIALIZE_VERSION, SERIALIZE_MARKERS_VERSION} = require '../lib/versions'
 ColorProject = require '../lib/color-project'
 ColorBuffer = require '../lib/color-buffer'
-jsonFixture = require('./spec-helper').jsonFixture(__dirname, 'fixtures')
-require '../lib/register-elements'
+jsonFixture = require('./helpers/fixtures').jsonFixture(__dirname, 'fixtures')
 {click} = require './helpers/events'
 
 TOTAL_VARIABLES_IN_PROJECT = 12
@@ -30,6 +29,9 @@ describe 'ColorProject', ->
       sourceNames: ['*.less']
       ignoredScopes: ['\\.comment']
     })
+
+  afterEach ->
+    project.destroy()
 
   describe '.deserialize', ->
     it 'restores the project in its previous state', ->
@@ -560,6 +562,8 @@ describe 'ColorProject', ->
         fs.writeFileSync(path.join(projectPath, '.gitignore'), fs.readFileSync(path.join(fixture, 'git.gitignore')))
         fs.writeFileSync(path.join(projectPath, 'base.sass'), fs.readFileSync(path.join(fixture, 'base.sass')))
         fs.writeFileSync(path.join(projectPath, 'ignored.sass'), fs.readFileSync(path.join(fixture, 'ignored.sass')))
+        fs.mkdirSync(path.join(projectPath, 'bower_components'))
+        fs.writeFileSync(path.join(projectPath, 'bower_components', 'some-ignored-file.sass'), fs.readFileSync(path.join(fixture, 'bower_components', 'some-ignored-file.sass')))
 
         # FIXME repo.getWorkingDirectory returns the project path prefixed with
         # /private
@@ -572,8 +576,9 @@ describe 'ColorProject', ->
 
           waitsForPromise -> project.initialize()
 
-        it 'finds the variables from the two directories', ->
+        it 'finds the variables from the three files', ->
           expect(project.getVariables().length).toEqual(3)
+          expect(project.getPaths().length).toEqual(1)
 
         describe 'and then disabled', ->
           beforeEach ->
@@ -584,10 +589,10 @@ describe 'ColorProject', ->
             waitsFor -> spy.callCount > 0
 
           it 'reloads the paths', ->
-            expect(project.getPaths().length).toEqual(2)
+            expect(project.getPaths().length).toEqual(3)
 
           it 'reloads the variables', ->
-            expect(project.getVariables().length).toEqual(6)
+            expect(project.getVariables().length).toEqual(7)
 
       describe 'when the ignoreVcsIgnoredPaths setting is disabled', ->
         beforeEach ->
@@ -596,8 +601,9 @@ describe 'ColorProject', ->
 
           waitsForPromise -> project.initialize()
 
-        it 'finds the variables from the two directories', ->
-          expect(project.getVariables().length).toEqual(6)
+        it 'finds the variables from the three files', ->
+          expect(project.getVariables().length).toEqual(7)
+          expect(project.getPaths().length).toEqual(3)
 
         describe 'and then enabled', ->
           beforeEach ->

@@ -1,7 +1,7 @@
 {
   "name": "atom-material-syntax",
   "theme": "syntax",
-  "version": "0.2.4",
+  "version": "0.2.10",
   "description": "A dark syntax theme for Atom that uses Google's Material Design color palette",
   "keywords": [
     "syntax",
@@ -17,16 +17,16 @@
   "engines": {
     "atom": ">=0.174.0 <2.0.0"
   },
-  "readme": "![](http://i.imgur.com/f58FC9u.png)\n---\n\nA syntax theme for [Atom Material UI](https://github.com/silvestreh/atom-material-ui). Inspired by Mattia Astorino's [SublimeText theme](https://github.com/equinusocio/material-theme).\n\n![](/screenshot.png)\n",
+  "readme": "![](http://i.imgur.com/f58FC9u.png)\n---\n\nA syntax theme for [Atom Material UI](https://github.com/silvestreh/atom-material-ui). Inspired by Mattia Astorino's [SublimeText theme](https://github.com/equinusocio/material-theme).\n\n![screenshot](https://cloud.githubusercontent.com/assets/499192/11417210/2ff7e544-9415-11e5-8c82-4ba4609eeb7e.png)\n",
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/silvestreh/atom-material-syntax/issues"
   },
   "homepage": "https://github.com/silvestreh/atom-material-syntax#readme",
-  "_id": "atom-material-syntax@0.2.4",
-  "_shasum": "9ae43805a076a91432c86340435f03ec245a701b",
-  "_resolved": "file:../d-11592-44064-1htuuwt/package.tgz",
-  "_from": "../d-11592-44064-1htuuwt/package.tgz",
+  "_id": "atom-material-syntax@0.2.10",
+  "_shasum": "69eeb553c1606a799b98baf895a0a4c86edbcea9",
+  "_resolved": "file:../d-1151114-18442-1kncnga/package.tgz",
+  "_from": "../d-1151114-18442-1kncnga/package.tgz",
   "_atomModuleCache": {
     "version": 1,
     "dependencies": [],
