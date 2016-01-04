@@ -2,7 +2,7 @@
   "name": "linter-eslint",
   "main": "./lib/main",
   "activationCommands": [],
-  "version": "5.2.6",
+  "version": "5.2.7",
   "description": "Lint JavaScript on the fly, using ESLint",
   "repository": {
     "type": "git",
@@ -16,7 +16,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "atom-linter": "^3.4.0",
+    "atom-linter": "^4.0.1",
     "atom-package-deps": "^3.0.5",
     "childprocess-promise": "^3.0.0",
     "escape-html": "^1.0.3",
@@ -25,8 +25,8 @@
   },
   "devDependencies": {
     "babel-eslint": "^4.1.5",
-    "eslint-config-airbnb": "^1.0.2",
-    "eslint-plugin-import": "^0.11.0",
+    "eslint-config-airbnb": "^2.1.1",
+    "eslint-plugin-import": "^0.12.0",
     "eslint-plugin-react": "^3.10.0",
     "shelljs": "^0.5.3"
   },
@@ -67,22 +67,22 @@
       "node": true
     }
   },
-  "readme": "# linter-eslint\n[![Build Status](https://travis-ci.org/AtomLinter/linter-eslint.svg)](https://travis-ci.org/AtomLinter/linter-eslint)\n[![Dependency Status](https://david-dm.org/AtomLinter/linter-eslint.svg)](https://david-dm.org/AtomLinter/linter-eslint)\n\nThis linter plugin for [Linter](https://github.com/AtomLinter/Linter) provides\nan interface to [eslint](http://eslint.org). It will be used with files that\nhave the \"JavaScript\" syntax.\n\n## Installation\n```ShellSession\napm install linter-eslint\n```\n\n`linter-eslint` will look for a version of `eslint` local to your project and\nuse it if it's available. If none is found it will fall back to the version it\nships with.\n\nLets say you depend on a specific version of `eslint`, maybe it has unreleased\nfeatures, maybe it's just newer than what `linter-eslint` ships with. If\n`your-project/node_modules/eslint` exists `linter-eslint` will be used.\nThis package requires an `eslint` of at least v1.0.0.\n\nNote that if you do not have the `linter` package installed it will be installed\nfor you. If you are using an alternative `linter-*` consumer feel free to disable\nthe `linter` package.\n\n## Use with plugins\n\nYou have two options:\n\n* Install locally to your project `eslint` and the plugin\n  * `$ npm i --save-dev eslint [eslint-plugins]`\n\n* Install globaly `eslint` and plugins\n  * `$ npm i -g eslint [eslint-plugins]`\n  * Activate `Use Global Eslint` package option\n  * (Optional) Set `Global Node Path` with `$ npm config get prefix`\n\n\n## Contributing\n\nIf you would like to contribute enhancements or fixes, please do the following:\n\n0. Fork the plugin repository\n0. Hack on a separate topic branch created from the latest `master`\n0. Commit and push the topic branch\n0. Make a pull request\n0. Welcome to the club!\n\nPlease note that modifications should follow these coding guidelines:\n\n* Indent is 2 spaces\n* Code should pass the `eslint` linter with the provided `.eslintrc`\n* Vertical whitespace helps readability, don’t be afraid to use it\n\nThank you for helping out!\n",
+  "readme": "# linter-eslint\n[![Build Status](https://travis-ci.org/AtomLinter/linter-eslint.svg)](https://travis-ci.org/AtomLinter/linter-eslint)\n[![Dependency Status](https://david-dm.org/AtomLinter/linter-eslint.svg)](https://david-dm.org/AtomLinter/linter-eslint)\n\nThis linter plugin for [Linter](https://github.com/AtomLinter/Linter) provides\nan interface to [eslint](http://eslint.org). It will be used with files that\nhave the \"JavaScript\" syntax.\n\n## Installation\n```ShellSession\napm install linter-eslint\n```\n\n`linter-eslint` will look for a version of `eslint` local to your project and\nuse it if it's available. If none is found it will fall back to the version it\nships with.\n\nLets say you depend on a specific version of `eslint`, maybe it has unreleased\nfeatures, maybe it's just newer than what `linter-eslint` ships with. If\n`your-project/node_modules/eslint` exists `linter-eslint` will be used.\nThis package requires an `eslint` of at least v1.0.0.\n\nNote that if you do not have the `linter` package installed it will be installed\nfor you. If you are using an alternative `linter-*` consumer feel free to disable\nthe `linter` package.\n\n## Use with plugins\n\nYou have two options:\n\n* Install locally to your project `eslint` and the plugin\n  * `$ npm i --save-dev eslint [eslint-plugins]`\n\n* Install globaly `eslint` and plugins\n  * `$ npm i -g eslint [eslint-plugins]`\n  * Activate `Use Global Eslint` package option\n  * (Optional) Set `Global Node Path` with `$ npm config get prefix`\n\n## Using ESLint\n\nNote that recent versions of ESLint do not use any rules by-default. This means you have to specify a configuration file for your project!\nTo do this in a straightforward way run this:\n```ShellSession\neslint --init\n```\n\nAlternatively you can create the `.eslintrc` file by yourself. It is a good idea to have a look at the [Get Started With ESLint](http://devnull.guru/get-started-with-eslint/) blog post by [IanVS](https://github.com/IanVS) and [the ESLint documentation](http://eslint.org/docs/user-guide/configuring), including the [list of rules](http://eslint.org/docs/rules/).\n\n## Contributing\n\nIf you would like to contribute enhancements or fixes, please do the following:\n\n0. Fork the plugin repository\n0. Hack on a separate topic branch created from the latest `master`\n0. Commit and push the topic branch\n0. Make a pull request\n0. Welcome to the club!\n\nPlease note that modifications should follow these coding guidelines:\n\n* Indent is 2 spaces\n* Code should pass the `eslint` linter with the provided `.eslintrc`\n* Vertical whitespace helps readability, don’t be afraid to use it\n\nThank you for helping out!\n",
   "readmeFilename": "README.md",
   "bugs": {
     "url": "https://github.com/AtomLinter/linter-eslint/issues"
   },
   "homepage": "https://github.com/AtomLinter/linter-eslint#readme",
-  "_id": "linter-eslint@5.2.6",
-  "_shasum": "db03f6960d7caa8a106c51f37b5190a63c9ea694",
-  "_resolved": "file:../d-1151110-48303-4gg0sp/package.tgz",
-  "_from": "../d-1151110-48303-4gg0sp/package.tgz",
+  "_id": "linter-eslint@5.2.7",
+  "_shasum": "3dadf4f72aabb8cff1094f7909df7fff134b44b8",
+  "_resolved": "file:../d-1151128-78428-1wla43l/package.tgz",
+  "_from": "../d-1151128-78428-1wla43l/package.tgz",
   "_atomModuleCache": {
     "version": 1,
     "dependencies": [
       {
         "name": "atom-linter",
-        "version": "3.4.1",
+        "version": "4.1.1",
         "path": "node_modules/atom-linter/lib/helpers.js"
       },
       {
@@ -97,7 +97,7 @@
       },
       {
         "name": "xregexp",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "path": "node_modules/atom-linter/node_modules/xregexp/xregexp-all.js"
       },
       {
@@ -107,7 +107,7 @@
       },
       {
         "name": "sb-callsite",
-        "version": "1.0.1",
+        "version": "1.1.0",
         "path": "node_modules/atom-package-deps/node_modules/sb-callsite/lib/main.js"
       },
       {
@@ -182,7 +182,7 @@
       },
       {
         "name": "readable-stream",
-        "version": "2.0.4",
+        "version": "2.0.5",
         "path": "node_modules/eslint/node_modules/concat-stream/node_modules/readable-stream/readable.js"
       },
       {
@@ -242,7 +242,7 @@
       },
       {
         "name": "escape-string-regexp",
-        "version": "1.0.3",
+        "version": "1.0.4",
         "path": "node_modules/eslint/node_modules/escape-string-regexp/index.js"
       },
       {
@@ -262,7 +262,7 @@
       },
       {
         "name": "es5-ext",
-        "version": "0.10.9",
+        "version": "0.10.11",
         "path": "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/index.js"
       },
       {
@@ -277,7 +277,7 @@
       },
       {
         "name": "es6-symbol",
-        "version": "3.0.1",
+        "version": "3.0.2",
         "path": "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es6-symbol/index.js"
       },
       {
@@ -297,7 +297,7 @@
       },
       {
         "name": "es5-ext",
-        "version": "0.10.9",
+        "version": "0.10.11",
         "path": "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/index.js"
       },
       {
@@ -307,7 +307,7 @@
       },
       {
         "name": "es6-symbol",
-        "version": "3.0.1",
+        "version": "3.0.2",
         "path": "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es6-symbol/index.js"
       },
       {
@@ -377,7 +377,7 @@
       },
       {
         "name": "glob",
-        "version": "6.0.1",
+        "version": "6.0.2",
         "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/globby/node_modules/glob/glob.js"
       },
       {
@@ -437,8 +437,38 @@
       },
       {
         "name": "rimraf",
-        "version": "2.4.4",
+        "version": "2.5.0",
         "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/rimraf.js"
+      },
+      {
+        "name": "glob",
+        "version": "6.0.2",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/glob.js"
+      },
+      {
+        "name": "inflight",
+        "version": "1.0.4",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/inflight.js"
+      },
+      {
+        "name": "wrappy",
+        "version": "1.0.1",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/node_modules/wrappy/wrappy.js"
+      },
+      {
+        "name": "inherits",
+        "version": "2.0.1",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inherits/inherits.js"
+      },
+      {
+        "name": "once",
+        "version": "1.3.3",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/once.js"
+      },
+      {
+        "name": "wrappy",
+        "version": "1.0.1",
+        "path": "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/node_modules/wrappy/wrappy.js"
       },
       {
         "name": "graceful-fs",
@@ -487,7 +517,7 @@
       },
       {
         "name": "globals",
-        "version": "8.14.0",
+        "version": "8.15.0",
         "path": "node_modules/eslint/node_modules/globals/index.js"
       },
       {
@@ -632,7 +662,7 @@
       },
       {
         "name": "decamelize",
-        "version": "1.1.1",
+        "version": "1.1.2",
         "path": "node_modules/eslint/node_modules/handlebars/node_modules/uglify-js/node_modules/yargs/node_modules/decamelize/index.js"
       },
       {
@@ -672,7 +702,7 @@
       },
       {
         "name": "onetime",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "path": "node_modules/eslint/node_modules/inquirer/node_modules/cli-cursor/node_modules/restore-cursor/node_modules/onetime/index.js"
       },
       {
@@ -1775,6 +1805,7 @@
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-copy-deep.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-copy.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-empty.js",
+        "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-number-value.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-object.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is-plain-object.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-map/node_modules/es5-ext/object/is.js",
@@ -2205,6 +2236,7 @@
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-copy-deep.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-copy.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-empty.js",
+        "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-number-value.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-object.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is-plain-object.js",
         "node_modules/eslint/node_modules/escope/node_modules/es6-weak-map/node_modules/es5-ext/object/is.js",
@@ -2390,6 +2422,17 @@
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/pinkie-promise/index.js",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/pinkie-promise/node_modules/pinkie/index.js",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/bin.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/common.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/glob.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/inflight.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/node_modules/wrappy/wrappy.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/test.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inherits/inherits.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inherits/inherits_browser.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inherits/test.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/node_modules/wrappy/wrappy.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/once.js",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/sync.js",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/rimraf.js",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/graceful-fs/fs.js",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/graceful-fs/graceful-fs.js",
@@ -3791,6 +3834,12 @@
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/pify/package.json",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/pinkie-promise/node_modules/pinkie/package.json",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/pinkie-promise/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/node_modules/wrappy/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inherits/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/node_modules/wrappy/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once/package.json",
+        "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/package.json",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/package.json",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/package.json",
         "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/graceful-fs/package.json",
@@ -3974,7 +4023,7 @@
           "spec/fixtures/local-eslint/lib"
         ],
         "dependencies": {
-          "atom-linter": "^3.4.0",
+          "atom-linter": "^4.0.1",
           "atom-package-deps": "^3.0.5",
           "childprocess-promise": "^3.0.0",
           "escape-html": "^1.0.3",
@@ -3988,7 +4037,7 @@
           "node_modules/atom-linter"
         ],
         "dependencies": {
-          "xregexp": "^2.0.0"
+          "xregexp": "^3.0.0"
         }
       },
       {
@@ -4128,7 +4177,7 @@
           "core-util-is": "~1.0.0",
           "inherits": "~2.0.1",
           "isarray": "0.0.1",
-          "process-nextick-args": "~1.0.0",
+          "process-nextick-args": "~1.0.6",
           "string_decoder": "~0.10.x",
           "util-deprecate": "~1.0.1"
         }
@@ -4349,7 +4398,7 @@
         ],
         "dependencies": {
           "es6-iterator": "2",
-          "es6-symbol": "~3.0.1"
+          "es6-symbol": "~3.0.2"
         }
       },
       {
@@ -4391,7 +4440,7 @@
         ],
         "dependencies": {
           "d": "~0.1.1",
-          "es5-ext": "~0.10.8"
+          "es5-ext": "~0.10.10"
         }
       },
       {
@@ -4583,7 +4632,7 @@
         ],
         "dependencies": {
           "es6-iterator": "2",
-          "es6-symbol": "~3.0.1"
+          "es6-symbol": "~3.0.2"
         }
       },
       {
@@ -4606,7 +4655,7 @@
         ],
         "dependencies": {
           "d": "~0.1.1",
-          "es5-ext": "~0.10.8"
+          "es5-ext": "~0.10.10"
         }
       },
       {
@@ -4730,7 +4779,36 @@
           "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf"
         ],
         "dependencies": {
-          "glob": "^5.0.14"
+          "glob": "^6.0.1"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob"
+        ],
+        "dependencies": {
+          "inflight": "^1.0.4",
+          "inherits": "2",
+          "minimatch": "2 || 3",
+          "once": "^1.3.0",
+          "path-is-absolute": "^1.0.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/inflight"
+        ],
+        "dependencies": {
+          "once": "^1.3.0",
+          "wrappy": "1"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/eslint/node_modules/file-entry-cache/node_modules/flat-cache/node_modules/del/node_modules/rimraf/node_modules/glob/node_modules/once"
+        ],
+        "dependencies": {
+          "wrappy": "1"
         }
       },
       {
@@ -4916,6 +4994,14 @@
         ],
         "dependencies": {
           "is-buffer": "^1.0.2"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/eslint/node_modules/handlebars/node_modules/uglify-js/node_modules/yargs/node_modules/decamelize"
+        ],
+        "dependencies": {
+          "escape-string-regexp": "^1.0.4"
         }
       },
       {

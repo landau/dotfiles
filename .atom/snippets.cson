@@ -62,3 +62,10 @@
         return $3;
       });
       """
+'prom':
+  'prefix': 'fn'
+  'body': """
+    new Promise(function(resolve, reject) {
+      $1
+    });
+  """

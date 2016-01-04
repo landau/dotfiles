@@ -3,7 +3,7 @@
 const ChildProcess = require('child_process')
 const Path = require('path')
 const FS = require('fs')
-const find = require('atom-linter').findFile
+const find = require('atom-linter').find
 
 let prefixPath = null
 const atomEslintPath = Path.join(FS.realpathSync(Path.join(__dirname, '..')), 'node_modules', 'eslint')
@@ -73,8 +73,8 @@ function getEslintCli(path) {
 
 
 module.exports = {
-  findEslintDir: findEslintDir,
-  find: find,
-  determineConfigFile: determineConfigFile,
-  getEslintCli: getEslintCli
+  findEslintDir,
+  find,
+  determineConfigFile,
+  getEslintCli
 }

@@ -30,7 +30,7 @@
     fontFamily: "Droid Sans Mono Dotted"
     lineHeight: 1.4
     preferredLineLength: 120
-    fontSize: 10
+    fontSize: 11
   linter:
     statusBar: "Show error if the cursor is in range"
     lintOnChangeInterval: 2000

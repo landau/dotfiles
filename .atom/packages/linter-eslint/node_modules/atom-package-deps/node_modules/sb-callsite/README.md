@@ -14,6 +14,8 @@ type Trace = shape(
   file: String
 )
 export function capture(): Array<Trace>
+export function fromStack(string): Array<Trace>
+// ^ Example Usage: callsite.fromStack(new Error().stack)
 ```
 
 #### License

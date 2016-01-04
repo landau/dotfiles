@@ -1,8 +1,8 @@
 'use babel'
 
 import Path from 'path'
-import {CompositeDisposable} from 'atom'
-import {spawnWorker} from './helpers'
+import { CompositeDisposable } from 'atom'
+import { spawnWorker } from './helpers'
 import escapeHTML from 'escape-html'
 
 export default {
@@ -53,7 +53,7 @@ export default {
       default: false
     }
   },
-  activate: function() {
+  activate() {
     require('atom-package-deps').install()
 
     this.subscriptions = new CompositeDisposable()
@@ -83,33 +83,23 @@ export default {
           return
         }
 
-        if (this.worker === null) {
-          // Abort if worker is not yet ready
-          atom.notifications.addError('Linter-ESLint: Not ready, please try again')
-          return
-        }
-
         this.worker.request('FIX', {
-          fileDir: fileDir,
-          filePath: filePath,
+          fileDir,
+          filePath,
           global: atom.config.get('linter-eslint.useGlobalEslint'),
           nodePath: atom.config.get('linter-eslint.globalNodePath'),
           configFile: atom.config.get('linter-eslint.eslintrcPath')
-        }).then(function(response) {
+        }).then(function (response) {
           atom.notifications.addSuccess(response)
-        }).catch(function(response) {
+        }).catch(function (response) {
           atom.notifications.addWarning(response)
         })
       }
     }))
 
-    // Reason: I (steelbrain) have observed that if we spawn a
-    // process while atom is starting up, it can increase startup
-    // time by several seconds, But if we do this after 5 seconds,
-    // we barely feel a thing.
     const initializeWorker = () => {
       if (this.active) {
-        const {child, worker, subscription} = spawnWorker()
+        const { child, worker, subscription } = spawnWorker()
         this.worker = worker
         this.subscriptions.add(subscription)
         child.on('exit-linter', shouldLive => {
@@ -121,13 +111,13 @@ export default {
         })
       }
     }
-    setTimeout(initializeWorker, 5 * 1000)
+    initializeWorker()
   },
-  deactivate: function() {
+  deactivate() {
     this.active = false
     this.subscriptions.dispose()
   },
-  provideLinter: function() {
+  provideLinter() {
     const Helpers = require('atom-linter')
     return {
       name: 'ESLint',
@@ -143,18 +133,9 @@ export default {
         const fileDir = Path.dirname(filePath)
         const showRule = atom.config.get('linter-eslint.showRuleIdInMessage')
 
-        if (this.worker === null) {
-          return Promise.resolve([{
-            filePath: filePath,
-            type: 'Info',
-            text: 'Worker initialization is delayed. Please try saving or typing to begin linting.',
-            range: Helpers.rangeFromLineNumber(textEditor, 0)
-          }])
-        }
-
         return this.worker.request('JOB', {
-          fileDir: fileDir,
-          filePath: filePath,
+          fileDir,
+          filePath,
           contents: text,
           global: atom.config.get('linter-eslint.useGlobalEslint'),
           canDisable: atom.config.get('linter-eslint.disableWhenNoEslintConfig'),
@@ -162,11 +143,11 @@ export default {
           rulesDir: atom.config.get('linter-eslint.eslintRulesDir'),
           configFile: atom.config.get('linter-eslint.eslintrcPath'),
           disableIgnores: atom.config.get('linter-eslint.disableEslintIgnore')
-        }).then(function(response) {
+        }).then(function (response) {
           if (response.length === 1 && response[0].message === 'File ignored because of your .eslintignore file. Use --no-ignore to override.') {
             return []
           }
-          return response.map(function({message, line, severity, ruleId, column}) {
+          return response.map(function ({ message, line, severity, ruleId, column }) {
             const range = Helpers.rangeFromLineNumber(textEditor, line - 1)
             if (column) {
               range[0][1] = column - 1
@@ -175,9 +156,9 @@ export default {
               range[1][1] = column - 1
             }
             const ret = {
-              filePath: filePath,
+              filePath,
               type: severity === 1 ? 'Warning' : 'Error',
-              range: range
+              range
             }
             if (showRule) {
               ret.html = `<span class="badge badge-flexible">${ruleId || 'Fatal'}</span> ${escapeHTML(message)}`
