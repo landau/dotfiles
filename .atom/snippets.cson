@@ -62,10 +62,19 @@
         return $3;
       });
       """
-'prom':
-  'prefix': 'fn'
-  'body': """
-    new Promise(function(resolve, reject) {
+  'prom':
+    'prefix': 'prom'
+    'body': """
+      new Promise(function(resolve, reject) {
+        $1
+      });
+      """
+  'test stuff':
+    'prefix': 'chai'
+    'body': """
+      var chai = require('chai');
+      var should = chai.should();
+      chai.use(require('sinon-chai'));
+      var sinon = require('sinon');
       $1
-    });
-  """
+      """

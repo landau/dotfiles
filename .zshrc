@@ -132,13 +132,13 @@ function pkgupdate {
   
   shift
   for i in "$@"; do
-    module=`echo $i | cut -d \@ -f 1`
-    ver=`echo $i | cut -d \@ -f 2`
+    module=`echo $i | cut -d \~ -f 1`
+    ver=`echo $i | cut -d \~ -f 2`
     setdep $module $ver
   done
   
   git add package.json 
-  git ci -m "use $(echo $@)"
+  git ci -m "use $(echo $@ | tr \~ \@)"
 
   # TODO exit if
   if [ $? -ne 0 ]; then
