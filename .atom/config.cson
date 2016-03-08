@@ -1,18 +1,13 @@
 "*":
-  "exception-reporting":
-    userId: "28573152-a855-a017-4231-03193cf4e9b2"
-  welcome:
-    showOnStartup: false
+  "atom-beautify":
+    _analyticsUserId: "a951b4af-5fa4-4bfc-8709-10b698005ae0"
+    js_brace_style: "expand"
+    js_keep_array_indentation: true
+    js_max_preserve_newlines: 2
+  "autocomplete-plus":
+    includeCompletionsFromAllBuffers: true
+    strictMatching: true
   core:
-    themes: [
-      "atom-dark-ui"
-      "atom-material-syntax"
-    ]
-    ignoredNames: [
-      ".git"
-      ".DS_Store"
-      "node_modules"
-    ]
     disabledPackages: [
       "welcome"
       "language-csharp"
@@ -25,32 +20,39 @@
       "language-sass"
       "language-toml"
     ]
+    ignoredNames: [
+      ".git"
+      ".DS_Store"
+      "node_modules"
+    ]
+    themes: [
+      "dark-flat-ui"
+      "an-old-hope-syntax"
+    ]
   editor:
-    invisibles: {}
     fontFamily: "Droid Sans Mono Dotted"
+    fontSize: 10
+    invisibles: {}
     lineHeight: 1.4
     preferredLineLength: 120
-    fontSize: 11
+  "exception-reporting":
+    userId: "28573152-a855-a017-4231-03193cf4e9b2"
   linter:
-    statusBar: "Show error if the cursor is in range"
     lintOnChangeInterval: 2000
+    showErrorPanel: false
+    showErrorTabFile: false
     showErrorTabLine: true
     showErrorTabProject: false
-    showErrorTabFile: false
-    showErrorPanel: false
-  react: {}
+    statusBar: "Show error if the cursor is in range"
   "linter-jshint": {}
   "linter-jsxhint": {}
-  "atom-beautify":
-    _analyticsUserId: "a951b4af-5fa4-4bfc-8709-10b698005ae0"
-    js_brace_style: "expand"
-    js_keep_array_indentation: true
-    js_max_preserve_newlines: 2
-  tabs: {}
-  whitespace: {}
-  "autocomplete-plus":
-    includeCompletionsFromAllBuffers: true
-    strictMatching: true
   minimap:
     absoluteMode: true
   "one-light-ui": {}
+  react: {}
+  tabs: {}
+  "tree-view":
+    hideVcsIgnoredFiles: true
+  welcome:
+    showOnStartup: false
+  whitespace: {}

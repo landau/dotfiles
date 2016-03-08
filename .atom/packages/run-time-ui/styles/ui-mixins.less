@@ -1,0 +1,313 @@
+@import "ui-variables";
+@import "run-time-variables";
+
+////////////////////////////////////////////////////////////////////////////////
+// GENERATE CSS FOR FILE TYPE ICONS
+////////////////////////////////////////////////////////////////////////////////
+
+
+// @type is a string label used to group together common file icon types
+// the 'hidden' type is used to apply a darker file name color and icon opacity
+.set-hidden-color (@type) when (@type = 'hidden') {
+  color: @color-status-ignored;
+}
+
+.set-hidden-opacity (@type) when (@type = 'hidden') {
+  opacity: 0.3;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// .icon-file-*( @match: ''; @type: ''; @icon: ''; )
+////////////////////////////////////////////////////////////////////////////////
+// this function is used to setup the various css pattern matching rules
+// @match is the case sensitive text to look for in the file name
+// @type is a string describing the icon to use (the 'hidden' type is special)
+// @icon is a string representing the 16x16 icon in base64 format
+// * is a string describing where to look for the @match in the file name
+//   'ends-with' looks for @match at the end of the filename (default)
+//   'begins-with' looks for @match at the beginning of the filename
+//   'equals' looks for @match to exactly equal the filename
+//   'contains' looks for @match anywhere in the filename
+////////////////////////////////////////////////////////////////////////////////
+
+
+.icon-file-ends-with( @match: ''; @type: ''; @icon: ''; ) {
+  tabs-bar tabs-tab .title[data-name$="@{match}"],
+  .tab-bar .tab .title[data-name$="@{match}"] {
+    padding: 0;
+    &:before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      float: left;
+      margin: 11px 6px 0 0;
+      background: url('@{icon}') 0 0 no-repeat;
+      opacity: 0.7;
+    }
+  }
+  .name.icon[data-name$="@{match}"] {
+    &.icon-file-text,
+    &.icon-file-media,
+    &.icon-book {
+      .set-hidden-color(@type);
+      &:before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin: 4px 6px 0 0;
+        background: url('@{icon}') 0 0 no-repeat;
+        opacity: 0.7;
+        .set-hidden-opacity(@type);
+      }
+    }
+  }
+}
+
+.icon-file-begins-with( @match: ''; @type: ''; @icon: ''; ) {
+  tabs-bar tabs-tab .title[data-name^="@{match}"],
+  .tab-bar .tab .title[data-name^="@{match}"] {
+    padding: 0;
+    &:before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      float: left;
+      margin: 11px 6px 0 0;
+      background: url('@{icon}') 0 0 no-repeat;
+      opacity: 0.7;
+    }
+  }
+  .name.icon[data-name^="@{match}"] {
+    &.icon-file-text,
+    &.icon-file-media,
+    &.icon-book {
+      .set-hidden-color(@type);
+      &:before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin: 4px 6px 0 0;
+        background: url('@{icon}') 0 0 no-repeat;
+        opacity: 0.7;
+        .set-hidden-opacity(@type);
+      }
+    }
+  }
+}
+
+.icon-file-equals( @match: ''; @type: ''; @icon: ''; ) {
+  tabs-bar tabs-tab .title[data-name="@{match}"],
+  .tab-bar .tab .title[data-name="@{match}"] {
+    padding: 0;
+    &:before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      float: left;
+      margin: 11px 6px 0 0;
+      background: url('@{icon}') 0 0 no-repeat;
+      opacity: 0.7;
+    }
+  }
+  .name.icon[data-name="@{match}"] {
+    &.icon-file-text,
+    &.icon-file-media,
+    &.icon-book {
+      .set-hidden-color(@type);
+      &:before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin: 4px 6px 0 0;
+        background: url('@{icon}') 0 0 no-repeat;
+        opacity: 0.7;
+        .set-hidden-opacity(@type);
+      }
+    }
+  }
+}
+
+.icon-file-contains( @match: ''; @type: ''; @icon: ''; ) {
+  tabs-bar tabs-tab .title[data-name*="@{match}"],
+  .tab-bar .tab .title[data-name*="@{match}"] {
+    padding: 0;
+    &:before {
+      content: "";
+      width: 16px;
+      height: 16px;
+      float: left;
+      margin: 11px 6px 0 0;
+      background: url('@{icon}') 0 0 no-repeat;
+      opacity: 0.7;
+    }
+  }
+  .name.icon[data-name*="@{match}"] {
+    &.icon-file-text,
+    &.icon-file-media,
+    &.icon-book {
+      .set-hidden-color(@type);
+      &:before {
+        content: "";
+        width: 16px;
+        height: 16px;
+        float: left;
+        margin: 4px 6px 0 0;
+        background: url('@{icon}') 0 0 no-repeat;
+        opacity: 0.7;
+        .set-hidden-opacity(@type);
+      }
+    }
+  }
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// GENERATE CSS FOR TEXT STATUS COLOR
+////////////////////////////////////////////////////////////////////////////////
+.status-gen( @status-state: 'ignored'; ) {
+  @status-color-name: ~'@color-status-@{status-state}';
+  @status-color-folder-class: ~'.directory.entry.list-nested-item.status-@{status-state}, .directory.entry.list-nested-item.status-@{status-state} > .header.list-item';
+  @status-color-file-class: ~'.file.entry.list-item.status-@{status-state}';
+
+  // FOLDERS
+  @status-color-folder-class {
+    &:before {
+      color: @status-color-name !important;
+    }
+    .name.icon.icon-file-directory {
+      color: @status-color-name !important;
+
+      &:before {
+        color: @status-color-name !important;
+      }
+    }
+  }
+
+  // FILES
+  @status-color-file-class {
+    .name.icon {
+      color: @status-color-name !important;
+    }
+  }
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PATTERN MATCHING: http://lesscss.org/#-pattern-matching-and-guard-expressions
+////////////////////////////////////////////////////////////////////////////////
+.text(normal) {
+  font-weight: normal;
+  color: @text-color;
+  text-shadow: none;
+}
+
+.text(subtle) {
+  font-weight: normal;
+  color: @text-color-subtle;
+  text-shadow: none;
+}
+
+.text(highlight) {
+  font-weight: normal;
+  color: inherit;
+  text-shadow: 0 1px 0 rgba(0,0,0, .5);
+}
+
+.text(selected) {
+  .text(highlight)
+}
+
+.text(info) {
+  color: @text-color-info !important;
+  text-shadow: none;
+}
+
+.text(success) {
+  color: @text-color-success !important;
+  text-shadow: none;
+}
+
+.text(warning) {
+  color: @text-color-warning !important;
+  text-shadow: none;
+}
+
+.text(error) {
+  color: @text-color-error !important;
+  text-shadow: none;
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// TODO: refactor the junk below...
+////////////////////////////////////////////////////////////////////////////////
+atom-text-editor, atom-text-editor::shadow {
+  .gutter .line-number {
+    padding-left: 10px;
+  }
+
+  .gutter .line-number.git-line-ignored {
+    border-color: @color-status-ignored;
+    opacity: 1;
+    padding-left: 8px;
+  }
+
+  .gutter .line-number.git-line-added {
+    border-color: @color-status-added;
+    opacity: 1;
+    padding-left: 8px;
+  }
+
+  .gutter .line-number.git-line-renamed {
+    border-color: @color-status-renamed;
+    opacity: 1;
+    padding-left: 8px;
+  }
+
+  .gutter .line-number.git-line-modified {
+    border-color: @color-status-modified;
+    opacity: 1;
+    padding-left: 8px;
+  }
+
+  .gutter .line-number.git-line-removed {
+    border-color: @color-status-removed;
+    opacity: 1;
+    padding-left: 8px;
+  }
+
+  // FIXME: these should go in syntax themes?
+  .gutter.drop-shadow {
+    -webkit-box-shadow: -2px 0 10px 2px #222;
+  }
+
+  .highlighted.selection .region {
+    -webkit-animation-name: highlight;
+    -webkit-animation-duration: 1s;
+    -webkit-animation-iteration-count: 1;
+  }
+}
+
+.select-list.command-palette.atom-panel.modal.from-top {
+  .error-message {
+    padding: 3px 0px 0px 6px;
+  }
+
+  atom-text-editor[mini].is-focused, atom-text-editor[mini].is-focused::shadow {
+    padding: 1px;
+  }
+}
+
+@-webkit-keyframes highlight {
+  from { background-color: rgba(100, 255, 100, 0.7); }
+  to { background-color: transparent; }
+}

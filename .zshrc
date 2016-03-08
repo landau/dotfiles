@@ -3,7 +3,7 @@ ZSH=$HOME/.oh-my-zsh
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 export PATH=$PATH:/usr/local/bin
-export PATH=/Users/tlandau/dev/mongo/bin:$PATH
+export PATH=/Users/tlandau/dev/mongo3.2.1/bin:$PATH
 export EDITOR=vim
 export LEIN_FAST_TRAMPOLINE=y
 TERM=xterm-256color
@@ -155,9 +155,23 @@ function sc {
 }
 
 function slp {
- osascript -e 'tell application "Finder" to sleep'
+  osascript -e 'tell application "Finder" to sleep'
 }
 
+function breath {
+  DELAY=600
+  BREAK=15
+  while true; do
+    sleep $DELAY; # sleep 10 minutes
+    osascript -e 'display notification "Where are you right now?" with title "Breath and Relax for 15 seconds"'
+    sleep $BREAK; # Come back in N seconds
+    osascript -e 'display notification "Back to life" with title "Next check-in in 10 minutes"'
+  done
+}
+
+function killbreath {
+  kill %$(jobs | grep breath | cut -c 2-2)
+}
 
 # <--------- Cool Functions by Crouse-------->
 # Cool Functions for your .bashrc file.
@@ -212,5 +226,34 @@ define () {
     echo "Sorry $USER, I can't find the term \"${1} \""				
   fi	
   rm -f /tmp/templookup.txt
+}
+
+
+# --- Camera lazeeeeehhhh
+
+
+function opencam {
+  cd /Volumes/NO\ NAME/DCIM/100OLYMP
+  open *.JPG
+}
+
+function copycam {
+  DIR=~/Photography/$(date "+%b\ %e,\ %Y") 
+  echo mkdir -p $DIR
+  mkdir -p $DIR
+
+  cd /Volumes/NO\ NAME/DCIM/100OLYMP
+
+  for p in $(find . -name "*.JPG" | cut -c 3- | cut -c -8); do 
+   #echo cp $p.ORF $DIR; 
+   cp $p.ORF $DIR; 
+  done
+
+  cd $DIR
+  open .
+}
+
+function purgecam {
+  rm -v /Volumes/NO\ NAME/DCIM/100OLYMP/*
 }
 

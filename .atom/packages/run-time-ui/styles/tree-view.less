@@ -1,0 +1,83 @@
+@import "ui-variables";
+
+.tree-view-scroller {
+  background: @tree-view-background-color !important;
+}
+
+.tree-view {
+  font-size: @font-size;
+  background: @tree-view-background-color !important;
+
+  .selected:before {
+    color: #fff;
+    background: #147;
+    box-shadow: none;
+  }
+}
+
+.focusable-panel {
+  opacity: 1;
+  background: #222;
+  box-shadow: none;
+  border: 0;
+
+  &:focus {
+    background: #222;
+
+    .selected:before {
+      color: #fff;
+      background: #147;
+    }
+
+
+  }
+}
+
+.file-list-view, .list-view {
+  background: #111;
+  color: #fff;
+  padding: 10px;
+
+  .file.selected {
+    .filename {
+      background: #222;
+    }
+  }
+
+  .selected {
+    text-shadow: none;
+    background: #222;
+  }
+
+  .selected:before {
+    background: #144;
+  }
+
+}
+
+.list-inline tabs-bar.inset-panel, .list-inline.tab-bar.inset-panel {
+  background: #222;
+  margin-bottom: 0px;
+}
+
+
+
+
+// highlight active icons
+.list-group li:not(.list-nested-item).selected > span,
+.list-tree li:not(.list-nested-item).selected > span,
+.list-group li.list-nested-item.selected > .list-item > span,
+.list-tree li.list-nested-item.selected > .list-item > span {
+  color: inherit;
+
+  &:before {
+    opacity: 1.0 !important;
+  }
+}
+
+.list-group li:not(.list-nested-item).selected,
+.list-tree li:not(.list-nested-item).selected,
+.list-group li.list-nested-item.selected > .list-item,
+.list-tree li.list-nested-item.selected > .list-item {
+  color: #fff;
+}

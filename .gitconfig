@@ -27,7 +27,8 @@
     undopush = push -f origin HEAD^:master
     # Push to origin
     pm = push origin master
-    pom= push origin master
+    # Push somewhere
+    po = push origin
     # rebase
     prom = pull --rebase origin master
     # rebase from elswhere

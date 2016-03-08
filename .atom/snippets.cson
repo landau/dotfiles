@@ -55,13 +55,6 @@
 
       $1
     """
-  'iter':
-    'prefix': 'iter'
-    'body': """
-      .$1(function($2) {
-        return $3;
-      });
-      """
   'prom':
     'prefix': 'prom'
     'body': """

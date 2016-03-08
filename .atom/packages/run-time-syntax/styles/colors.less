@@ -1,0 +1,73 @@
+// COLORS
+@blue: #6ce;
+@green: #8c8;
+@yellow: #ec6;
+@red: #d46;
+@purple: #a8c;
+@cyan: #488;
+
+// GUTTER
+@gutter-text: #266;
+@gutter-text-highlight: @entity;
+@gutter-background: #111;
+@gutter-background-highlight: #111;
+
+// CODE VIEW
+@code-background: #111; // editor background
+@code-font: Source Code Pro;
+@code-font-color: #dadada; // default editor text
+
+// SYNTAX COLORS
+@comment: @cyan; // comments
+@comment-bg: none; // comments
+@comment-punc: @comment;
+@string: @blue; // 'value' of var='value', "name.png" or src="name.png"
+@constant: @red; // true of var x = true, {{}} of {{> hbs_include}}
+@variable: @green; // foo or function(foo), hbs_include of {{> hbs_include}}, http://dom.com/ of url(http://dom.com/)
+@support: @purple; // module of module.exports, color of color: rgb(0,0,0)
+@entity: @blue; // exports of module.exports, <div id= of <div id="#id">, . of .className
+@keyword: @green; // = of var a = b, if of if a = b, px of font-size: 13px;
+@storage: @yellow; // var of var a = b;
+@meta: @code-font-color; // none of border: none;
+@function-param: @blue;
+
+@error: @red;
+
+@regex: @purple;
+
+@numeric: @red;
+@quotes: @code-font-color;
+
+@markup: @code-font-color;
+@unknown: @code-font-color;
+
+// MISC COLORS
+@invisible: rgba(255,255,255,0.1);
+@guides: rgba(245,250,255,0.04);
+@cursor-color: @code-font-color;
+@cursor-width: 2px;
+@selected: #046; // selected background color
+@selected-border: rgba(85,181,219,0.9);
+@selected-line: transparent;
+
+// HTML
+@tag: @blue;
+@tag-entity: @blue;
+@element-attr: @green;
+@class: @green;
+@id: @green;
+@block: @blue;
+@inline: lighten(@blue, 25%);
+
+@entity-function: @blue;
+@brackets: #ba8;
+@punctuation: #ba8;
+
+@search-bg: transparent;
+@search-border: solid 1px @blue;
+
+@search-active-bg: @blue;
+@search-active-border: solid 1px @blue;
+
+@search-item-border: @blue;
+@search-item-bg: @red;
