@@ -94,9 +94,9 @@ var moveMidBrowser = moveMidOp.dup({
   width: '(screenSizeX/1.35)'
 });
 
-var moveMidMacVim = moveMidOp.dup({
-  width: 'screenSizeX*0.80',
-  x: 'screenSizeX*0.20'
+var moveMidCodeOp = moveMidOp.dup({
+  width: '(screenSizeX/1.5)',
+  x: '(screenSizeX*0.15)'
 });
 
 var moveTwitterNextToBrowser = S.op('corner', {
@@ -238,21 +238,21 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   MacVim: {
-    operations: [moveMidOp],
+    operations: [moveMidCodeOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   Emacs: {
-    operations: [moveMidOp],
+    operations: [moveMidCodeOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   'Atom': {
-    operations: [moveMidOp],
+    operations: [moveMidCodeOp],
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Brackets': {
+  'IntelliJ IDEA': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -278,6 +278,11 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   HipChat: {
+    operations: [moveLapHipChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  Slack: {
     operations: [moveLapHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -351,7 +356,7 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Brackets': {
+  'IntelliJ IDEA': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -397,7 +402,12 @@ var oneMonLayout = S.layout('oneMon', {
     operations: [moveLapHipChatOp],
     'ignore-fail': true,
     'repeat-last': true
-  }
+  },
+  Slack: {
+    operations: [moveLapHipChatOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
 });
 
 var twoMonOp = S.op('layout', { name: twoMonLayout });

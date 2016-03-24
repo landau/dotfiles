@@ -66,6 +66,10 @@ describe 'ColorParser', ->
       '@list-item-height': '@component-line-height'
     }).asUndefined()
 
+  itParses('$text-color !default').withContext({
+    '$text-color': asColor 'cyan'
+  }).asColor(0,255,255)
+
   itParses('c').withContext({'c': 'c'}).asUndefined()
   itParses('c').withContext({
     'c': 'd'
@@ -234,6 +238,7 @@ describe 'ColorParser', ->
   itParses('YellowGreen').asColor('#9acd32')
   itParses('yellow_green').asColor('#9acd32')
   itParses('YELLOW_GREEN').asColor('#9acd32')
+  itParses('>YELLOW_GREEN').asColor('#9acd32')
 
   itParses('darken(cyan, 20%)').asColor(0, 153, 153)
   itParses('darken(cyan, 20)').asColor(0, 153, 153)

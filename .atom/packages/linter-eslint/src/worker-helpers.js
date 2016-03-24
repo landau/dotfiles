@@ -4,7 +4,7 @@ import Path from 'path'
 import ChildProcess from 'child_process'
 import resolveEnv from 'resolve-env'
 import { findCached } from 'atom-linter'
-import { getPath } from 'consistent-path'
+import getPath from 'consistent-path'
 
 const Cache = {
   ESLINT_LOCAL_PATH: Path.normalize(Path.join(__dirname, '..', 'node_modules', 'eslint')),
@@ -118,6 +118,11 @@ export function getArgv(type, config, filePath, fileDir, givenConfigPath) {
     argv.push('--stdin')
   }
   argv.push('--format', Path.join(__dirname, 'reporter.js'))
+
+  const ignoreFile = config.disableEslintIgnore ? null : findCached(fileDir, '.eslintignore')
+  if (ignoreFile) {
+    argv.push('--ignore-path', ignoreFile)
+  }
 
   if (config.eslintRulesDir) {
     let rulesDir = resolveEnv(config.eslintRulesDir)

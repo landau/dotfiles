@@ -1,8 +1,10 @@
 @import "ui-mixins";
 @import "ui-variables";
 
-.btn, button, button[class] {
+button {
     display: inline-block;
+}
+.btn, button {
     padding: 0;
     height: 2.25rem;
     line-height: 2.25rem;
@@ -84,8 +86,8 @@
         }
     }
     &.btn-sm {
-        font-size: 0.75rem;
-        line-height: 1rem;
+        font-size: 0.85rem;
+        line-height: 1.75rem;
         padding: 0 0.75rem;
 
         &.icon::before {
@@ -93,9 +95,9 @@
         }
     }
     &.btn-xs {
-        font-size: 0.5rem;
-        line-height: 1rem;
-        padding: 0 0.5rem;
+        font-size: 0.75rem;
+        line-height: 1.125rem;
+        padding: 0 0.75rem;
 
         &.icon::before {
             font-size: 0.5rem;
@@ -133,5 +135,8 @@
             line-height: 1rem;
             padding: 0 0.5rem;
         }
+    }
+    &.btn-block {
+        display: block;
     }
 }

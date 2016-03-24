@@ -1,0 +1,40 @@
+{
+  "name": "github-2016-syntax",
+  "theme": "syntax",
+  "version": "1.2.0",
+  "description": "GitHub flavored syntax theme for Atom",
+  "keywords": [
+    "syntax",
+    "theme",
+    "github",
+    "light"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mmcbride1007/github-2016-syntax.git"
+  },
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "readme": "# github-2016-syntax theme\n\nGitHub syntax highlighting theme for Atom.\n\nThis is as close as I could get to matching the syntax highlighting from GitHub.com as of early January 2016. Due to the syntax highlighting library they use on the site, there are some minor inconsistencies but those felt more like edge cases (and Atom actually handles it better than Pygments does in those cases). I compared syntax highlighting on 5 or 6 major languages and by the last one I hardly saw any differences, so I feel pretty good about this. If you find some differences you'd like fixed, go ahead and try to get it working locally and cut a PR here.\n\nSee screenshots of some common languages below.\n\n### HTML:\n![screenshot](https://raw.github.com/mmcbride1007/github-2016-syntax/master/media/github-syntax-html-screenshot.png)\n\n### JavaScript:\n![screenshot](https://raw.github.com/mmcbride1007/github-2016-syntax/master/media/github-syntax-js-screenshot.png)\n\n### CSS:\n![screenshot](https://raw.github.com/mmcbride1007/github-2016-syntax/master/media/github-syntax-css-screenshot.png)\n",
+  "readmeFilename": "README.md",
+  "bugs": {
+    "url": "https://github.com/mmcbride1007/github-2016-syntax/issues"
+  },
+  "homepage": "https://github.com/mmcbride1007/github-2016-syntax#readme",
+  "_id": "github-2016-syntax@1.2.0",
+  "_shasum": "a78c2ba39e28b9634fb6bc3ffa626d8f85a884b5",
+  "_resolved": "file:../d-116211-42947-uz4bzs/package.tgz",
+  "_from": "../d-116211-42947-uz4bzs/package.tgz",
+  "_atomModuleCache": {
+    "version": 1,
+    "dependencies": [],
+    "extensions": {
+      ".json": [
+        "package.json"
+      ]
+    },
+    "folders": []
+  }
+}

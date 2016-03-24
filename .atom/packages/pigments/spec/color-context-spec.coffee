@@ -7,8 +7,12 @@ describe 'ColorContext', ->
   [context, parser] = []
 
   itParses = (expression) ->
-    asUndefinedColor: ->
+    asUndefined: ->
       it "parses '#{expression}' as undefined", ->
+        expect(context.getValue(expression)).toBeUndefined()
+
+    asUndefinedColor: ->
+      it "parses '#{expression}' as undefined color", ->
         expect(context.readColor(expression)).toBeUndefined()
 
     asInt: (expected) ->
@@ -97,6 +101,47 @@ describe 'ColorContext', ->
         context = new ColorContext({variables, registry})
 
       itParses('@list-item-height').asUndefinedColor()
+
+    describe 'that contains circular references', ->
+      beforeEach ->
+        variables =[
+          createVar '@foo', '@bar'
+          createVar '@bar', '@baz'
+          createVar '@baz', '@foo'
+          createVar '@taz', '@taz'
+        ]
+
+        context = new ColorContext({variables, registry})
+
+      itParses('@foo').asUndefined()
+      itParses('@taz').asUndefined()
+
+    describe 'that contains circular references', ->
+      beforeEach ->
+        variables =[
+          createColorVar '@foo', '@bar'
+          createColorVar '@bar', '@baz'
+          createColorVar '@baz', '@foo'
+          createColorVar '@taz', '@taz'
+        ]
+
+        context = new ColorContext({variables, registry})
+
+      itParses('@foo').asUndefinedColor()
+      itParses('@foo').asUndefined()
+      itParses('@taz').asUndefined()
+
+    describe 'that contains circular references nested in operations', ->
+      beforeEach ->
+        variables =[
+          createColorVar '@foo', 'complement(@bar)'
+          createColorVar '@bar', 'transparentize(@baz, 0.5)'
+          createColorVar '@baz', 'darken(@foo, 10%)'
+        ]
+
+        context = new ColorContext({variables, registry})
+
+      itParses('@foo').asUndefinedColor()
 
   describe 'with variables from a default file', ->
     [projectPath, referenceVariable] = []

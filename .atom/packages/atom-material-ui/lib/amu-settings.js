@@ -13,7 +13,7 @@ var init = function() {
     amu.toggleClass(atom.config.get('atom-material-ui.treeView.blendTabs'), 'blend-tree-view');
     amu.toggleBlendTreeView(atom.config.get('atom-material-ui.treeView.blendTabs'));
 
-    document.querySelector(':root').style.fontSize = atom.config.get('atom-material-ui.fonts.fontSize') + 'px';
+    document.querySelector(':root').style.fontSize = `${atom.config.get('atom-material-ui.fonts.fontSize')}px`;
 
     // FIXME: Object.observe is deprecated
     if (Object.observe && typeof Object.observe === 'function') {
@@ -48,7 +48,8 @@ module.exports = {
         // Font Size Settings
 
         atom.config.onDidChange('atom-material-ui.fonts.fontSize', (value) => {
-            document.querySelector(':root').style.fontSize = value.newValue + 'px';
+            var fontSize = Math.round(value.newValue);
+            document.querySelector(':root').style.fontSize = `${fontSize}px`;
         });
 
         // Tab blending

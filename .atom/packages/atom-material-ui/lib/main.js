@@ -7,17 +7,20 @@ import amuSettings from './amu-settings';
 import amuColorSettings from './amu-color-settings';
 import amuBindings from './amu-bindings';
 import tinycolor from 'tinycolor2';
+import { apply as updateSchema } from './update-config-schema';
 
 var treeViews;
 
-var setTreeViews = function() {
+var getTreeViews = function() {
     setImmediate(() => {
         treeViews = [
             document.querySelector('.tree-view-resizer'),
             document.querySelector('.remote-ftp-view'),
             function () {
-                if (document.querySelector('.nuclide-file-tree')) {
-                    return document.querySelector('.nuclide-file-tree').parentElement.parentElement;
+                var nuclideTreeView = document.querySelector('.nuclide-file-tree');
+
+                if (nuclideTreeView) {
+                    return nuclideTreeView.closest('.nuclide-ui-panel-component');
                 }
             }()
         ];
@@ -25,7 +28,7 @@ var setTreeViews = function() {
 };
 
 var removeBlendingEl = function() {
-    setTreeViews();
+    getTreeViews();
     treeViews.forEach((treeView) => {
         if (treeView) {
             var blendingEl = treeView.querySelector('.tabBlender');
@@ -60,8 +63,6 @@ export default {
         var accentTextColor = '#666';
         var luminance = tinycolor(baseColor).getLuminance();
 
-        console.log(luminance);
-
         if (luminance <= 0.3 && luminance > 0.22) {
             accentTextColor = 'rgba(255,255,255,0.9)';
         } else if (luminance <= 0.22) {
@@ -94,7 +95,7 @@ export default {
     },
 
     toggleBlendTreeView(bool) {
-        setTreeViews();
+        getTreeViews();
         setImmediate(() => {
             treeViews.forEach((treeView) => {
                 if (treeView) {
@@ -125,6 +126,7 @@ export default {
     },
 
     activate() {
+        updateSchema();
         amuSettings.apply();
         amuColorSettings.apply();
         setImmediate(() => amuBindings.apply());
