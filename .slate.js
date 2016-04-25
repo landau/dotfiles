@@ -95,8 +95,8 @@ var moveMidBrowser = moveMidOp.dup({
 });
 
 var moveMidCodeOp = moveMidOp.dup({
-  width: '(screenSizeX/1.5)',
-  x: '(screenSizeX*0.15)'
+  width: '(screenSizeX/1.25)',
+  x: '(screenSizeX*0.10)'
 });
 
 var moveTwitterNextToBrowser = S.op('corner', {
@@ -252,6 +252,11 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  'Eclipse': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   'IntelliJ IDEA': {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -352,6 +357,11 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   'Atom': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Eclipse': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true

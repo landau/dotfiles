@@ -31,7 +31,7 @@
     ]
   editor:
     fontFamily: "Droid Sans Mono Dotted"
-    fontSize: 10
+    fontSize: 11
     invisibles: {}
     lineHeight: 1.4
     preferredLineLength: 120

@@ -45,17 +45,7 @@
 atom-text-editor.is-focused .selection .region,
 :host(.is-focused) .selection .region {
     background-color: @syntax-selection-color;
-
-    &:after {
-        content: '';
-        position: absolute;
-        top: -2px;
-        left: -2px;
-        right: -2px;
-        bottom: -2px;
-        border: 2px solid @syntax-selection-color;
-        border-radius: 3px;
-    }
+    border-radius: 0.125rem;
 }
 .variable {
     &.instance, &.instance > * {
@@ -75,14 +65,25 @@ atom-text-editor.is-focused .selection .region,
     .string.quoted {
         color: #C3E88D;
     }
-    &.array.json .string.quoted, &.array.json .string.quoted > * {
+    &.array.json .string.quoted {
         color: #80CBC4;
+
+        > * {
+            color: currentColor;
+        }
     }
     .punctuation.separator.key-value + .string.quoted {
         color: #80CBC4;
 
         * {
-            color: #80CBC4;
+            color: currentColor;
+        }
+    }
+    &.structure.dictionary .string.quoted {
+        color: #C3E88D;
+
+        .punctuation.string {
+            color: currentColor;
         }
     }
 }
@@ -94,5 +95,10 @@ atom-text-editor.is-focused .selection .region,
         &.logical, &.comparison, &.assignment {
             color: #c792ea;
         }
+    }
+}
+.punctuation.section.embedded, .variable.interpolation {
+    .source.php {
+        color: currentColor;
     }
 }

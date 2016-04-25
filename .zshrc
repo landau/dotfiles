@@ -257,3 +257,15 @@ function purgecam {
   rm -v /Volumes/NO\ NAME/DCIM/100OLYMP/*
 }
 
+function setkeyrepeat {
+  # normal is 15 (225 ms)
+  defaults write -g InitialKeyRepeat -int 10 
+  #normal is 2 (30 ms)
+  defaults write -g KeyRepeat -int 1 
+}
+
+# -- Java
+export JAVA_HOME=$(/usr/libexec/java_home)
+TOMCAT_DIR=/Library/Tomcat/bin
+alias tomstart=$TOMCAT_DIR/startup.sh
+alias tomstop=$TOMCAT_DIR/shutdown.sh
