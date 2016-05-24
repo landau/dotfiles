@@ -54,10 +54,13 @@ set t_co=256
 set background="dark"
 let g:solarized_termcolors=256
 
-" powerline shiz
-python from powerline.vim import setup as powerline_setup
-python powerline_setup()
-python del powerline_setup
+" Navigation (Do you have mouse enabled in your term?)
+set mouse=a
+
+" powerline 
+" python from powerline.vim import setup as powerline_setup
+" python powerline_setup()
+" python del powerline_setup
 
 set guifont=Source\ Code\ Pro:h12
 set paste

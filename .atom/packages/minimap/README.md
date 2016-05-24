@@ -167,15 +167,29 @@ The scrolling speed when the `Independent Minimap Scroll On Mouse Wheel Events` 
 
 If checked the Minimap scroll is done using a `translate3d` transform, otherwise the `translate` transform is used. `(default=true)`
 
+#### Adjust Minimap Width To Soft Wrap
+
+If this option is enabled and Soft Wrap is checked then the Minimap max width is set to the Preferred Line Length value. `(default=true)`
+
+#### Adjust Minimap Width Only When Smaller
+
+If this option and `adjustMinimapWidthToSoftWrap` are enabled the minimap width will never go past the limit sets by CSS. On the other hand, when disabled the minimap will expand to honor the preferred line width. `(default=true)`
+
 #### Absolute Mode
 
-When enabled the Minimap uses an absolute positioning, letting the editor's content flow below the Minimap. `(default=true)`
+When enabled the Minimap uses an absolute positioning, letting the editor's content flow below the Minimap. `(default=false)`
 
 Note that this setting will do nothing if `Display Minimap On Left` is also enabled.
 
 `false`|`true`
 ---|---
 ![](https://github.com/atom-minimap/minimap/blob/master/resources/normal-mode.png?raw=true)|![](https://github.com/atom-minimap/minimap/blob/master/resources/absolute-mode.png?raw=true)
+
+#### Adjust Absolute Mode Height
+
+When enabled and `Absolute Mode` is also enabled, the minimap height will be adjusted to only take the space required by the text editor content, leaving the space below triggering mouse events on the text editor. `(default=false)`
+
+**Be aware this can have some impact on performances as the minimap canvases will be resized every time a change in the editor make its height change.**
 
 ### Key Bindings
 
@@ -196,8 +210,8 @@ The Minimap package doesn't provide any default keybindings. But you can define 
 If you want to hide the default editor scrollbar, edit your `style.less` (Open Your Stylesheet) and use the following snippet:
 
 ```css
-atom-text-editor .vertical-scrollbar,
-atom-text-editor::shadow .vertical-scrollbar {
+atom-text-editor[with-minimap] .vertical-scrollbar,
+atom-text-editor[with-minimap]::shadow .vertical-scrollbar {
   opacity: 0;
   width: 0;
 }
@@ -234,6 +248,18 @@ atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area 
 atom-text-editor atom-text-editor-minimap::shadow .minimap-scroll-indicator,
 atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-scroll-indicator {
   background-color: green;
+}
+```
+
+#### Adding an opaque background to the minimap in absolute mode with adjusted height
+
+With both `absoluteMode` and `adjustAbsoluteModeHeight` settings are enabled, the canvases in the minimap won't necessarily takes the whole editor's height.
+
+```css
+atom-text-editor::shadow, atom-text-editor, html {
+  atom-text-editor-minimap::shadow canvas:first-child {
+    background: @syntax-background-color;
+  }
 }
 ```
 
