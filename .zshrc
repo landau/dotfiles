@@ -132,6 +132,28 @@ function setversionmaj {
   setversion $next
 }
 
+function setversionminor {
+  ver=$(jq -r '.version' package.json)
+
+  minor=$(echo $ver | cut -d '.' -f 2)
+  minor=$(echo $minor + 1 | bc)
+  ver=$(echo $ver | cut -d '.' -f 1)
+  next="$ver.$minor.0"
+
+  setversion $next
+}
+
+function setversionpatch {
+  ver=$(jq -r '.version' package.json)
+
+  patch=$(echo $ver | cut -d '.' -f 3)
+  patch=$(echo $patch + 1 | bc)
+  ver=$(echo $ver | cut -d '.' -f 1-2)
+  next="$ver.$patch"
+
+  setversion $next
+}
+
 function setdep {
   json=$(node -p "var j = require('./package.json'); j.dependencies['$1'] = '$2'; JSON.stringify(j, null, '  ');" )
   echo $json > package.json
@@ -191,6 +213,37 @@ function setkeyrepeat {
   defaults write -g KeyRepeat -int 1 
 }
 
+
+ssh-multi() {
+	#HOSTS=${HOSTS:=$*}
+	setopt shwordsplit
+	HOSTS=${HOSTS:=$*}
+
+	if [ -z "$HOSTS" ]; then
+		echo -n "You need to supply ips"
+		return # read HOSTS
+	fi
+
+	hosts=(${=HOSTS})
+	target="ssh-multi $hosts[1]"
+	session_name=$(uuidgen)
+
+	tmux new -d -s "$session_name"
+	tmux new-window -n "$target" ssh $hosts[1]
+
+	echo $hosts[2,-1]
+
+	for i in $hosts[2,-1]; do
+		echo "foooo"
+		echo $target
+		tmux split-window -t :"$target" -h  "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 $i"
+		tmux select-layout -t :"$target" tiled > /dev/null
+	done
+
+	tmux select-pane -t 0
+	tmux set-window-option -t :"$target"  synchronize-panes on > /dev/null
+	tmux attach-session -t "$session_name"
+}
 
 # --- Camera lazeeeeehhhh
 

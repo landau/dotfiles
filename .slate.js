@@ -146,6 +146,14 @@ var moveLapHipChatOp = moveLapAdiumOp.dup({
   height: 'screenSizeY'
 });
 
+var moveLapSlackOp = moveLapAdiumOp.dup({
+  screen: monLap,
+  width: 'screenSizeX/2',
+  height: 'screenSizeY',
+  x: 'screenOriginX/2.15',
+  y:'0'
+});
+
 var moveChromeWindow = S.op('corner', {
   screen: monRight,
   direction: 'top-right',
@@ -232,7 +240,7 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  iTerm: {
+  iTerm2: {
     operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -288,7 +296,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   Slack: {
-    operations: [moveLapHipChatOp],
+    operations: [moveLapSlackOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -341,7 +349,7 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  iTerm: {
+  iTerm2: {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -414,7 +422,7 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   Slack: {
-    operations: [moveLapHipChatOp],
+    operations: [moveLapSlackOp],
     'ignore-fail': true,
     'repeat-last': true
   },
