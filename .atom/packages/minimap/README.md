@@ -233,10 +233,9 @@ atom-text-editor::shadow atom-text-editor-minimap {
 ![minimap-custom-background](https://github.com/atom-minimap/minimap/blob/master/resources/minimap-custom-visible-area.png?raw=true)
 
 ```css
-atom-text-editor atom-text-editor-minimap::shadow .minimap-visible-area,
-atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area {
-  background-color: green;
-  opacity: .5;
+atom-text-editor atom-text-editor-minimap::shadow .minimap-visible-area::after,
+atom-text-editor::shadow atom-text-editor-minimap::shadow .minimap-visible-area::after {
+  background-color: rgba(0, 255, 0, 0.5);
 }
 ```
 
@@ -302,6 +301,58 @@ atom-text-editor {
   }
 }
 ```
+
+#### Make Minimap Visible area display like Sublime Text 
+
+Put the following code in your user stylesheet to make your minimap look like Sublime text.
+It's more easy to view when you have code hightlight in minimap.
+
+`Default State (Hidden)`|`Hover`|`Only display Visible area when hover or click/drag event.`
+---|---|:---:
+![](https://github.com/machinavn/minimap/blob/master/resources/on-default-minimap.png?raw=true)|![](https://github.com/machinavn/minimap/blob/master/resources/on-hover-minimap.png?raw=true)|![](https://github.com/machinavn/minimap/blob/master/resources/on-scroll-minimap.png?raw=true)
+
+```css
+atom-text-editor,
+atom-text-editor::shadow,
+html {
+    atom-text-editor-minimap {
+        &::shadow {
+            .minimap-visible-area {
+                background-color: #7c7c7c;
+                // Color of Visible area.
+                opacity: 0;
+                // Default 0 when you not working with minimap
+                cursor: default;
+                // Change cursor style to pointer.
+                transition: 0.5s opacity;
+                // Better UI.
+                &:hover {
+                    opacity: 0.2;
+                } // Only display Minimap visible area when working.
+                &:active {
+                    cursor: default;
+                } // Change cursor when dragging.
+            }
+        }
+        &:hover::shadow {
+            .minimap-visible-area {
+                opacity: 0.2;
+                transition: opacity 1s;
+            } // When Hover to all minimap area, visible area will display. 
+        }
+        
+        &:active::shadow {
+            .minimap-visible-area {
+                opacity: 0.2;
+                transition: opacity 0.5s;
+            } // Display Minimap visible area when dragging.
+        }
+    }
+}
+
+```
+
+
 
 ### ASCII Art Comments
 

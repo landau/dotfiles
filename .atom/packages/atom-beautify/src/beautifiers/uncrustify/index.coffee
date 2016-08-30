@@ -10,6 +10,7 @@ _ = require('lodash')
 
 module.exports = class Uncrustify extends Beautifier
   name: "Uncrustify"
+  link: "https://github.com/uncrustify/uncrustify"
   options: {
     Apex: true
     C: true
@@ -37,6 +38,8 @@ module.exports = class Uncrustify extends Beautifier
         editor = atom.workspace.getActiveTextEditor()
         if editor?
           basePath = path.dirname(editor.getPath())
+          # Expand Home Directory in Config Path
+          configPath = expandHomeDir(configPath)
           # console.log(basePath);
           configPath = path.resolve(basePath, configPath)
           resolve configPath
@@ -44,9 +47,6 @@ module.exports = class Uncrustify extends Beautifier
           reject(new Error("No Uncrustify Config Path set! Please configure Uncrustify with Atom Beautify."))
     )
     .then((configPath) =>
-
-      # Expand Home Directory in Config Path
-      configPath = expandHomeDir(configPath)
 
       # Select Uncrustify language
       lang = "C" # Default is C

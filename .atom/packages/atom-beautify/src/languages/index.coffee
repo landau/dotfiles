@@ -40,6 +40,7 @@ module.exports = class Languages
     "jsx"
     "latex"
     "less"
+    "lua"
     "markdown"
     'marko'
     "mustache"
@@ -63,6 +64,7 @@ module.exports = class Languages
     "twig"
     "typescript"
     "vala"
+    "vue"
     "visualforce"
     "xml"
     "xtemplate"

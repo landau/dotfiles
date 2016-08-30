@@ -1,4 +1,5 @@
-{CompositeDisposable, Emitter} = require 'atom'
+[CompositeDisposable, Emitter] = []
+
 {registerOrUpdateElement, EventsDelegation} = require 'atom-utils'
 
 SPEC_MODE = atom.inSpecMode()
@@ -15,6 +16,8 @@ class ColorMarkerElement extends HTMLElement
   renderer: new RENDERERS.background
 
   createdCallback: ->
+    {CompositeDisposable, Emitter} = require 'atom' unless Emitter?
+
     @emitter = new Emitter
     @released = true
 
@@ -31,6 +34,8 @@ class ColorMarkerElement extends HTMLElement
 
   setModel: (@colorMarker) ->
     return unless @released
+    {CompositeDisposable, Emitter} = require 'atom' unless CompositeDisposable?
+
     @released = false
     @subscriptions = new CompositeDisposable
     @subscriptions.add @colorMarker.marker.onDidDestroy => @release()
@@ -39,7 +44,7 @@ class ColorMarkerElement extends HTMLElement
       if isValid then @bufferElement.requestMarkerUpdate([this]) else @release()
 
     @subscriptions.add atom.config.observe 'pigments.markerType', (type) =>
-      @bufferElement.requestMarkerUpdate([this]) unless type is 'gutter'
+      @bufferElement.requestMarkerUpdate([this]) unless @bufferElement.useNativeDecorations()
 
     @subscriptions.add @subscribeTo this,
       click: (e) =>
@@ -109,6 +114,19 @@ module.exports =
 ColorMarkerElement =
 registerOrUpdateElement 'pigments-color-marker', ColorMarkerElement.prototype
 
+ColorMarkerElement.isNativeDecorationType = (type) ->
+  type in [
+    'gutter'
+    'native-background'
+    'native-outline'
+    'native-underline'
+    'native-dot'
+    'native-square-dot'
+  ]
+
 ColorMarkerElement.setMarkerType = (markerType) ->
-  return if markerType is 'gutter'
+  return if ColorMarkerElement.isNativeDecorationType(markerType)
+  return unless RENDERERS[markerType]?
+
+  @prototype.rendererType = markerType
   @prototype.renderer = new RENDERERS[markerType]

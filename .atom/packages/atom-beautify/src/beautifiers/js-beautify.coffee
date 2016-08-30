@@ -3,13 +3,13 @@ Beautifier = require('./beautifier')
 
 module.exports = class JSBeautify extends Beautifier
   name: "JS Beautify"
+  link: "https://github.com/beautify-web/js-beautify"
 
   options: {
     HTML: true
     XML: true
     Handlebars: true
     Mustache: true
-    Marko: true
     JavaScript: true
     JSON: true
     CSS:
@@ -19,6 +19,7 @@ module.exports = class JSBeautify extends Beautifier
       newline_between_rules: true
       preserve_newlines: true
       wrap_line_length: true
+      end_with_newline: true
   }
 
   beautify: (text, language, options) ->
@@ -41,7 +42,7 @@ module.exports = class JSBeautify extends Beautifier
             beautifyHTML = require("js-beautify").html
             text = beautifyHTML(text, options)
             resolve text
-          when "HTML (Liquid)", "HTML", "XML", "Marko", "Web Form/Control (C#)", "Web Handler (C#)"
+          when "HTML (Liquid)", "HTML", "XML", "Web Form/Control (C#)", "Web Handler (C#)"
             beautifyHTML = require("js-beautify").html
             text = beautifyHTML(text, options)
             @debug("Beautified HTML: #{text}")

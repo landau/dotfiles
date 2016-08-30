@@ -1,10 +1,12 @@
-_ = require 'underscore-plus'
-{CompositeDisposable, Range}  = require 'atom'
-{variables: variablesRegExp} = require './regexes'
+[
+  CompositeDisposable, variablesRegExp, _
+] = []
 
 module.exports =
 class PigmentsProvider
   constructor: (@pigments) ->
+    CompositeDisposable ?= require('atom').CompositeDisposable
+
     @subscriptions = new CompositeDisposable
     @selector = atom.config.get('pigments.autocompleteScopes').join(',')
 
@@ -38,6 +40,8 @@ class PigmentsProvider
     suggestions
 
   getPrefix: (editor, bufferPosition) ->
+    variablesRegExp ?= require('./regexes').variables
+
     line = editor.getTextInRange([[bufferPosition.row, 0], bufferPosition])
 
     line.match(new RegExp(variablesRegExp + '$'))?[0] or ''
@@ -45,9 +49,12 @@ class PigmentsProvider
   findSuggestionsForPrefix: (variables, prefix) ->
     return [] unless variables?
 
+    _ ?= require 'underscore-plus'
+
     suggestions = []
 
-    matchedVariables = variables.filter (v) -> ///^#{_.escapeRegExp prefix}///.test v.name
+    matchedVariables = variables.filter (v) ->
+      not v.isAlternate and ///^#{_.escapeRegExp prefix}///.test(v.name)
 
     matchedVariables.forEach (v) =>
       if v.isColor

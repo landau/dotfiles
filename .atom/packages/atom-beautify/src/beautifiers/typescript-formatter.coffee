@@ -3,6 +3,7 @@ Beautifier = require('./beautifier')
 
 module.exports = class TypeScriptFormatter extends Beautifier
   name: "TypeScript Formatter"
+  link: "https://github.com/vvakame/typescript-formatter"
   options: {
     TypeScript: true
   }
@@ -16,10 +17,14 @@ module.exports = class TypeScriptFormatter extends Beautifier
         # @verbose('format', format, formatterUtils)
 
         opts = formatterUtils.createDefaultFormatCodeOptions()
-        opts.TabSize = options.tab_width or options.indent_size
-        opts.IndentSize = options.indent_size
-        opts.IndentStyle = 'space'
-        opts.convertTabsToSpaces = true
+
+        if options.indent_with_tabs
+          opts.ConvertTabsToSpaces = false
+        else
+          opts.TabSize = options.tab_width or options.indent_size
+          opts.IndentSize = options.indent_size
+          opts.IndentStyle = 'space'
+
         @verbose('typescript', text, opts)
         result = format('', text, opts)
         @verbose(result)

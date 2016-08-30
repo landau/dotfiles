@@ -1,5 +1,19 @@
 # Changelog
 
+## v7.2.4
+
+*   Bump minimum Atom version to v1.8.0
+
+## v7.2.3
+
+*   Clarified `disableEslintIgnore` description ([#569](https://github.com/AtomLinter/linter-eslint/pull/569))
+*   Update `eslint-plugin-ava` link ([#589](https://github.com/AtomLinter/linter-eslint/pull/589))
+*   Update ignore message for `eslint@2.11.1` ([#593](https://github.com/AtomLinter/linter-eslint/pull/593))
+
+## v7.2.2
+
+*   Add links for several plugin's rules ([#562](https://github.com/AtomLinter/linter-eslint/pull/562))
+
 ## v7.2.1
 
 *   Only run Fix on Save on supported file types ([#545](https://github.com/AtomLinter/linter-eslint/pull/545))

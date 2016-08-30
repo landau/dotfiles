@@ -26,12 +26,12 @@
       "node_modules"
     ]
     themes: [
-      "dark-flat-ui"
-      "an-old-hope-syntax"
+      "one-dark-ui"
+      "gruvbox-plus-syntax"
     ]
   editor:
     fontFamily: "Droid Sans Mono Dotted"
-    fontSize: 11
+    fontSize: 10
     invisibles: {}
     lineHeight: 1.4
     preferredLineLength: 120
@@ -48,6 +48,9 @@
   "linter-jsxhint": {}
   minimap:
     absoluteMode: true
+  "one-dark-ui":
+    fontSize: 10
+    layoutMode: "Compact"
   "one-light-ui": {}
   react: {}
   tabs: {}

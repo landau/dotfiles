@@ -1,3 +1,40 @@
+<a name="v4.24.7"></a>
+# v4.24.7 (2016-07-05)
+
+## :bug: Bug Fixes
+
+- Fix minimal width badly measured after a split pane ([1f97824e](https://github.com/atom-minimap/minimap/commit/1f97824e23706d10fb0c6e35da9000388d20ef46), [#497](https://github.com/atom-minimap/minimap/issues/497))
+- Add guard against duplicated minimap ([d782ed65](https://github.com/atom-minimap/minimap/commit/d782ed650775d82d32e3cd0c18105ca7e82acb59), [#504](https://github.com/atom-minimap/minimap/issues/504))
+
+<a name="v4.24.5"></a>
+# v4.24.5 (2016-06-14)
+
+## :bug: Bug Fixes
+
+- Fix invalid invisible regexp when show invisible is disabled ([5b762a54](https://github.com/atom-minimap/minimap/commit/5b762a540bbc812df583fb67ec58c3b27432c6c7), [#502](https://github.com/atom-minimap/minimap/issues/502))
+
+<a name="v4.24.4"></a>
+# v4.24.4 (2016-06-09)
+
+## :bug: Bug Fixes
+
+- Fix infinite loop in scroll top listener ([46b6f1fc](https://github.com/atom-minimap/minimap/commit/46b6f1fc894f22ec8a0c40cb93bef6df616c71b8), [#491](https://github.com/atom-minimap/minimap/issues/491))
+
+<a name="v4.24.3"></a>
+# v4.24.3 (2016-05-27)
+
+## :bug: Bug Fixes
+
+- Use a border to offset the visible area instead of a transform ([8e65b938](https://github.com/atom-minimap/minimap/commit/8e65b9384dd226670e6054cb45bec36a43dcb4e8), [#484](https://github.com/atom-minimap/minimap/issues/484))
+
+<a name="v4.24.2"></a>
+# v4.24.2 (2016-05-25)
+
+## :bug: Bug Fixes
+
+- Set the with-minimap attribute in attached callback ([478e5ef7](https://github.com/atom-minimap/minimap/commit/478e5ef75b6652329f7696ffffb03b56d6ac4066), [#487](https://github.com/atom-minimap/minimap/issues/487))
+- Add another guard when accessing tokenLinesForScreenRows ([80fd6533](https://github.com/atom-minimap/minimap/commit/80fd65332e396b818c67b1387742c2ddeb361c21))
+
 <a name="v4.24.1"></a>
 # v4.24.1 (2016-05-24)
 

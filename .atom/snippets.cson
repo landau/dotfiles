@@ -20,7 +20,7 @@
   'Node Style Callback':
     'prefix': 'cb'
     'body': """
-      function(err, $1) {
+      (err, $1) => {
         if (err) {
           return cb(err);
         }
@@ -31,7 +31,7 @@
   'anonymous function':
     'prefix': 'afn'
     'body': """
-      function($1) {
+      ($1) => {
         $2
       }
     """
@@ -44,10 +44,10 @@
     """
   'node require':
     'prefix': 'req'
-    'body': 'var $1 = require(\'$2\');$3'
+    'body': 'const $1 = require(\'$2\');$3'
   'lodash require':
     'prefix': 'lodash'
-    'body': 'var _ = require(\'lodash\');$1'
+    'body': 'const _ = require(\'lodash\');$1'
   'use strict':
     'prefix': 'us'
     'body': """
@@ -55,19 +55,12 @@
 
       $1
     """
-  'prom':
-    'prefix': 'prom'
-    'body': """
-      new Promise(function(resolve, reject) {
-        $1
-      });
-      """
   'test stuff':
     'prefix': 'chai'
     'body': """
-      var chai = require('chai');
-      var should = chai.should();
+      const chai = require('chai');
+      const should = chai.should();
       chai.use(require('sinon-chai'));
-      var sinon = require('sinon');
+      const sinon = require('sinon');
       $1
       """
