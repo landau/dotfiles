@@ -1,13 +1,39 @@
-'use babel'
+'use strict'
 
-import {CompositeDisposable, Disposable} from 'atom'
-import {EventsDelegation, AncestorsMethods} from 'atom-utils'
-import Main from './main'
-import include from './decorators/include'
-import element from './decorators/element'
-import DOMStylesReader from './mixins/dom-styles-reader'
-import CanvasDrawer from './mixins/canvas-drawer'
-import MinimapQuickSettingsElement from './minimap-quick-settings-element'
+const {EventsDelegation, AncestorsMethods} = require('atom-utils')
+const DOMStylesReader = require('./mixins/dom-styles-reader')
+const CanvasDrawer = require('./mixins/canvas-drawer')
+const include = require('./decorators/include')
+const element = require('./decorators/element')
+const elementResizeDetector = require('element-resize-detector')({strategy: 'scroll'})
+
+let Main, MinimapQuickSettingsElement, CompositeDisposable, Disposable, overlayStyle
+
+const ensureOverlayStyle = () => {
+  if (!overlayStyle) {
+    overlayStyle = document.createElement('style')
+    overlayStyle.setAttribute('context', 'atom-text-editor-minimap')
+    document.head.appendChild(overlayStyle)
+  }
+}
+
+const removeOverlayStyle = () => {
+  if (overlayStyle) {
+    overlayStyle.parentNode.removeChild(overlayStyle)
+    overlayStyle = null
+  }
+}
+
+const updateOverlayStyle = (basis) => {
+  if (overlayStyle) {
+    overlayStyle.textContent = `
+    atom-text-editor[with-minimap]::shadow atom-overlay,
+    atom-text-editor[with-minimap] atom-overlay {
+      margin-left: ${basis}px;
+    }
+    `
+  }
+}
 
 const SPEC_MODE = atom.inSpecMode()
 
@@ -25,20 +51,10 @@ const SPEC_MODE = atom.inSpecMode()
  * @example
  * let minimapElement = atom.views.getView(minimap)
  */
-@element('atom-text-editor-minimap')
-@include(DOMStylesReader, CanvasDrawer, EventsDelegation, AncestorsMethods)
-export default class MinimapElement {
-
-  /**
-   * The method that registers the MinimapElement factory in the
-   * `atom.views` registry with the Minimap model.
-   */
-  static registerViewProvider (Minimap) {
-    atom.views.addViewProvider(Minimap, function (model) {
-      let element = new MinimapElement()
-      element.setModel(model)
-      return element
-    })
+class MinimapElement {
+  static initClass () {
+    include(this, DOMStylesReader, CanvasDrawer, EventsDelegation, AncestorsMethods)
+    return element(this, 'atom-text-editor-minimap')
   }
 
   //    ##     ##  #######   #######  ##    ##  ######
@@ -55,6 +71,10 @@ export default class MinimapElement {
    * @access private
    */
   createdCallback () {
+    if (!CompositeDisposable) {
+      ({CompositeDisposable, Disposable} = require('atom'))
+    }
+
     // Core properties
 
     /**
@@ -141,10 +161,6 @@ export default class MinimapElement {
     /**
      * @access private
      */
-    this.shadowRoot = undefined
-    /**
-     * @access private
-     */
     this.visibleArea = undefined
     /**
      * @access private
@@ -207,6 +223,9 @@ export default class MinimapElement {
       'minimap.displayMinimapOnLeft': (displayMinimapOnLeft) => {
         this.displayMinimapOnLeft = displayMinimapOnLeft
 
+        displayMinimapOnLeft
+          ? ensureOverlayStyle()
+          : removeOverlayStyle()
         this.updateMinimapFlexPosition()
       },
 
@@ -304,6 +323,14 @@ export default class MinimapElement {
         if (this.attached) { this.requestUpdate() }
       },
 
+      'editor.showInvisibles': () => {
+        if (this.attached) { this.requestUpdate() }
+      },
+
+      'editor.invisibles': () => {
+        if (this.attached) { this.requestUpdate() }
+      },
+
       'editor.softWrapAtPreferredLineLength': () => {
         if (this.attached) { this.requestUpdate() }
       }
@@ -316,11 +343,33 @@ export default class MinimapElement {
    * @access private
    */
   attachedCallback () {
-    this.subscriptions.add(atom.views.pollDocument(() => { this.pollDOM() }))
+    if (atom.views.pollDocument) {
+      this.subscriptions.add(atom.views.pollDocument(() => { this.pollDOM() }))
+    } else {
+      this.intersectionObserver = new IntersectionObserver((entries) => {
+        const {intersectionRect} = entries[entries.length - 1]
+        if (intersectionRect.width > 0 || intersectionRect.height > 0) {
+          this.measureHeightAndWidth(true, true)
+        }
+      })
+
+      this.intersectionObserver.observe(this)
+      if (this.isVisible()) {
+        this.measureHeightAndWidth(true, true)
+      }
+
+      const measureDimensions = () => { this.measureHeightAndWidth(false, false) }
+      elementResizeDetector.listenTo(this, measureDimensions)
+      this.subscriptions.add(new Disposable(() => { elementResizeDetector.removeListener(this, measureDimensions) }))
+
+      window.addEventListener('resize', measureDimensions)
+      this.subscriptions.add(new Disposable(() => { window.removeEventListener('resize', measureDimensions) }))
+    }
+
     this.measureHeightAndWidth()
     this.updateMinimapFlexPosition()
     this.attached = true
-    this.attachedToTextEditor = this.parentNode === this.getTextEditorElementRoot()
+    this.attachedToTextEditor = this.queryParentSelector('atom-text-editor') === this.getTextEditorElement()
 
     if (this.attachedToTextEditor) {
       this.getTextEditorElement().setAttribute('with-minimap', '')
@@ -380,7 +429,7 @@ export default class MinimapElement {
   attach (parent) {
     if (this.attached) { return }
 
-    const container = parent || this.getTextEditorElementRoot()
+    const container = parent || this.getTextEditorElement()
     let minimaps = container.querySelectorAll('atom-text-editor-minimap')
     if (minimaps.length) {
       Array.prototype.forEach.call(minimaps, (el) => { el.destroy() })
@@ -432,8 +481,7 @@ export default class MinimapElement {
   initializeContent () {
     this.initializeCanvas()
 
-    this.shadowRoot = this.createShadowRoot()
-    this.attachCanvases(this.shadowRoot)
+    this.attachCanvases(this)
 
     this.createVisibleArea()
     this.createControls()
@@ -441,7 +489,7 @@ export default class MinimapElement {
     this.subscriptions.add(this.subscribeTo(this, {
       'mousewheel': (e) => {
         if (!this.standAlone) {
-          this.relayMousewheelEvent(e)
+          this.minimap.onMouseWheel(e)
         }
       }
     }))
@@ -462,7 +510,7 @@ export default class MinimapElement {
 
     this.visibleArea = document.createElement('div')
     this.visibleArea.classList.add('minimap-visible-area')
-    this.shadowRoot.appendChild(this.visibleArea)
+    this.appendChild(this.visibleArea)
     this.visibleAreaSubscription = this.subscribeTo(this.visibleArea, {
       'mousedown': (e) => { this.startDrag(this.extractMouseEventData(e)) },
       'touchstart': (e) => { this.startDrag(this.extractTouchEventData(e)) }
@@ -481,7 +529,7 @@ export default class MinimapElement {
 
     this.subscriptions.remove(this.visibleAreaSubscription)
     this.visibleAreaSubscription.dispose()
-    this.shadowRoot.removeChild(this.visibleArea)
+    this.removeChild(this.visibleArea)
     delete this.visibleArea
   }
 
@@ -495,7 +543,7 @@ export default class MinimapElement {
 
     this.controls = document.createElement('div')
     this.controls.classList.add('minimap-controls')
-    this.shadowRoot.appendChild(this.controls)
+    this.appendChild(this.controls)
   }
 
   /**
@@ -506,7 +554,7 @@ export default class MinimapElement {
   removeControls () {
     if (!this.controls) { return }
 
-    this.shadowRoot.removeChild(this.controls)
+    this.removeChild(this.controls)
     delete this.controls
   }
 
@@ -552,6 +600,10 @@ export default class MinimapElement {
 
     this.openQuickSettingSubscription = this.subscribeTo(this.openQuickSettings, {
       'mousedown': (e) => {
+        if (!MinimapQuickSettingsElement) {
+          MinimapQuickSettingsElement = require('./minimap-quick-settings-element')
+        }
+
         e.preventDefault()
         e.stopPropagation()
 
@@ -612,40 +664,6 @@ export default class MinimapElement {
     return this.editorElement
   }
 
-  /**
-   * Returns the root of the `TextEditorElement` content.
-   *
-   * This method is mostly used to ensure compatibility with the `shadowDom`
-   * setting.
-   *
-   * @return {HTMLElement} the root of the `TextEditorElement` content
-   */
-  getTextEditorElementRoot () {
-    let editorElement = this.getTextEditorElement()
-
-    if (editorElement.shadowRoot) {
-      return editorElement.shadowRoot
-    } else {
-      return editorElement
-    }
-  }
-
-  /**
-   * Returns the root where to inject the dummy node used to read DOM styles.
-   *
-   * @param  {boolean} shadowRoot whether to use the text editor shadow DOM
-   *                              or not
-   * @return {HTMLElement} the root node where appending the dummy node
-   * @access private
-   */
-  getDummyDOMRoot (shadowRoot) {
-    if (shadowRoot) {
-      return this.getTextEditorElementRoot()
-    } else {
-      return this.getTextEditorElement()
-    }
-  }
-
   //    ##     ##  #######  ########  ######## ##
   //    ###   ### ##     ## ##     ## ##       ##
   //    #### #### ##     ## ##     ## ##       ##
@@ -668,6 +686,8 @@ export default class MinimapElement {
    * @return {Minimap} this element's Minimap
    */
   setModel (minimap) {
+    if (!Main) { Main = require('./main') }
+
     this.minimap = minimap
     this.subscriptions.add(this.minimap.onDidChangeScrollTop(() => {
       this.requestUpdate()
@@ -783,7 +803,8 @@ export default class MinimapElement {
     const devicePixelRatio = this.minimap.getDevicePixelRatio()
     const visibleAreaLeft = minimap.getTextEditorScaledScrollLeft()
     const visibleAreaTop = minimap.getTextEditorScaledScrollTop() - minimap.getScrollTop()
-    const visibleWidth = Math.min(canvas.width / devicePixelRatio, this.width)
+    const width = Math.min(canvas.width / devicePixelRatio, this.width)
+    const visibleWidth = width + visibleAreaLeft
 
     if (this.adjustToSoftWrap && this.flexBasis) {
       this.style.flexBasis = this.flexBasis + 'px'
@@ -795,21 +816,21 @@ export default class MinimapElement {
 
     if (SPEC_MODE) {
       this.applyStyles(this.visibleArea, {
-        width: visibleWidth + 'px',
-        height: minimap.getTextEditorScaledHeight() + 'px',
-        top: visibleAreaTop + 'px',
-        'border-left-width': visibleAreaLeft + 'px'
+        width: Math.round(visibleWidth) + 'px',
+        height: Math.round(minimap.getTextEditorScaledHeight()) + 'px',
+        top: Math.round(visibleAreaTop) + 'px',
+        'border-left-width': Math.round(visibleAreaLeft) + 'px'
       })
     } else {
       this.applyStyles(this.visibleArea, {
-        width: visibleWidth + 'px',
-        height: minimap.getTextEditorScaledHeight() + 'px',
+        width: Math.round(visibleWidth) + 'px',
+        height: Math.round(minimap.getTextEditorScaledHeight()) + 'px',
         transform: this.makeTranslate(0, visibleAreaTop),
-        'border-left-width': visibleAreaLeft + 'px'
+        'border-left-width': Math.round(visibleAreaLeft) + 'px'
       })
     }
 
-    this.applyStyles(this.controls, {width: visibleWidth + 'px'})
+    this.applyStyles(this.controls, {width: Math.round(width) + 'px'})
 
     let canvasTop = minimap.getFirstVisibleScreenRow() * minimap.getLineHeight() - minimap.getScrollTop()
 
@@ -958,10 +979,13 @@ export default class MinimapElement {
         if (softWrap && softWrapAtPreferredLineLength && lineLength && (width <= this.width || !this.adjustOnlyIfSmaller)) {
           this.flexBasis = width
           canvasWidth = width
+          updateOverlayStyle(width)
         } else {
+          updateOverlayStyle(canvasWidth)
           delete this.flexBasis
         }
       } else {
+        updateOverlayStyle(canvasWidth)
         delete this.flexBasis
       }
 
@@ -971,11 +995,16 @@ export default class MinimapElement {
     }
   }
 
-  updateCanvasesSize (canvasWidth = this.getFrontCanvas().width) {
+  updateCanvasesSize (canvasWidth) {
     const devicePixelRatio = this.minimap.getDevicePixelRatio()
     const maxCanvasHeight = this.height + this.minimap.getLineHeight()
     const newHeight = this.absoluteMode && this.adjustAbsoluteModeHeight ? Math.min(this.minimap.getHeight(), maxCanvasHeight) : maxCanvasHeight
     const canvas = this.getFrontCanvas()
+
+    if (canvasWidth == null) {
+      canvasWidth = canvas.width / devicePixelRatio
+    }
+
     if (canvasWidth !== canvas.width || newHeight !== canvas.height) {
       this.setCanvasesSize(
         canvasWidth * devicePixelRatio,
@@ -1048,6 +1077,10 @@ export default class MinimapElement {
     const scrollTop = row * textEditor.getLineHeightInPixels() - this.minimap.getTextEditorHeight() / 2
     const textEditorScrollTop = textEditorElement.pixelPositionForScreenPosition([row, 0]).top - this.minimap.getTextEditorHeight() / 2
 
+    if (atom.config.get('minimap.moveCursorOnMinimapClick')) {
+      textEditor.setCursorScreenPosition([row, 0])
+    }
+
     if (atom.config.get('minimap.scrollAnimation')) {
       const duration = atom.config.get('minimap.scrollAnimationDuration')
       const independentScroll = this.minimap.scrollIndependentlyOnMouseWheel()
@@ -1083,27 +1116,12 @@ export default class MinimapElement {
    * @access private
    */
   canvasMiddleMousePressed (y) {
-    let {top: offsetTop} = this.getBoundingClientRect()
-    let deltaY = y - offsetTop - this.minimap.getTextEditorScaledHeight() / 2
+    const {top: offsetTop} = this.getBoundingClientRect()
+    const deltaY = y - offsetTop - this.minimap.getTextEditorScaledHeight() / 2
 
-    let ratio = deltaY / (this.minimap.getVisibleHeight() - this.minimap.getTextEditorScaledHeight())
+    const ratio = deltaY / (this.minimap.getVisibleHeight() - this.minimap.getTextEditorScaledHeight())
 
     this.minimap.setTextEditorScrollTop(ratio * this.minimap.getTextEditorMaxScrollTop())
-  }
-
-  /**
-   * A method that relays the `mousewheel` events received by the MinimapElement
-   * to the `TextEditorElement`.
-   *
-   * @param  {MouseEvent} e the mouse event object
-   * @access private
-   */
-  relayMousewheelEvent (e) {
-    if (this.minimap.scrollIndependentlyOnMouseWheel()) {
-      this.minimap.onMouseWheel(e)
-    } else {
-      this.getTextEditorElement().component.onMouseWheel(e)
-    }
   }
 
   /**
@@ -1156,6 +1174,10 @@ export default class MinimapElement {
    * @access private
    */
   subscribeToMediaQuery () {
+    if (!Disposable) {
+      ({CompositeDisposable, Disposable} = require('atom'))
+    }
+
     const query = 'screen and (-webkit-min-device-pixel-ratio: 1.5)'
     const mediaQuery = window.matchMedia(query)
     const mediaListener = (e) => { this.requestForcedUpdate() }
@@ -1184,6 +1206,10 @@ export default class MinimapElement {
    * @access private
    */
   startDrag ({y, isLeftMouse, isMiddleMouse}) {
+    if (!Disposable) {
+      ({CompositeDisposable, Disposable} = require('atom'))
+    }
+
     if (!this.minimap) { return }
     if (!isLeftMouse && !isMiddleMouse) { return }
 
@@ -1358,3 +1384,5 @@ export default class MinimapElement {
     update()
   }
 }
+
+module.exports = MinimapElement.initClass()

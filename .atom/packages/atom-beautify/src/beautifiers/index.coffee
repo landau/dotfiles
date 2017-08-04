@@ -35,33 +35,41 @@ module.exports = class Beautifiers extends EventEmitter
   ###
   beautifierNames : [
     'uncrustify'
+    'align-yaml'
     'autopep8'
     'coffee-formatter'
     'coffee-fmt'
+    'cljfmt'
     'clang-format'
     'crystal'
     'dfmt'
     'elm-format'
+    'hh_format'
     'htmlbeautifier'
     'csscomb'
     'gherkin'
     'gofmt'
+    'goimports'
     'latex-beautify'
     'fortran-beautifier'
     'js-beautify'
     'jscs'
+    'eslint'
     'lua-beautifier'
+    'nginx-beautify'
     'ocp-indent'
     'perltidy'
     'php-cs-fixer'
     'phpcbf'
     'prettydiff'
+    'pybeautifier'
     'pug-beautify'
     'puppet-fix'
     'remark'
     'rubocop'
     'ruby-beautify'
     'rustfmt'
+    'sass-convert'
     'sqlformat'
     'stylish-haskell'
     'tidy-markdown'
@@ -70,6 +78,8 @@ module.exports = class Beautifiers extends EventEmitter
     'yapf'
     'erl_tidy'
     'marko-beautifier'
+    'formatR'
+    'beautysh'
   ]
 
   ###
@@ -102,11 +112,32 @@ module.exports = class Beautifiers extends EventEmitter
       new Beautifier()
     )
 
+    @options = @loadOptions()
+
+  loadOptions : ->
     try
-      @options = require('../options.json')
-    catch
-      console.warn('Beautifier options not found.')
-      @options = {}
+      options = require('../options.json')
+      options = _.mapValues(options, (lang) ->
+        scope = lang.scope
+        tabLength = atom?.config.get('editor.tabLength', scope: scope) ? 4
+        softTabs = atom?.config.get('editor.softTabs', scope: scope) ? true
+        defaultIndentSize = (if softTabs then tabLength else 1)
+        defaultIndentChar = (if softTabs then " " else "\t")
+        defaultIndentWithTabs = not softTabs
+        if _.has(lang, "properties.indent_size")
+          _.set(lang, "properties.indent_size.default", defaultIndentSize)
+        if _.has(lang, "properties.indent_char")
+          _.set(lang, "properties.indent_char.default", defaultIndentChar)
+        if _.has(lang, "properties.indent_with_tabs")
+          _.set(lang, "properties.indent_with_tabs.default", defaultIndentWithTabs)
+        if _.has(lang, "properties.wrap_attributes_indent_size")
+          _.set(lang, "properties.wrap_attributes_indent_size.default", defaultIndentSize)
+        return lang
+      )
+    catch error
+      console.error("Error loading options", error)
+      options = {}
+    return options
 
   ###
     From https://github.com/atom/notifications/blob/01779ade79e7196f1603b8c1fa31716aa4a33911/lib/notification-issue.coffee#L130
@@ -135,19 +166,31 @@ module.exports = class Beautifiers extends EventEmitter
     ) or beautifiers[0]
     return beautifier
 
-  getLanguage : (grammar, filePath) ->
+  getExtension : (filePath) ->
+    if filePath
+      return path.extname(filePath).substr(1)
+
+  getLanguages : (grammar, filePath) ->
     # Get language
-    fileExtension = path.extname(filePath)
-    # Remove prefix "." (period) in fileExtension
-    fileExtension = fileExtension.substr(1)
-    languages = @languages.getLanguages({grammar, extension: fileExtension})
-    logger.verbose(languages, grammar, fileExtension)
-    # Check if unsupported language
-    if languages.length < 1
-      return null
+    fileExtension = @getExtension(filePath)
+
+    if fileExtension
+      languages = @languages.getLanguages({grammar, extension: fileExtension})
     else
-      # TODO: select appropriate language
+      languages = @languages.getLanguages({grammar})
+
+    logger.verbose(languages, grammar, fileExtension)
+
+    return languages
+
+  getLanguage : (grammar, filePath) ->
+    languages = @getLanguages(grammar, filePath)
+
+    # Check if unsupported language
+    if languages.length > 0
       language = languages[0]
+
+    return language
 
   getOptionsForLanguage : (allOptions, language) ->
     # Options for Language
@@ -212,7 +255,8 @@ module.exports = class Beautifiers extends EventEmitter
   track : (type, payload) ->
     try
       # Check if Analytics is enabled
-      if atom.config.get("atom-beautify.general.analytics")
+      if atom.config.get("core.telemetryConsent") is "limited"
+        logger.info("Analytics is enabled.")
         # Setup Analytics
         unless atom.config.get("atom-beautify.general._analyticsUserId")
           uuid = require("node-uuid")
@@ -225,26 +269,24 @@ module.exports = class Beautifiers extends EventEmitter
           }
         })
         @analytics[type](payload).send()
+      else
+        logger.info("Analytics is disabled.")
     catch error
       logger.error(error)
 
 
-  beautify : (text, allOptions, grammar, filePath, {onSave} = {}) ->
+  beautify : (text, allOptions, grammar, filePath, {onSave, language} = {}) ->
     return Promise.all(allOptions)
     .then((allOptions) =>
       return new Promise((resolve, reject) =>
-        logger.info('beautify', text, allOptions, grammar, filePath, onSave)
+        logger.debug('beautify', text, allOptions, grammar, filePath, onSave, language)
         logger.verbose(allOptions)
 
-        # Get language
-        fileExtension = path.extname(filePath)
-        # Remove prefix "." (period) in fileExtension
-        fileExtension = fileExtension.substr(1)
-        languages = @languages.getLanguages({grammar, extension: fileExtension})
-        logger.verbose(languages, grammar, fileExtension)
+        language ?= @getLanguage(grammar, filePath)
+        fileExtension = @getExtension(filePath)
 
         # Check if unsupported language
-        if languages.length < 1
+        if !language
           unsupportedGrammar = true
 
           logger.verbose('Unsupported language')
@@ -255,18 +297,13 @@ module.exports = class Beautifiers extends EventEmitter
             # not intended to be beautified
             return resolve( null )
         else
-          # TODO: select appropriate language
-          language = languages[0]
-
           logger.verbose("Language #{language.name} supported")
 
           # Get language config
           langDisabled = atom.config.get("atom-beautify.#{language.namespace}.disabled")
 
-
           # Beautify!
           unsupportedGrammar = false
-
 
           # Check if Language is disabled
           if langDisabled
@@ -308,38 +345,44 @@ module.exports = class Beautifiers extends EventEmitter
 
             context =
               filePath: filePath
+              fileExtension: fileExtension
 
             startTime = new Date()
-            beautifier.beautify(text, language.name, options, context)
-            .then((result) =>
-              resolve(result)
-              # Track Timing
-              @trackTiming({
-                utc: "Beautify" # Category
-                utv: language?.name # Variable
-                utt: (new Date() - startTime) # Value
-                utl: version # Label
-              })
-              # Track Empty beautification results
-              if not result
+            beautifier.loadExecutables()
+              .then((executables) ->
+                logger.verbose('executables', executables)
+                beautifier.beautify(text, language.name, options, context)
+              )
+              .then((result) =>
+                resolve(result)
+                # Track Timing
+                @trackTiming({
+                  utc: "Beautify" # Category
+                  utv: language?.name # Variable
+                  utt: (new Date() - startTime) # Value
+                  utl: version # Label
+                })
+                # Track Empty beautification results
+                if not result
+                  @trackEvent({
+                    ec: version, # Category
+                    ea: "Beautify:Empty" # Action
+                    el: language?.name # Label
+                  })
+              )
+              .catch((error) =>
+                logger.error(error)
+                reject(error)
+                # Track Errors
                 @trackEvent({
                   ec: version, # Category
-                  ea: "Beautify:Empty" # Action
+                  ea: "Beautify:Error" # Action
                   el: language?.name # Label
                 })
-            )
-            .catch((error) =>
-              reject(error)
-              # Track Errors
-              @trackEvent({
-                ec: version, # Category
-                ea: "Beautify:Error" # Action
-                el: language?.name # Label
-              })
-            )
-            .finally(=>
-              @emit "beautify::end"
-            )
+              )
+              .finally(=>
+                @emit "beautify::end"
+              )
 
         # Check if Analytics is enabled
         @trackEvent({

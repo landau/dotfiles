@@ -1,0 +1,18 @@
+'menu': [
+  {
+    'label': 'Packages'
+    'submenu': [
+      'label': 'Atom Clock'
+      'submenu': [
+        {
+          'label': 'Toggle clock in status bar'
+          'command': 'atom-clock:toggle'
+        },
+        {
+          'label': 'Toggle UTC mode'
+          'command': 'atom-clock:utc-mode'
+        }
+      ]
+    ]
+  }
+]

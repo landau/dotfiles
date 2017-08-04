@@ -148,7 +148,7 @@ var moveLapHipChatOp = moveLapAdiumOp.dup({
 
 var moveLapSlackOp = moveLapAdiumOp.dup({
   screen: monLap,
-  width: 'screenSizeX/2',
+  width: 'screenSizeX/1.5',
   height: 'screenSizeY',
   x: 'screenOriginX/2.15',
   y:'0'
@@ -275,6 +275,11 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  'Postman': {
+    operations: [moveMidBrowser],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   'Twitter': {
     operations: [moveTwitterNextToBrowser],
     'ignore-fail': true,
@@ -291,7 +296,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   HipChat: {
-    operations: [moveLapHipChatOp],
+    operations: [moveLapSlackOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -385,6 +390,12 @@ var oneMonLayout = S.layout('oneMon', {
     'title-order': [], // TODO move other google windows to monRight
     'repeat-last': true
   },
+  'Postman': {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'title-order': [], // TODO move other google windows to monRight
+    'repeat-last': true
+  },
   'Amazon Music': {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -417,7 +428,7 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   HipChat: {
-    operations: [moveLapHipChatOp],
+    operations: [moveLapSlackOp],
     'ignore-fail': true,
     'repeat-last': true
   },

@@ -10,6 +10,8 @@ module.exports = {
   grammars: [
     "JSX"
     "JavaScript (JSX)"
+    "Babel ES6 JavaScript"
+    "JavaScript with JSX"
   ]
 
   ###
@@ -19,5 +21,13 @@ module.exports = {
     "jsx",
     "js"
   ]
+
+  defaultBeautifier: "Pretty Diff"
+
+  options:
+    e4x:
+      type: 'boolean'
+      default: true
+      description: "Support e4x/jsx syntax"
 
 }

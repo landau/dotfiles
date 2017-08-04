@@ -8,7 +8,18 @@ path = require("path")
 
 module.exports = class FortranBeautifier extends Beautifier
   name: "Fortran Beautifier"
-  link: "https://github.com/Glavin001/atom-beautify/blob/master/src/beautifiers/fortran-beautifier/emacs-fortran-formating-script.lisp"
+  link: "https://www.gnu.org/software/emacs/"
+  executables: [
+    {
+      name: "Emacs"
+      cmd: "emacs"
+      homepage: "https://www.gnu.org/software/emacs/"
+      installation: "https://www.gnu.org/software/emacs/"
+      version: {
+        parse: (text) -> text.match(/Emacs (\d+\.\d+\.\d+)/)[1]
+      }
+    }
+  ]
 
   options: {
     Fortran: true
@@ -16,6 +27,7 @@ module.exports = class FortranBeautifier extends Beautifier
 
   beautify: (text, language, options) ->
     @debug('fortran-beautifier', options)
+    emacs = @exe("emacs")
 
     emacs_path = options.emacs_path
     emacs_script_path = options.emacs_script_path
@@ -35,12 +47,13 @@ module.exports = class FortranBeautifier extends Beautifier
       ]
 
     if emacs_path
+      @deprecateOptionForExecutable("Emacs", "emacs_path", "Path")
       @run(emacs_path, args, {ignoreReturnCode: false})
         .then(=>
           @readFile(tempFile)
         )
     else
-      @run("emacs", args, {ignoreReturnCode: false})
+      emacs.run(args, {ignoreReturnCode: false})
         .then(=>
           @readFile(tempFile)
         )

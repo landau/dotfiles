@@ -1,9 +1,9 @@
-'use babel'
+'use strict'
 
 /*
   The following hack clears the require cache of all the paths to the minimap when this file is laoded. It should prevents errors of partial reloading after an update.
  */
-import path from 'path'
+const path = require('path')
 
 if (!atom.inSpecMode()) {
   Object.keys(require.cache).filter((p) => {
@@ -13,11 +13,10 @@ if (!atom.inSpecMode()) {
   })
 }
 
-import {Emitter, CompositeDisposable} from 'atom'
-import include from './decorators/include'
-import PluginManagement from './mixins/plugin-management'
+const include = require('./decorators/include')
+const PluginManagement = require('./mixins/plugin-management')
 
-let Minimap, MinimapElement, MinimapPluginGeneratorElement
+let Emitter, CompositeDisposable, Minimap, MinimapElement, MinimapPluginGeneratorElement
 
 /**
  * The `Minimap` package provides an eagle-eye view of text buffers.
@@ -25,14 +24,20 @@ let Minimap, MinimapElement, MinimapPluginGeneratorElement
  * It also provides API for plugin packages that want to interact with the
  * minimap and be available to the user through the minimap settings.
  */
-@include(PluginManagement)
+
 class Main {
+  static initClass () {
+    include(this, PluginManagement)
+    return this
+  }
   /**
    * Used only at export time.
    *
    * @access private
    */
   constructor () {
+    if (!Emitter) { ({Emitter, CompositeDisposable} = require('atom')) }
+
     /**
      * The activation state of the package.
      *
@@ -69,13 +74,7 @@ class Main {
      * @access private
      */
     this.subscriptionsOfCommands = null
-    /**
-     * The package's config object.
-     *
-     * @type {Object}
-     * @access private
-     */
-    this.config = require('./config-schema.json')
+
     /**
      * The package's events emitter.
      *
@@ -92,11 +91,7 @@ class Main {
    */
   activate () {
     if (this.active) { return }
-
-    if (!Minimap) { Minimap = require('./minimap') }
-    if (!MinimapElement) { MinimapElement = require('./minimap-element') }
-
-    MinimapElement.registerViewProvider(Minimap)
+    if (!CompositeDisposable) { ({Emitter, CompositeDisposable} = require('atom')) }
 
     this.subscriptionsOfCommands = atom.commands.add('atom-workspace', {
       'minimap:toggle': () => {
@@ -121,6 +116,24 @@ class Main {
   }
 
   /**
+   * Returns a {MinimapElement} for the passed-in model if it's a {Minimap}.
+   *
+   * @param {*} model the model for which returning a view
+   * @return {MinimapElement}
+   */
+  minimapViewProvider (model) {
+    if (!Minimap) { Minimap = require('./minimap') }
+
+    if (model instanceof Minimap) {
+      if (!MinimapElement) { MinimapElement = require('./minimap-element') }
+
+      const element = new MinimapElement()
+      element.setModel(model)
+      return element
+    }
+  }
+
+  /**
    * Deactivates the minimap package.
    */
   deactivate () {
@@ -142,6 +155,12 @@ class Main {
     this.editorsMinimaps = undefined
     this.toggled = false
     this.active = false
+  }
+
+  getConfigSchema () {
+    return this.config
+      ? this.config
+      : atom.packages.getLoadedPackage('minimap').metadata.configSchema
   }
 
   /**
@@ -272,7 +291,10 @@ class Main {
    *
    * @return {Function} the `Minimap` class constructor
    */
-  minimapClass () { return Minimap }
+  minimapClass () {
+    if (!Minimap) { Minimap = require('./minimap') }
+    return Minimap
+  }
 
   /**
    * Returns the `Minimap` object associated to the passed-in
@@ -295,10 +317,13 @@ class Main {
    */
   minimapForEditor (textEditor) {
     if (!textEditor) { return }
+    if (!this.editorsMinimaps) { return }
 
     let minimap = this.editorsMinimaps.get(textEditor)
 
     if (!minimap) {
+      if (!Minimap) { Minimap = require('./minimap') }
+
       minimap = new Minimap({textEditor})
       this.editorsMinimaps.set(textEditor, minimap)
 
@@ -321,6 +346,7 @@ class Main {
    */
   standAloneMinimapForEditor (textEditor) {
     if (!textEditor) { return }
+    if (!Minimap) { Minimap = require('./minimap') }
 
     return new Minimap({
       textEditor: textEditor,
@@ -365,15 +391,16 @@ class Main {
       let minimapElement = atom.views.getView(minimap)
 
       this.emitter.emit('did-create-minimap', minimap)
-
       minimapElement.attach()
     }))
   }
 }
+
+Main.initClass()
 
 /**
  * The exposed instance of the `Main` class.
  *
  * @access private
  */
-export default new Main()
+module.exports = new Main()

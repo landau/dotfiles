@@ -1,16 +1,12 @@
---type-set=less=.less
---type-set=coffee=.coffee
---type-set=dust=.dust
 --type-set=py=.py
 --type-set=markdown=.md,.markdown
---type-set=stylus=.stylus,.styl
---type-set=mustache=.mustache
 --type-set=jade=.jade
 --type-set=json=.json
 --type-set=js=.js
 --type-set=clj=.clj
 --type-set=cljs=.cljs
 --type-set=jsx=.jsx
+--type-set=sh=.sh
 
 
 --ignore-dir=target

@@ -1,9 +1,9 @@
-'use babel'
+'use strict'
 
-import './helpers/workspace'
+require('./helpers/workspace')
 
-import fs from 'fs-plus'
-import Minimap from '../lib/minimap'
+const fs = require('fs-plus')
+const Minimap = require('../lib/minimap')
 
 describe('Minimap', () => {
   let [editor, editorElement, minimap, largeSample, smallSample, minimapVerticalScaleFactor, minimapHorizontalScaleFactor] = []
@@ -14,6 +14,7 @@ describe('Minimap', () => {
     atom.config.set('minimap.interline', 1)
 
     editor = atom.workspace.buildTextEditor({})
+    editor.autoHeight = false
 
     editorElement = atom.views.getView(editor)
     jasmine.attachToDOM(editorElement)
@@ -28,6 +29,10 @@ describe('Minimap', () => {
     minimap = new Minimap({textEditor: editor})
     largeSample = fs.readFileSync(dir.resolve('large-file.coffee')).toString()
     smallSample = fs.readFileSync(dir.resolve('sample.coffee')).toString()
+
+    if (editorElement.component.measurements) {
+      waitsFor(() => editorElement.component.measurements.clientContainerHeight)
+    }
   })
 
   it('has an associated editor', () => {
@@ -57,6 +62,7 @@ describe('Minimap', () => {
 
   it('measures the editor visible area size at minimap scale', () => {
     editor.setText(largeSample)
+
     expect(minimap.getTextEditorScaledHeight()).toEqual(50 * minimapVerticalScaleFactor)
   })
 
@@ -111,7 +117,7 @@ describe('Minimap', () => {
     expect(scrollSpy).toHaveBeenCalled()
   })
 
-  describe('when scrols past end is enabled', () => {
+  describe('when scrolls past end is enabled', () => {
     beforeEach(() => {
       editor.setText(largeSample)
       atom.config.set('editor.scrollPastEnd', true)
@@ -120,14 +126,14 @@ describe('Minimap', () => {
     it('adjust the scrolling ratio', () => {
       editorElement.setScrollTop(editorElement.getScrollHeight())
 
-      let maxScrollTop = editorElement.getScrollHeight() - editorElement.getHeight() - (editorElement.getHeight() - 3 * editor.getLineHeightInPixels())
+      const maxScrollTop = editorElement.getMaxScrollTop()
 
-      expect(minimap.getTextEditorScrollRatio()).toEqual(editorElement.getScrollTop() / maxScrollTop)
+      expect(minimap.getTextEditorScrollRatio()).toBeCloseTo(editorElement.getScrollTop() / maxScrollTop, 0)
     })
 
     it('lock the minimap scroll top to 1', () => {
       editorElement.setScrollTop(editorElement.getScrollHeight())
-      expect(minimap.getScrollTop()).toEqual(minimap.getMaxScrollTop())
+      expect(minimap.getScrollTop()).toBeCloseTo(minimap.getMaxScrollTop(), 0)
     })
 
     describe('getTextEditorScrollRatio(), when getScrollTop() and maxScrollTop both equal 0', () => {
@@ -187,7 +193,7 @@ describe('Minimap', () => {
       editorElement.setScrollLeft(200)
 
       largeLineCount = editor.getScreenLineCount()
-      editorScrollRatio = editorElement.getScrollTop() / (editorElement.getScrollHeight() - editorElement.getHeight())
+      editorScrollRatio = editorElement.getScrollTop() / editorElement.getMaxScrollTop()
     })
 
     it('scales the editor scroll based on the minimap scale factor', () => {
@@ -196,7 +202,7 @@ describe('Minimap', () => {
     })
 
     it('computes the offset to apply based on the editor scroll top', () => {
-      expect(minimap.getScrollTop()).toEqual(editorScrollRatio * minimap.getMaxScrollTop())
+      expect(minimap.getScrollTop()).toBeCloseTo(editorScrollRatio * minimap.getMaxScrollTop(), 0)
     })
 
     it('computes the first visible row in the minimap', () => {
@@ -282,7 +288,7 @@ describe('Minimap', () => {
     beforeEach(() => {
       editor.setText(largeSample)
       editorElement.setScrollTop(1000)
-      editorScrollRatio = editorElement.getScrollTop() / (editorElement.getScrollHeight() - editorElement.getHeight())
+      editorScrollRatio = editorElement.getScrollTop() / editorElement.getMaxScrollTop()
 
       atom.config.set('minimap.independentMinimapScroll', true)
     })
@@ -486,6 +492,7 @@ describe('Stand alone minimap', () => {
     atom.config.set('minimap.interline', 1)
 
     editor = atom.workspace.buildTextEditor({})
+    editor.autoHeight = false
     editorElement = atom.views.getView(editor)
     jasmine.attachToDOM(editorElement)
     editorElement.setHeight(50)
@@ -501,6 +508,10 @@ describe('Stand alone minimap', () => {
 
     largeSample = fs.readFileSync(dir.resolve('large-file.coffee')).toString()
     smallSample = fs.readFileSync(dir.resolve('sample.coffee')).toString()
+
+    if (editorElement.component.measurements) {
+      waitsFor(() => editorElement.component.measurements.clientContainerHeight)
+    }
   })
 
   it('has an associated editor', () => {

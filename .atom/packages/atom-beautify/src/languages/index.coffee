@@ -14,8 +14,10 @@ module.exports = class Languages
   languageNames: [
     "apex"
     "arduino"
+    "bash"
     "c-sharp"
     "c"
+    "clojure"
     "coffeescript"
     "coldfusion"
     "cpp"
@@ -28,7 +30,9 @@ module.exports = class Languages
     "erb"
     "erlang"
     "gherkin"
+    "glsl"
     "go"
+    "gohtml"
     "fortran"
     "handlebars"
     "haskell"
@@ -44,6 +48,8 @@ module.exports = class Languages
     "markdown"
     'marko'
     "mustache"
+    "nginx"
+    "nunjucks"
     "objective-c"
     "ocaml"
     "pawn"
@@ -51,6 +57,7 @@ module.exports = class Languages
     "php"
     "puppet"
     "python"
+    "r"
     "riotjs"
     "ruby"
     "rust"
@@ -63,11 +70,13 @@ module.exports = class Languages
     "tss"
     "twig"
     "typescript"
+    "ux_markup"
     "vala"
     "vue"
     "visualforce"
     "xml"
     "xtemplate"
+    "yaml"
   ]
 
   ###

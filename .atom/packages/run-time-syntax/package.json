@@ -1,34 +1,60 @@
 {
-  "name": "run-time-syntax",
-  "theme": "syntax",
-  "version": "13.37.0",
+  "_args": [
+    [
+      {
+        "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+        "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+        "type": "local"
+      },
+      "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-11717-9390-sfj57s"
+    ]
+  ],
+  "_from": "../d-11717-9390-e8re8k/package.tgz",
+  "_id": "run-time-syntax@13.41.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/run-time-syntax",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+    "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-11717-9390-e8re8k/package.tgz",
+  "_shasum": "ecdd9ecc24c11817c96ebe463d02da98e321e06b",
+  "_shrinkwrap": null,
+  "_spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11717-9390-e8re8k/package.tgz",
+  "_where": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-11717-9390-sfj57s",
+  "bugs": {
+    "url": "https://github.com/run-time/run-time-syntax/issues"
+  },
+  "dependencies": {},
   "description": "An acute yet obtuse Dark Atom Syntax theme featuring animated bracket highlighting",
+  "devDependencies": {},
+  "engines": {
+    "atom": ">1.0"
+  },
+  "homepage": "https://github.com/run-time/run-time-syntax#readme",
+  "license": "MIT",
+  "name": "run-time-syntax",
+  "optionalDependencies": {},
+  "readme": "# Kick your Atom Syntax theme up a notch!\n\n### `run-time-syntax` is an acute yet obtuse Dark Atom Syntax theme\n\n### `run-time-syntax` is son of the honorable [`seti-syntax`](https://atom.io/themes/seti-syntax)\n\n### `run-time-syntax` features animated bracket highlighting\n\n### `run-time-syntax` clearly shows collapsed code blocks\n\n### `run-time-syntax` goes perfect with [`run-time-ui`](https://atom.io/themes/run-time-ui)\n\n### `run-time-syntax` is so LEET it had to start on version `13.37.0`\n\n# It's Run Time!\n\n### Animated bracket matching\n\n![Screenshot](https://github.com/run-time/run-time-syntax/raw/master/screenshot.gif)\n\n\n### Collapsed code block highlights\n\n![Screenshot](https://github.com/run-time/run-time-syntax/raw/master/screenshot2.gif)\n",
+  "readmeFilename": "README.md",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/run-time/run-time-syntax.git"
   },
-  "license": "MIT",
-  "engines": {
-    "atom": ">1.0"
-  },
-  "readme": "# Kick your Atom Syntax theme up a notch!\n\n### `run-time-syntax` is an acute yet obtuse Dark Atom Syntax theme\n\n### `run-time-syntax` is son of the honorable [`seti-syntax`](https://atom.io/themes/seti-syntax)\n\n### `run-time-syntax` features animated bracket highlighting\n\n### `run-time-syntax` clearly shows collapsed code blocks\n\n### `run-time-syntax` goes perfect with [`run-time-ui`](https://atom.io/themes/run-time-ui)\n\n### `run-time-syntax` is so LEET it had to start on version `13.37.0`\n\n# It's Run Time!\n\n### Animated bracket matching\n\n![Screenshot](https://github.com/run-time/run-time-syntax/raw/master/screenshot.gif)\n\n\n### Collapsed code block highlights\n\n![Screenshot](https://github.com/run-time/run-time-syntax/raw/master/screenshot2.gif)\n",
-  "readmeFilename": "README.md",
-  "bugs": {
-    "url": "https://github.com/run-time/run-time-syntax/issues"
-  },
-  "homepage": "https://github.com/run-time/run-time-syntax#readme",
-  "_id": "run-time-syntax@13.37.0",
-  "_shasum": "28e33c2e6f06fe9d5c580cbbdf94b866f74dbe43",
-  "_resolved": "file:../d-11612-52151-1pgtti4/package.tgz",
-  "_from": "../d-11612-52151-1pgtti4/package.tgz",
-  "_atomModuleCache": {
-    "version": 1,
-    "dependencies": [],
-    "extensions": {
-      ".json": [
-        "package.json"
-      ]
-    },
-    "folders": []
-  }
+  "theme": "syntax",
+  "version": "13.41.0"
 }

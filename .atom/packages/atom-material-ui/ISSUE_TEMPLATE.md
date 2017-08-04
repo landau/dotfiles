@@ -1,3 +1,9 @@
+<!--
+
+Have you read Atom's Code of Conduct? By filing an Issue, you are expected to comply with it, including treating everyone with respect: https://github.com/atom/atom/blob/master/CODE_OF_CONDUCT.md
+
+-->
+
 [Short description of problem here]
 
 **Reproduction Steps:**
@@ -24,10 +30,3 @@
 **Installed packages:**
 
 [List of installed packages here]
-
-**Additional information:**
-
-* Problem can be reproduced in safe mode: [Yes/No]
-* Problem started happening recently, didn't happen in an older version of Atom: [Yes/No]
-* Problem can be reliably reproduced, doesn't happen randomly: [Yes/No]
-* Problem happens with all files and projects, not only some files or projects: [Yes/No]

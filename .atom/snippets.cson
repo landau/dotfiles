@@ -31,7 +31,7 @@
   'anonymous function':
     'prefix': 'afn'
     'body': """
-      ($1) => {
+      $1 => {
         $2
       }
     """
@@ -63,4 +63,18 @@
       chai.use(require('sinon-chai'));
       const sinon = require('sinon');
       $1
+      """
+  'test stuff2':
+    'prefix': 'chai-expect'
+    'body': """
+      const {expect} = require('chai');
+      const sinon = require('sinon');
+      $1
+      """
+  'jsdoc':
+    'prefix': 'jsdoc'
+    'body': """
+      /**
+      * $1
+      */
       """

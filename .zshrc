@@ -1,21 +1,54 @@
-# Path to your oh-my-zsh configuration.
+#d Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 export PATH=$PATH:/usr/local/bin
-export PATH=/Users/tlandau/dev/mongo3.2.1/bin:$PATH
+export PATH=/Users/tlandau/dev/mongo3.4.2/bin:$PATH
 export EDITOR=vim
 export LEIN_FAST_TRAMPOLINE=y
-TERM=xterm-256color
+export CLICOLOR=1
+export TERM=xterm-256color
 ulimit -n 2560
 
 # Set name of the theme to load. Look in ~/.oh-my-zsh/themes/
 ZSH_THEME="minimal"
 
 source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
-source ~/.nvm/nvm.sh
 source ~/.work
 source $ZSH/oh-my-zsh.sh
+
+#source ~/.nvm/nvm.sh
+
+lazynvm() {
+  #unset -f nvm node npm
+  export NVM_DIR=~/.nvm
+  [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
+}
+
+#nvm() {
+#  lazynvm 
+#  nvm $@
+#}
+# 
+#node() {
+#  lazynvm
+#  node $@
+#}
+# 
+#npm() {
+#  lazynvm
+#  npm $@
+#}
+
+set -a NODE_GLOBALS
+NODE_GLOBALS=(`find ~/.nvm/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
+
+NODE_GLOBALS+=("node")
+NODE_GLOBALS+=("nvm")
+
+for cmd in "${NODE_GLOBALS[@]}"; do
+  eval "${cmd}(){ unset -f ${NODE_GLOBALS}; lazynvm; ${cmd} \$@ }"
+done
 
 # Example aliases
 
@@ -52,6 +85,10 @@ plugins=(git nyan node npm nvm github git-extras brew osx python z web-search)
 
 cdpath=(~/web ~/work ~/oss)
 
+function weather {
+  curl http://wttr.in/$1
+}
+
 alias brw="brew"
 alias cljs='cd ~/clojurescript && ./script/noderepljs'
 alias cljsbuild="lein trampoline cljsbuild $@"
@@ -60,6 +97,7 @@ alias showfiles='defauls write com.apple.finder AppleShowAllFiles -boolean true;
 alias hidefiles='defaults write com.apple.finder AppleShowAllFiles -boolean false;killall Finder'
 alias trash='rm -rf ~/.Trash/*'
 alias mongod='sudo mongod --fork --logpath /var/log/mongodb.log'
+#alias mongod='sudo mongod --fork'
 alias nodet='nodemon --exec "npm tst --silent"'
 alias nodeyun="nodemon -x 'node . | ./node_modules/.bin/bunyan'"
 alias npmr="npm run"
@@ -70,15 +108,23 @@ alias tree="tree -I 'node_modules'"
 alias yt='youtube-dl -t'
 alias ytmp3='youtube-dl --audio-format=mp3 -x -t'
 alias zshconfig="vim ~/.zshrc"
+alias openchrome='open -a "Google Chrome"'
+alias open-gh-socket='ssh -M git@github.com'
+alias weatherct="weather 06825"
+alias weathernyc="weather nyc"
+
+function clone {
+  git clone gitgithub.com:$1/$2.git
+}
 
 # JSON post curl function
 function jsonpost {
-  curl -X POST -H "Content-Type: application/json" -d $1 $2
+  curl -sX POST -H "Content-Type: application/json" -d $1 $2
 }
 
 # JSON put curl function
 function jsonput {
-  curl -X PUT -H "Content-Type: application/json" -d $1 $2
+  curl -sX PUT -H "Content-Type: application/json" -d $1 $2
 }
 
 function postphoto {
@@ -110,7 +156,8 @@ function validateyaml {
 }
 
 function tojson {
-  python -m json.tool $1
+  #python -m json.tool $1
+  jq -Mr $1
 }
 
 function versions {
@@ -156,6 +203,11 @@ function setversionpatch {
 
 function setdep {
   json=$(node -p "var j = require('./package.json'); j.dependencies['$1'] = '$2'; JSON.stringify(j, null, '  ');" )
+  echo $json > package.json
+}
+
+function setdevdep {
+  json=$(node -p "var j = require('./package.json'); j.devDependencies['$1'] = '$2'; JSON.stringify(j, null, '  ');" )
   echo $json > package.json
 }
 
@@ -214,7 +266,7 @@ function setkeyrepeat {
 }
 
 
-ssh-multi() {
+function ssh-multi() {
 	#HOSTS=${HOSTS:=$*}
 	setopt shwordsplit
 	HOSTS=${HOSTS:=$*}
@@ -234,22 +286,62 @@ ssh-multi() {
 	echo $hosts[2,-1]
 
 	for i in $hosts[2,-1]; do
-		echo "foooo"
-		echo $target
-		tmux split-window -t :"$target" -h  "ssh -o ConnectTimeout=2 -o ConnectionAttempts=2 $i"
+		tmux split-window -t :"$target" -h  "ssh -oStrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=2 $i"
 		tmux select-layout -t :"$target" tiled > /dev/null
 	done
 
-	tmux select-pane -t 0
+	#tmux select-pane -t 0
 	tmux set-window-option -t :"$target"  synchronize-panes on > /dev/null
 	tmux attach-session -t "$session_name"
 }
+
+mssh() {
+	tmux rename-window ${1};
+	active_window=`tmux list-windows | grep active | cut -d: -f1`;
+	pane=`tmux list-panes -t ${active_window} | grep active | cut -d: -f1`;
+	tmux select-layout tiled;
+	tmux setw synchronize-panes on;
+	echo "Current window.pane is ${active_window}.${pane}";
+
+	machines="";
+	first_machine="";
+
+	setopt shwordsplit
+	HOSTS=$*
+	hosts=(${=HOSTS})
+
+	for connHost in $hosts; do
+		echo "* Adding host '${connHost}'";
+		if (test -z "$first_machine")
+		then
+			first_machine="$connHost";
+		else
+			machines="$machines $connHost";
+		fi
+	done
+
+	echo $first_machine
+	echo $machines
+	for m in $machines
+	do
+		#tmux new-window -n "$m" "tmux join-pane -d -t ${active_window}.${pane} ; tmux select-layout -t ${active_window} tiled; ssh -oStrictHostKeyChecking=no $m";	
+		tmux new-window -n "$m" "tmux join-pane -d -t ${active_window}.${pane} ; tmux select-layout -t ${active_window} tiled; ssh -oStrictHostKeyChecking=no $m";	
+	done;
+
+	ssh -oStrictHostKeyChecking=no $first_machine;
+}
+
+function speed {
+  pv --line-mode --average-rate >/dev/null
+}
+
+
 
 # --- Camera lazeeeeehhhh
 
 
 function opencam {
-  cd /Volumes/NO\ NAME/DCIM/100OLYMP
+  cd /Volumes/Untitled/DCIM/100OLYMP
   open *.JPG
 }
 
@@ -258,7 +350,7 @@ function copycam {
   echo mkdir -p $DIR
   mkdir -p $DIR
 
-  cd /Volumes/NO\ NAME/DCIM/100OLYMP
+  cd /Volumes/Untitled/DCIM/100OLYMP
 
   for p in $(find . -name "*.JPG" | cut -c 3- | cut -c -8); do 
    #echo cp $p.ORF $DIR; 
@@ -270,8 +362,18 @@ function copycam {
 }
 
 function purgecam {
-  rm -v /Volumes/NO\ NAME/DCIM/100OLYMP/*
+  rm -v /Volumes/Untitled/DCIM/100OLYMP/*
 }
+
+function togif {
+	palette="/tmp/palette.png"
+
+	filters="fps=15,scale=320:-1:flags=lanczos"
+
+	ffmpeg -v warning -i $1 -vf "$filters,palettegen" -y $palette
+	ffmpeg -v warning -i $1 -i $palette -lavfi "$filters [x]; [x][1:v] paletteuse" -y $2
+}
+
 
 
 # -- Java
@@ -279,3 +381,29 @@ export JAVA_HOME=$(/usr/libexec/java_home)
 TOMCAT_DIR=/Library/Tomcat/bin
 alias tomstart=$TOMCAT_DIR/startup.sh
 alias tomstop=$TOMCAT_DIR/shutdown.sh
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
+
+
+OATH_KEY_HOME="$HOME/Documents"
+
+function oauth {
+  if [ -f $OATH_KEY_HOME/$1 ]
+    then
+      CODE=$(oathtool --totp -b -d 6 `cat $OATH_KEY_HOME/$1`)
+      if [ `uname` = 'Darwin' ]
+        then
+          echo -n $CODE | pbcopy # Comment out if you don't want the
+                                 # OTP to be automatically copied to
+                                 # the clipboard on Mac OS X
+      fi
+      echo "$CODE"
+  else
+    echo "No key specified, or key not found."
+    echo "Available keys:"
+    ls $OATH_KEY_HOME
+  fi
+}
+
+alias dynamo="cd /Users/tlandau/Downloads/dynamodb_local_latest && java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb"

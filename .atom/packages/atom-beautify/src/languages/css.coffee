@@ -1,15 +1,8 @@
-# Get Atom defaults
-scope = ['source.css']
-tabLength = atom?.config.get('editor.tabLength', scope: scope) ? 4
-softTabs = atom?.config.get('editor.softTabs', scope: scope) ? true
-defaultIndentSize = (if softTabs then tabLength else 1)
-defaultIndentChar = (if softTabs then " " else "\t")
-defaultIndentWithTabs = not softTabs
-
 module.exports = {
 
   name: "CSS"
   namespace: "css"
+  scope: ['source.css']
 
   ###
   Supported Grammars
@@ -31,12 +24,12 @@ module.exports = {
     # CSS
     indent_size:
       type: 'integer'
-      default: defaultIndentSize
+      default: null
       minimum: 0
       description: "Indentation size/length"
     indent_char:
       type: 'string'
-      default: defaultIndentChar
+      default: null
       minimum: 0
       description: "Indentation character"
     selector_separator_newline:
@@ -85,13 +78,13 @@ module.exports = {
     no_lead_zero:
       type: 'boolean'
       default: false
-      description: "If in CSS values leading 0s immediately preceeding \
+      description: "If in CSS values leading 0s immediately preceding \
                 a decimal should be removed or prevented."
     configPath:
       title: "comb custom config file"
       type: 'string'
       default: ""
-      description: "Path to custom CSScomb config file, used in absense of a \
+      description: "Path to custom CSScomb config file, used in absence of a \
                 `.csscomb.json` or `.csscomb.cson` at the root of your project."
     predefinedConfig:
       title: "comb predefined config"

@@ -11,11 +11,26 @@ module.exports = class ClangFormat extends Beautifier
 
   name: "clang-format"
   link: "https://clang.llvm.org/docs/ClangFormat.html"
+  executables: [
+    {
+      name: "ClangFormat"
+      cmd: "clang-format"
+      homepage: "https://clang.llvm.org/docs/ClangFormat.html"
+      installation: "https://clang.llvm.org/docs/ClangFormat.html"
+      version: {
+        parse: (text) -> text.match(/version (\d+\.\d+\.\d+)/)[1]
+      }
+      docker: {
+        image: "unibeautify/clang-format"
+      }
+    }
+  ]
 
   options: {
     "C++": false
     "C": false
     "Objective-C": false
+    "GLSL": true
   }
 
   ###
@@ -62,12 +77,10 @@ module.exports = class ClangFormat extends Beautifier
     )
     .then((dumpFile) =>
       # console.log("clang-format", dumpFile)
-      return @run("clang-format", [
+      return @exe("clang-format").run([
         @dumpToFile(dumpFile, text)
         ["--style=file"]
-        ], help: {
-          link: "https://clang.llvm.org/docs/ClangFormat.html"
-        }).finally( ->
+        ]).finally( ->
           fs.unlink(dumpFile)
         )
     )

@@ -9,72 +9,112 @@ path = require('path')
 module.exports = class PHPCSFixer extends Beautifier
 
   name: 'PHP-CS-Fixer'
-  link: "http://php.net/manual/en/install.php"
+  link: "https://github.com/FriendsOfPHP/PHP-CS-Fixer"
+  executables: [
+    {
+      name: "PHP"
+      cmd: "php"
+      homepage: "http://php.net/"
+      installation: "http://php.net/manual/en/install.php"
+      version: {
+        parse: (text) -> text.match(/PHP (\d+\.\d+\.\d+)/)[1]
+      }
+    }
+    {
+      name: "PHP-CS-Fixer"
+      cmd: "php-cs-fixer"
+      homepage: "https://github.com/FriendsOfPHP/PHP-CS-Fixer"
+      installation: "https://github.com/FriendsOfPHP/PHP-CS-Fixer#installation"
+      optional: true
+      version: {
+        parse: (text) ->
+          try
+            text.match(/version (.*) by/)[1] + ".0"
+          catch
+            text.match(/PHP CS Fixer (\d+\.\d+\.\d+)/)[1]
+      }
+      docker: {
+        image: "unibeautify/php-cs-fixer"
+        workingDir: "/project"
+      }
+    }
+  ]
 
   options:
-    PHP: true
+    PHP:
+      rules: true
+      cs_fixer_path: true
+      cs_fixer_version: true
+      cs_fixer_config_file: true
+      allow_risky: true
+      level: true
+      fixers: true
 
   beautify: (text, language, options, context) ->
     @debug('php-cs-fixer', options)
+    php = @exe('php')
+    phpCsFixer = @exe('php-cs-fixer')
+    configFiles = ['.php_cs', '.php_cs.dist']
 
-    configFile = if context? and context.filePath? then @findFile(path.dirname(context.filePath), '.php_cs')
+    # Find a config file in the working directory if a custom one was not provided
+    if not options.cs_fixer_config_file
+      options.cs_fixer_config_file = if context? and context.filePath? then @findFile(path.dirname(context.filePath), configFiles)
 
-    if @isWindows
-      # Find php-cs-fixer.phar script
-      @Promise.all([
-        @which(options.cs_fixer_path) if options.cs_fixer_path
-        @which('php-cs-fixer')
-      ]).then((paths) =>
-        @debug('php-cs-fixer paths', paths)
-        _ = require 'lodash'
-        # Get first valid, absolute path
-        phpCSFixerPath = _.find(paths, (p) -> p and path.isAbsolute(p) )
-        @verbose('phpCSFixerPath', phpCSFixerPath)
-        @debug('phpCSFixerPath', phpCSFixerPath, paths)
-        # Check if PHP-CS-Fixer path was found
-        if phpCSFixerPath?
-          # Found PHP-CS-Fixer path
-          @run("php", [
-            phpCSFixerPath
-            "fix"
-            "--level=#{options.level}" if options.level
-            "--fixers=#{options.fixers}" if options.fixers
-            "--config-file=#{configFile}" if configFile
-            tempFile = @tempFile("temp", text)
-            ], {
-              ignoreReturnCode: true
-              help: {
-                link: "http://php.net/manual/en/install.php"
-              }
-            })
-            .then(=>
-              @readFile(tempFile)
-            )
-        else
-          @verbose('php-cs-fixer not found!')
-          # Could not find PHP-CS-Fixer path
-          @Promise.reject(@commandNotFoundError(
-            'php-cs-fixer'
-            {
-            link: "https://github.com/FriendsOfPHP/PHP-CS-Fixer"
-            program: "php-cs-fixer.phar"
-            pathOption: "PHP - CS Fixer Path"
-            })
-          )
-      )
-    else
-      @run("php-cs-fixer", [
+    # Try again to find a config file in the project root
+    if not options.cs_fixer_config_file
+      options.cs_fixer_config_file = @findFile(atom.project.getPaths()[0], configFiles)
+
+    phpCsFixerOptions = [
+      "fix"
+      "--rules=#{options.rules}" if options.rules
+      "--config=#{options.cs_fixer_config_file}" if options.cs_fixer_config_file
+      "--allow-risky=#{options.allow_risky}" if options.allow_risky
+      "--using-cache=no"
+    ]
+
+    isVersion1 = ((phpCsFixer.isInstalled and phpCsFixer.isVersion('1.x')) or \
+      (options.cs_fixer_version and phpCsFixer.versionSatisfies("#{options.cs_fixer_version}.0.0", '1.x')))
+    if isVersion1
+      phpCsFixerOptions = [
         "fix"
         "--level=#{options.level}" if options.level
         "--fixers=#{options.fixers}" if options.fixers
-        "--config-file=#{configFile}" if configFile
-        tempFile = @tempFile("temp", text)
-        ], {
-          ignoreReturnCode: true
-          help: {
-            link: "https://github.com/FriendsOfPHP/PHP-CS-Fixer"
-          }
-        })
-        .then(=>
-          @readFile(tempFile)
+        "--config-file=#{options.cs_fixer_config_file}" if options.cs_fixer_config_file
+      ]
+    runOptions = {
+      ignoreReturnCode: true
+      help: {
+        link: "https://github.com/FriendsOfPHP/PHP-CS-Fixer"
+      }
+    }
+
+    # Find php-cs-fixer.phar script
+    if options.cs_fixer_path
+      @deprecateOptionForExecutable("PHP-CS-Fixer", "PHP - PHP-CS-Fixer Path (cs_fixer_path)", "Path")
+
+    @Promise.all([
+      @which(options.cs_fixer_path) if options.cs_fixer_path
+      phpCsFixer.path()
+      @tempFile("temp", text, '.php')
+    ]).then(([customPhpCsFixerPath, phpCsFixerPath, tempFile]) =>
+      # Get first valid, absolute path
+      finalPhpCsFixerPath = if customPhpCsFixerPath and path.isAbsolute(customPhpCsFixerPath) then \
+        customPhpCsFixerPath else phpCsFixerPath
+      @verbose('finalPhpCsFixerPath', finalPhpCsFixerPath, phpCsFixerPath, customPhpCsFixerPath)
+
+      isPhpScript = (finalPhpCsFixerPath.indexOf(".phar") isnt -1) or (finalPhpCsFixerPath.indexOf(".php") isnt -1)
+      @verbose('isPhpScript', isPhpScript)
+
+      if finalPhpCsFixerPath and isPhpScript
+        php.run([finalPhpCsFixerPath, phpCsFixerOptions, tempFile], runOptions)
+          .then(=>
+            @readFile(tempFile)
+          )
+      else
+        phpCsFixer.run([phpCsFixerOptions, tempFile],
+          Object.assign({}, runOptions, { cmd: finalPhpCsFixerPath })
         )
+          .then(=>
+            @readFile(tempFile)
+          )
+    )
