@@ -1,4 +1,4 @@
-# vim-mode-plus [![Build Status](https://travis-ci.org/t9md/atom-vim-mode-plus.svg)](https://travis-ci.org/t9md/atom-vim-mode-plus)
+# vim-mode-plus [![Build Status](https://travis-ci.org/t9md/atom-vim-mode-plus.svg)](https://travis-ci.org/t9md/atom-vim-mode-plus) [![BountySource](https://api.bountysource.com/badge/team?team_id=116280&style=raised)](https://www.bountysource.com/teams/atom-vim-mode-plus)
 
 vim-mode improved.
 
@@ -12,9 +12,11 @@ vim-mode improved.
 - [Whats this?](#whats-this)
 - [FAQ](#faq)
     - [Why fork? why not directly contribute to official vim-mode?](#why-fork-why-not-directly-contribute-to-official-vim-mode)
+    - [Behavior different from pure Vim?](#behavior-different-from-pure-vim)
     - [In visual-block mode, some motions make the editor slow, freeze.](#in-visual-block-mode-some-motions-make-the-editor-slow-freeze)
     - [ex-mode?](#ex-mode)
     - [Want to suppress autocomplete-plus's auto suggestion except insert-mode.](#want-to-suppress-autocomplete-pluss-auto-suggestion-except-insert-mode)
+    - [Flash effect not appear on cursor-line, occurrence-marker is not displayed on cursor-line too.](#flash-effect-not-appear-on-cursor-line-occurrence-marker-is-not-displayed-on-cursor-line-too)
     - [Surround not work](#surround-not-work)
     - [How can I insert single white space when surround?](#how-can-i-insert-single-white-space-when-surround)
 - [Wiki](#wiki)
@@ -86,6 +88,11 @@ Search [Q&A](https://github.com/t9md/atom-vim-mode-plus/issues?utf8=%E2%9C%93&q=
 - Changes are [too big](https://github.com/t9md/atom-vim-mode-plus/graphs/contributors).
 - I felt many features are too experimental to merge to the official vim-mode.
 
+### Behavior different from pure Vim?
+
+Some behaviors are intentionally have different default behaviors.
+See [DifferencesFromPureVim](https://github.com/t9md/atom-vim-mode-plus/wiki/DifferencesFromPureVim) for details.
+
 ### In visual-block mode, some motions make the editor slow, freeze.
 
 Not freezing, it's just VERY slow.  
@@ -116,6 +123,11 @@ If you want to directly edit `config.cson`, here it is.
     "vim-mode-plus.insert-mode.replace"
   ]
 ```
+
+### Flash effect not appear on cursor-line, occurrence-marker is not displayed on cursor-line too.
+
+This is because of syntax-theme you are using.
+See [this tips on Wiki](https://github.com/t9md/atom-vim-mode-plus/wiki/TIPS#flash-effect-not-appear-on-cursor-line-occurrence-marker-is-not-displayed-on-cursor-line-too).
 
 ### Surround not work
 
@@ -154,6 +166,8 @@ provides <kbd>gf</kbd> to open file under cursor.
 Does not exist in pure Vim, provides clip-board history you can pop yanked text until you get result you want.
 - [choose-pane](https://atom.io/packages/choose-pane)
 Does not exist in pure Vim, provides keyboard navigation between panes/panels by choosing it by label.
+- [keystroke](https://atom.io/packages/keystroke)
+Keystrokes to keystroke keyamp in you `keymap.cson`.
 
 # References
 

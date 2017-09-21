@@ -31,7 +31,7 @@
   'anonymous function':
     'prefix': 'afn'
     'body': """
-      $1 => {
+      function($1) {
         $2
       }
     """
@@ -67,6 +67,7 @@
   'test stuff2':
     'prefix': 'chai-expect'
     'body': """
+      const { describe, it } = require('mocha');
       const {expect} = require('chai');
       const sinon = require('sinon');
       $1

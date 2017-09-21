@@ -159,6 +159,10 @@ InsertAtEndOfTarget:
   file: "./operator-insert"
   commandName: "vim-mode-plus:insert-at-end-of-target"
   commandScope: "atom-text-editor"
+InsertAtHeadOfTarget:
+  file: "./operator-insert"
+  commandName: "vim-mode-plus:insert-at-head-of-target"
+  commandScope: "atom-text-editor"
 InsertAtStartOfOccurrence:
   file: "./operator-insert"
   commandName: "vim-mode-plus:insert-at-start-of-occurrence"
@@ -631,6 +635,20 @@ MoveToFirstLine:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-first-line"
   commandScope: "atom-text-editor"
+MoveToScreenColumn:
+  file: "./motion"
+MoveToBeginningOfScreenLine:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-beginning-of-screen-line"
+  commandScope: "atom-text-editor"
+MoveToFirstCharacterOfScreenLine:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-first-character-of-screen-line"
+  commandScope: "atom-text-editor"
+MoveToLastCharacterOfScreenLine:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-last-character-of-screen-line"
+  commandScope: "atom-text-editor"
 MoveToLastLine:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-last-line"
@@ -1091,6 +1109,8 @@ InnerPersistentSelection:
   file: "./text-object"
   commandName: "vim-mode-plus:inner-persistent-selection"
   commandScope: "atom-text-editor"
+LastPastedRange:
+  file: "./text-object"
 VisibleArea:
   file: "./text-object"
 AVisibleArea:

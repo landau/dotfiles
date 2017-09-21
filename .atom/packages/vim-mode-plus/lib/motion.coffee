@@ -26,6 +26,7 @@ _ = require 'underscore-plus'
   pointIsAtEndOfLineAtNonEmptyRow
   getEndOfLineForBufferRow
   findRangeInBufferRow
+  saveEditorState
 } = require './utils'
 
 Base = require './base'
@@ -98,7 +99,7 @@ class Motion extends Base
     @vimState.getLastBlockwiseSelection().autoscroll() if @wise is 'blockwise'
 
   setCursorBufferRow: (cursor, row, options) ->
-    if @verticalMotion and @getConfig('moveToFirstCharacterOnVerticalMotion')
+    if @verticalMotion and not @getConfig('stayOnVerticalMotion')
       cursor.setBufferPosition(@getFirstCharacterPositionForBufferRow(row), options)
     else
       setBufferRow(cursor, row, options)
@@ -115,6 +116,12 @@ class Motion extends Base
       if (newPosition = cursor.getBufferPosition()).isEqual(oldPosition)
         state.stop()
       oldPosition = newPosition
+
+  isCaseSensitive: (term) ->
+    if @getConfig("useSmartcaseFor#{@caseSensitivityKind}")
+      term.search(/[A-Z]/) isnt -1
+    else
+      not @getConfig("ignoreCaseFor#{@caseSensitivityKind}")
 
 # Used as operator's target in visual-mode.
 class CurrentSelection extends Motion
@@ -601,6 +608,7 @@ class MoveToPreviousParagraph extends MoveToNextParagraph
   direction: 'previous'
 
 # -------------------------
+# keymap: 0
 class MoveToBeginningOfLine extends Motion
   @extend()
 
@@ -636,6 +644,7 @@ class MoveToLastNonblankCharacterOfLineAndDown extends Motion
 
 # MoveToFirstCharacterOfLine faimily
 # ------------------------------------
+# ^
 class MoveToFirstCharacterOfLine extends Motion
   @extend()
   moveCursor: (cursor) ->
@@ -681,6 +690,28 @@ class MoveToFirstLine extends Motion
 
   getRow: ->
     @getCount(-1)
+
+class MoveToScreenColumn extends Motion
+  @extend(false)
+  moveCursor: (cursor) ->
+    allowOffScreenPosition = @getConfig("allowMoveToOffScreenColumnOnScreenLineMotion")
+    point = @vimState.utils.getScreenPositionForScreenRow(@editor, cursor.getScreenRow(), @which, {allowOffScreenPosition})
+    @setScreenPositionSafely(cursor, point)
+
+# keymap: g 0
+class MoveToBeginningOfScreenLine extends MoveToScreenColumn
+  @extend()
+  which: "beginning"
+
+# g ^: `move-to-first-character-of-screen-line`
+class MoveToFirstCharacterOfScreenLine extends MoveToScreenColumn
+  @extend()
+  which: "first-character"
+
+# keymap: g $
+class MoveToLastCharacterOfScreenLine extends MoveToScreenColumn
+  @extend()
+  which: "last-character"
 
 # keymap: G
 class MoveToLastLine extends MoveToFirstLine
@@ -866,35 +897,108 @@ class Find extends Motion
   inclusive: true
   offset: 0
   requireInput: true
+  caseSensitivityKind: "Find"
+
+  restoreEditorState: ->
+    @_restoreEditorState?()
+    @_restoreEditorState = null
+
+  cancelOperation: ->
+    @restoreEditorState()
+    super
 
   initialize: ->
     super
-    @focusInput() unless @isComplete()
+
+    @repeatIfNecessary() if @getConfig("reuseFindForRepeatFind")
+    return if @isComplete()
+
+    charsMax = @getConfig("findCharsMax")
+
+    if (charsMax > 1)
+      @_restoreEditorState = saveEditorState(@editor)
+
+      options =
+        autoConfirmTimeout: @getConfig("findConfirmByTimeout")
+        onConfirm: (@input) => if @input then @processOperation() else @cancelOperation()
+        onChange: (@preConfirmedChars) => @highlightTextInCursorRows(@preConfirmedChars, "pre-confirm")
+        onCancel: =>
+          @vimState.highlightFind.clearMarkers()
+          @cancelOperation()
+        commands:
+          "vim-mode-plus:find-next-pre-confirmed": => @findPreConfirmed(+1)
+          "vim-mode-plus:find-previous-pre-confirmed": =>  @findPreConfirmed(-1)
+
+    options ?= {}
+    options.purpose = "find"
+    options.charsMax = charsMax
+
+    @focusInput(options)
+
+  findPreConfirmed: (delta) ->
+    if @preConfirmedChars and @getConfig("highlightFindChar")
+      index = @highlightTextInCursorRows(@preConfirmedChars, "pre-confirm", @getCount(-1) + delta, true)
+      @count = index + 1
+
+  repeatIfNecessary: ->
+    currentFind = @vimState.globalState.get("currentFind")
+    isSequentialExecution = @vimState.operationStack.getLastCommandName() in ["Find", "FindBackwards", "Till", "TillBackwards"]
+    if currentFind? and isSequentialExecution
+      @input = currentFind.input
+      @repeated = true
 
   isBackwards: ->
     @backwards
 
+  execute: ->
+    super
+    decorationType = "post-confirm"
+    decorationType += " long" if @isAsTargetExceptSelect()
+    @editor.component.getNextUpdatePromise().then =>
+      @highlightTextInCursorRows(@input, decorationType)
+
+    return # Don't return Promise here. OperationStack treat Promise differently.
+
   getPoint: (fromPoint) ->
-    {start, end} = @editor.bufferRangeForBufferRow(fromPoint.row)
-
-    offset = if @isBackwards() then @offset else -@offset
-    unOffset = -offset * @repeated
-    if @isBackwards()
-      scanRange = [start, fromPoint.translate([0, unOffset])]
-      method = 'backwardsScanInBufferRange'
-    else
-      scanRange = [fromPoint.translate([0, 1 + unOffset]), end]
-      method = 'scanInBufferRange'
-
+    scanRange = @editor.bufferRangeForBufferRow(fromPoint.row)
     points = []
-    @editor[method] ///#{_.escapeRegExp(@input)}///g, scanRange, ({range}) ->
-      points.push(range.start)
-    points[@getCount(-1)]?.translate([0, offset])
+    regex = @getRegex(@input)
+    indexWantAccess = @getCount(-1)
+
+    translation = new Point(0, if @isBackwards() then @offset else -@offset)
+    fromPoint = fromPoint.translate(translation.negate()) if @repeated
+
+    if @isBackwards()
+      scanRange.start = Point.ZERO if @getConfig("findAcrossLines")
+      @editor.backwardsScanInBufferRange regex, scanRange, ({range, stop}) ->
+        if range.start.isLessThan(fromPoint)
+          points.push(range.start)
+          stop() if points.length > indexWantAccess
+    else
+      scanRange.end = @editor.getEofBufferPosition() if @getConfig("findAcrossLines")
+      @editor.scanInBufferRange regex, scanRange, ({range, stop}) ->
+        if range.start.isGreaterThan(fromPoint)
+          points.push(range.start)
+          stop() if points.length > indexWantAccess
+
+    points[indexWantAccess]?.translate(translation)
+
+  highlightTextInCursorRows: (text, decorationType, index = @getCount(-1), adjustIndex = false) ->
+    return unless @getConfig("highlightFindChar")
+    @vimState.highlightFind.highlightCursorRows(@getRegex(text), decorationType, @isBackwards(), @offset, index, adjustIndex)
 
   moveCursor: (cursor) ->
     point = @getPoint(cursor.getBufferPosition())
-    @setBufferPositionSafely(cursor, point)
+    if point?
+      cursor.setBufferPosition(point)
+    else
+      @restoreEditorState()
+
     @globalState.set('currentFind', this) unless @repeated
+
+  getRegex: (term) ->
+    modifiers = if @isCaseSensitive(term) then 'g' else 'gi'
+    new RegExp(_.escapeRegExp(term), modifiers)
 
 # keymap: F
 class FindBackwards extends Find
@@ -929,7 +1033,7 @@ class MoveToMark extends Motion
 
   initialize: ->
     super
-    @focusInput() unless @isComplete()
+    @readChar() unless @isComplete()
 
   getPoint: ->
     @vimState.mark.get(@input)
@@ -1075,40 +1179,38 @@ class MoveToNextOccurrence extends Motion
       marker.getBufferRange()
 
   execute: ->
-    @ranges = @getRanges()
+    @ranges = @vimState.utils.sortRanges(@getRanges())
     super
 
   moveCursor: (cursor) ->
-    index = @getIndex(cursor.getBufferPosition())
-    if index?
-      offset = switch @direction
-        when 'next' then @getCount(-1)
-        when 'previous' then -@getCount(-1)
-      range = @ranges[getIndex(index + offset, @ranges)]
-      point = range.start
+    range = @ranges[getIndex(@getIndex(cursor.getBufferPosition()), @ranges)]
+    point = range.start
+    cursor.setBufferPosition(point, autoscroll: false)
 
-      cursor.setBufferPosition(point, autoscroll: false)
+    if cursor.isLastCursor()
+      @editor.unfoldBufferRow(point.row)
+      smartScrollToBufferPosition(@editor, point)
 
-      if cursor.isLastCursor()
-        @editor.unfoldBufferRow(point.row)
-        smartScrollToBufferPosition(@editor, point)
-
-      if @getConfig('flashOnMoveToOccurrence')
-        @vimState.flash(range, type: 'search')
+    if @getConfig('flashOnMoveToOccurrence')
+      @vimState.flash(range, type: 'search')
 
   getIndex: (fromPoint) ->
+    index = null
     for range, i in @ranges when range.start.isGreaterThan(fromPoint)
-      return i
-    0
+      index = i
+      break
+    (index ? 0) + @getCount(-1)
 
 class MoveToPreviousOccurrence extends MoveToNextOccurrence
   @extend()
   direction: 'previous'
 
   getIndex: (fromPoint) ->
+    index = null
     for range, i in @ranges by -1 when range.end.isLessThan(fromPoint)
-      return i
-    @ranges.length - 1
+      index = i
+      break
+    (index ? @ranges.length - 1) - @getCount(-1)
 
 # -------------------------
 # keymap: %

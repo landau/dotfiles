@@ -149,14 +149,12 @@ describe "Operator general", ->
 
       it "leaves the cursor on the first nonblank character", ->
         set
-          text: """
-          12345
+          textC: """
+          1234|5
             abcde\n
           """
-          cursor: [0, 4]
         ensure 'd d',
-          text: "  abcde\n"
-          cursor: [0, 2]
+          textC: "  |abcde\n"
 
     describe "undo behavior", ->
       [originalText, initialTextC] = []
@@ -404,7 +402,7 @@ describe "Operator general", ->
           set text: "test (xyz)", cursor: [0, 6]
 
         it "deletes until the closing parenthesis", ->
-          ensure ['d t', input: ')'],
+          ensure 'd t )',
             text: 'test ()'
             cursor: [0, 6]
 
@@ -427,7 +425,7 @@ describe "Operator general", ->
           text: "abcd\nabc\nabd"
           cursor: [[0, 0], [1, 0], [2, 0]]
 
-        ensure ['d t', input: 'd'],
+        ensure 'd t d',
           text: "d\nabc\nd"
           cursor: [[0, 0], [1, 0], [2, 0]]
 
@@ -542,9 +540,8 @@ describe "Operator general", ->
   describe "the y keybinding", ->
     beforeEach ->
       set
-        cursor: [0, 4]
-        text: """
-        012 345
+        textC: """
+        012 |345
         abc\n
         """
 
@@ -563,9 +560,8 @@ describe "Operator general", ->
     describe "visual-mode.linewise", ->
       beforeEach ->
         set
-          cursor: [0, 4]
-          text: """
-            000000
+          textC: """
+            0000|00
             111111
             222222\n
             """
@@ -641,13 +637,13 @@ describe "Operator general", ->
 
     describe "with a register", ->
       it "saves the line to the a register", ->
-        ensure ['"', input: 'a', 'y y'],
+        ensure '" a y y',
           register: a: text: "012 345\n"
 
     describe "with A register", ->
       it "append to existing value of lowercase-named register", ->
-        ensure ['"', input: 'a', 'y y'], register: a: text: "012 345\n"
-        ensure ['"', input: 'A', 'y y'], register: a: text: "012 345\n012 345\n"
+        ensure '" a y y', register: a: text: "012 345\n"
+        ensure '" A y y', register: a: text: "012 345\n012 345\n"
 
     describe "with a motion", ->
       beforeEach ->
@@ -657,7 +653,7 @@ describe "Operator general", ->
         ensure 'y e', cursor: [0, 4], register: {'"': text: '345'}
 
       it "does not yank when motion failed", ->
-        ensure ['y t', input: 'x'], register: {'"': text: undefined}
+        ensure 'y t x', register: {'"': text: undefined}
 
       it "yank and move cursor to start of target", ->
         ensure 'y h',
@@ -940,8 +936,6 @@ describe "Operator general", ->
            678\n
           """
 
-    # HERE
-    # -------------------------
     describe "put-after-with-auto-indent command", ->
       beforeEach ->
         waitsForPromise ->
@@ -1033,7 +1027,7 @@ describe "Operator general", ->
               if (2) {
                 |if(3) {
                   abc
-            ____
+
                   def
                 }
               }
@@ -1122,12 +1116,7 @@ describe "Operator general", ->
         cursor: [[0, 0], [1, 0]]
 
     it "replaces a single character", ->
-      ensure ['r', input: 'x'], text: 'x2\nx4\n\n'
-
-    it "does nothing when cancelled", ->
-      ensure 'r escape',
-        text: '12\n34\n\n'
-        mode: 'normal'
+      ensure 'r x', text: 'x2\nx4\n\n'
 
     it "remain visual-mode when cancelled", ->
       ensure 'v r escape',
@@ -1151,24 +1140,37 @@ describe "Operator general", ->
         """
 
     it "composes properly with motions", ->
-      ensure ['2 r', input: 'x'], text: 'xx\nxx\n\n'
+      ensure '2 r x', text: 'xx\nxx\n\n'
 
     it "does nothing on an empty line", ->
       set cursor: [2, 0]
-      ensure ['r', input: 'x'], text: '12\n34\n\n'
+      ensure 'r x', text: '12\n34\n\n'
 
     it "does nothing if asked to replace more characters than there are on a line", ->
-      ensure ['3 r', input: 'x'], text: '12\n34\n\n'
+      ensure '3 r x', text: '12\n34\n\n'
+
+    describe "cancellation", ->
+      it "does nothing when cancelled", ->
+        ensure 'r escape', text: '12\n34\n\n', mode: 'normal'
+
+      it "keep multi-cursor on cancelled", ->
+        set                textC: "|    a\n!    a\n|    a\n"
+        ensure "r escape", textC: "|    a\n!    a\n|    a\n", mode: "normal"
+
+      it "keep multi-cursor on cancelled", ->
+        set                textC: "|**a\n!**a\n|**a\n"
+        ensure "v l",      textC: "**|a\n**!a\n**|a\n", selectedText: ["**", "**", "**"], mode: ["visual", "characterwise"]
+        ensure "r escape", textC: "**|a\n**!a\n**|a\n", selectedText: ["**", "**", "**"], mode: ["visual", "characterwise"]
 
     describe "when in visual mode", ->
       beforeEach ->
         keystroke 'v e'
 
       it "replaces the entire selection with the given character", ->
-        ensure ['r', input: 'x'], text: 'xx\nxx\n\n'
+        ensure 'r x', text: 'xx\nxx\n\n'
 
       it "leaves the cursor at the beginning of the selection", ->
-        ensure ['r', input: 'x' ], cursor: [[0, 0], [1, 0]]
+        ensure 'r x', cursor: [[0, 0], [1, 0]]
 
     describe "when in visual-block mode", ->
       beforeEach ->
@@ -1186,7 +1188,7 @@ describe "Operator general", ->
           selectedTextOrdered: ['11', '22', '33', '44'],
 
       it "replaces each selection and put cursor on start of top selection", ->
-        ensure ['r', input: 'x'],
+        ensure 'r x',
           mode: 'normal'
           cursor: [1, 4]
           text: """

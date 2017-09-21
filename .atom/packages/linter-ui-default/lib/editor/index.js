@@ -81,13 +81,23 @@ class Editor {
     this.subscriptions.add(new Disposable(function() {
       tooltipSubscription.dispose()
     }))
-    this.subscriptions.add(textEditor.onDidChangeCursorPosition(() => {
-      this.ignoreTooltipInvocation = false
+
+    const lastCursorPositions = new WeakMap()
+    this.subscriptions.add(textEditor.onDidChangeCursorPosition(({ cursor, newBufferPosition }) => {
+      const lastBufferPosition = lastCursorPositions.get(cursor)
+      if (!lastBufferPosition || !lastBufferPosition.isEqual(newBufferPosition)) {
+        lastCursorPositions.set(cursor, newBufferPosition)
+        this.ignoreTooltipInvocation = false
+      }
       if (this.tooltipFollows === 'Mouse') {
         this.removeTooltip()
       }
     }))
     this.subscriptions.add(textEditor.getBuffer().onDidChangeText(() => {
+      const cursors = textEditor.getCursors()
+      cursors.forEach((cursor) => {
+        lastCursorPositions.set(cursor, cursor.getBufferPosition())
+      })
       if (this.tooltipFollows !== 'Mouse') {
         this.ignoreTooltipInvocation = true
         this.removeTooltip()
@@ -103,7 +113,7 @@ class Editor {
       let lastEmpty
       const handlePositionChange = ({ start, end }) => {
         const gutter = this.gutter
-        if (!gutter) return
+        if (!gutter || this.subscriptions.disposed) return
         // We need that Range.fromObject hack below because when we focus index 0 on multi-line selection
         // end.column is the column of the last line but making a range out of two and then accesing
         // the end seems to fix it (black magic?)
@@ -151,7 +161,7 @@ class Editor {
     const editorElement = atom.views.getView(this.textEditor)
 
     return disposableEvent(editorElement, 'mousemove', debounce((event) => {
-      if (!editorElement.component || !hasParent(event.target, 'div.scroll-view')) {
+      if (!editorElement.component || this.subscriptions.disposed || !hasParent(event.target, 'div.scroll-view')) {
         return
       }
       const tooltip = this.tooltip
@@ -278,7 +288,7 @@ class Editor {
   decorateMarker(message: LinterMessage, marker: Object, paint: 'gutter' | 'editor' | 'both' = 'both') {
     if (paint === 'both' || paint === 'editor') {
       this.textEditor.decorateMarker(marker, {
-        type: 'highlight',
+        type: 'text',
         class: `linter-highlight linter-${message.severity}`,
       })
     }
@@ -286,7 +296,7 @@ class Editor {
     const gutter = this.gutter
     if (gutter && (paint === 'both' || paint === 'gutter')) {
       const element = document.createElement('span')
-      element.className = `linter-gutter linter-highlight linter-${message.severity} icon icon-${message.icon || 'primitive-dot'}`
+      element.className = `linter-gutter linter-gutter-${message.severity} icon icon-${message.icon || 'primitive-dot'}`
       gutter.decorateMarker(marker, {
         class: 'linter-row',
         item: element,

@@ -117,7 +117,7 @@ describe "Occurrence", ->
           "Study" Snake
           UP_CASE
 
-          |other Paragraph
+          other| Paragraph
           """
 
     describe "apply various operator to occurrence in various target", ->
@@ -424,7 +424,6 @@ describe "Occurrence", ->
             """
 
     describe "persistent-selection is exists", ->
-      persistentSelectionBufferRange = null
       beforeEach ->
         atom.keymaps.add "create-persistent-selection",
           'atom-text-editor.vim-mode-plus:not(.insert-mode)':
@@ -439,12 +438,11 @@ describe "Occurrence", ->
           """
           cursor: [0, 0]
 
-        persistentSelectionBufferRange = [
-          [[0, 0], [2, 0]]
-          [[3, 0], [4, 0]]
-        ]
         ensure 'V j m G m m',
-          persistentSelectionBufferRange: persistentSelectionBufferRange
+          persistentSelectionBufferRange: [
+            [[0, 0], [2, 0]]
+            [[3, 0], [4, 0]]
+          ]
 
       describe "when no selection is exists", ->
         it "select occurrence in all persistent-selection", ->
@@ -515,7 +513,7 @@ describe "Occurrence", ->
 
       it 'change all assignment("=") of current-function to "?="', ->
         set cursor: [0, 0]
-        ensure ['j f', input: '='], cursor: [1, 17]
+        ensure 'j f =', cursor: [1, 17]
 
         runs ->
           keystroke [
@@ -531,7 +529,7 @@ describe "Occurrence", ->
           expect(vimState.persistentSelection.getMarkers()).toHaveLength(11)
 
           keystroke '2 l' # to move to out-side of range-mrker
-          ensure ['/', search: '=>'], cursor: [9, 69]
+          ensure '/ => enter', cursor: [9, 69]
           keystroke "m" # clear persistentSelection at cursor which is = sign part of fat arrow.
           expect(vimState.persistentSelection.getMarkers()).toHaveLength(10)
 
@@ -539,10 +537,8 @@ describe "Occurrence", ->
           classList.contains('has-persistent-selection')
 
         runs ->
-          keystroke [
-            'ctrl-cmd-g' # select-persistent-selection
-            'I'          # Insert at start of selection
-          ]
+          keystroke "ctrl-cmd-g I" # "select-persistent-selection" then "Insert at start of selection"
+
           editor.insertText('?')
           ensure 'escape',
             text: """
@@ -691,7 +687,7 @@ describe "Occurrence", ->
               mode: ['visual', 'linewise']
               selectedText: textOriginal
               occurrenceText: ['text', 'text', 'text', 'text', 'text', 'text']
-            ensure ['r', input: '!'],
+            ensure 'r !',
               mode: 'normal'
               text: """
               This !!!! have 3 instance of '!!!!' in the whole !!!!
@@ -858,7 +854,6 @@ describe "Occurrence", ->
         ensure 'g o',
           occurrenceText: ['ooo', 'ooo', 'ooo', 'ooo', 'ooo']
 
-
       describe "tab, shift-tab", ->
         describe "cursor is at start of occurrence", ->
           it "search next/previous occurrence marker", ->
@@ -979,6 +974,26 @@ describe "Occurrence", ->
             |ooo: xxx: OOO:
             """
 
+      describe "when multiple preset-occurrence created at different timing", ->
+        beforeEach ->
+          set
+            cursor: [0, 5]
+          ensure 'g o',
+            occurrenceText: ['ooo', 'ooo', 'ooo', 'ooo', 'ooo', 'xxx', 'xxx', 'xxx']
+
+        it "visit occurrences ordered by buffer position", ->
+          ensure "tab",       textC: "ooo: xxx: |ooo\n___: ooo: xxx:\nooo: xxx: ooo:"
+          ensure "tab",       textC: "ooo: xxx: ooo\n___: |ooo: xxx:\nooo: xxx: ooo:"
+          ensure "tab",       textC: "ooo: xxx: ooo\n___: ooo: |xxx:\nooo: xxx: ooo:"
+          ensure "tab",       textC: "ooo: xxx: ooo\n___: ooo: xxx:\n|ooo: xxx: ooo:"
+          ensure "tab",       textC: "ooo: xxx: ooo\n___: ooo: xxx:\nooo: |xxx: ooo:"
+          ensure "tab",       textC: "ooo: xxx: ooo\n___: ooo: xxx:\nooo: xxx: |ooo:"
+          ensure "shift-tab", textC: "ooo: xxx: ooo\n___: ooo: xxx:\nooo: |xxx: ooo:"
+          ensure "shift-tab", textC: "ooo: xxx: ooo\n___: ooo: xxx:\n|ooo: xxx: ooo:"
+          ensure "shift-tab", textC: "ooo: xxx: ooo\n___: ooo: |xxx:\nooo: xxx: ooo:"
+          ensure "shift-tab", textC: "ooo: xxx: ooo\n___: |ooo: xxx:\nooo: xxx: ooo:"
+          ensure "shift-tab", textC: "ooo: xxx: |ooo\n___: ooo: xxx:\nooo: xxx: ooo:"
+
     describe "explict operator-modifier o and preset-marker", ->
       beforeEach ->
         set
@@ -1026,3 +1041,104 @@ describe "Occurrence", ->
       describe "add preset subword-occurrence", ->
         it "mark subword under cursor", ->
           ensure 'g O', occurrenceText: ['Case', 'Case', 'Case', 'Case']
+
+  describe "linewise-bound-operation in occurrence operation", ->
+    beforeEach ->
+      waitsForPromise ->
+        atom.packages.activatePackage("language-javascript")
+
+      runs ->
+        set
+          grammar: 'source.js'
+          textC: """
+          function hello(name) {
+            console.log("debug-1")
+            |console.log("debug-2")
+
+            const greeting = "hello"
+            console.log("debug-3")
+
+            console.log("debug-4, includ `console` word")
+            returrn name + " " + greeting
+          }
+          """
+
+    describe "with preset-occurrence", ->
+      it "works characterwise for `delete` operator", ->
+        ensure "g o v i f", mode: ['visual', 'linewise']
+        ensure "d",
+          textC: """
+          function hello(name) {
+            |.log("debug-1")
+            .log("debug-2")
+
+            const greeting = "hello"
+            .log("debug-3")
+
+            .log("debug-4, includ `` word")
+            returrn name + " " + greeting
+          }
+          """
+      it "works linewise for `delete-line` operator", ->
+        ensure "g o v i f D",
+          textC: """
+          function hello(name) {
+          |
+            const greeting = "hello"
+
+            returrn name + " " + greeting
+          }
+          """
+    describe "when specified both o and V operator-modifier", ->
+      it "delete `console` including line by `V` modifier", ->
+        ensure "d o V f",
+          textC: """
+          function hello(name) {
+          |
+            const greeting = "hello"
+
+            returrn name + " " + greeting
+          }
+          """
+      it "upper-case `console` including line by `V` modifier", ->
+        ensure "g U o V f",
+          textC: """
+          function hello(name) {
+            CONSOLE.LOG("DEBUG-1")
+            |CONSOLE.LOG("DEBUG-2")
+
+            const greeting = "hello"
+            CONSOLE.LOG("DEBUG-3")
+
+            CONSOLE.LOG("DEBUG-4, INCLUD `CONSOLE` WORD")
+            returrn name + " " + greeting
+          }
+          """
+    describe "with o operator-modifier", ->
+      it "toggle-line-comments of `occurrence` inclding **lines**", ->
+        ensure "g / o f",
+          textC: """
+          function hello(name) {
+            // console.log("debug-1")
+            // |console.log("debug-2")
+
+            const greeting = "hello"
+            // console.log("debug-3")
+
+            // console.log("debug-4, includ `console` word")
+            returrn name + " " + greeting
+          }
+          """
+        ensure '.',
+          textC: """
+          function hello(name) {
+            console.log("debug-1")
+            |console.log("debug-2")
+
+            const greeting = "hello"
+            console.log("debug-3")
+
+            console.log("debug-4, includ `console` word")
+            returrn name + " " + greeting
+          }
+          """

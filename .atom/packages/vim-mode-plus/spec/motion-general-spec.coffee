@@ -2,6 +2,13 @@
 {getVimState, dispatch, TextData, getView} = require './spec-helper'
 settings = require '../lib/settings'
 
+setEditorWidthInCharacters = (editor, widthInCharacters) ->
+  editor.setDefaultCharWidth(1)
+  component = editor.component
+  component.element.style.width =
+    component.getGutterContainerWidth() + widthInCharacters * component.measurements.baseCharacterWidth + "px"
+  return component.getNextUpdatePromise()
+
 describe "Motion general", ->
   [set, ensure, keystroke, editor, editorElement, vimState] = []
 
@@ -985,36 +992,38 @@ describe "Motion general", ->
 
   describe "the b keybinding", ->
     beforeEach ->
-      set text: " ab cde1+- \n xyz\n\nzip }\n last"
+      set
+        textC_: """
+        _ab cde1+-_
+        _xyz
+
+        zip }
+        _|last
+        """
 
     describe "as a motion", ->
-      beforeEach ->
-        set cursor: [4, 1]
-
       it "moves the cursor to the beginning of the previous word", ->
-        ensure 'b', cursor: [3, 4]
-        ensure 'b', cursor: [3, 0]
-        ensure 'b', cursor: [2, 0]
-        ensure 'b', cursor: [1, 1]
-        ensure 'b', cursor: [0, 8]
-        ensure 'b', cursor: [0, 4]
-        ensure 'b', cursor: [0, 1]
+        ensure 'b', textC: " ab cde1+- \n xyz\n\nzip |}\n last"
+        ensure 'b', textC: " ab cde1+- \n xyz\n\n|zip }\n last"
+        ensure 'b', textC: " ab cde1+- \n xyz\n|\nzip }\n last"
+        ensure 'b', textC: " ab cde1+- \n |xyz\n\nzip }\n last"
+        ensure 'b', textC: " ab cde1|+- \n xyz\n\nzip }\n last"
+        ensure 'b', textC: " ab |cde1+- \n xyz\n\nzip }\n last"
+        ensure 'b', textC: " |ab cde1+- \n xyz\n\nzip }\n last"
 
         # Go to start of the file, after moving past the first word
-        ensure 'b', cursor: [0, 0]
-        # Stay at the start of the file
-        ensure 'b', cursor: [0, 0]
+        ensure 'b', textC: "| ab cde1+- \n xyz\n\nzip }\n last"
+        # Do nothing
+        ensure 'b', textC: "| ab cde1+- \n xyz\n\nzip }\n last"
 
     describe "as a selection", ->
       describe "within a word", ->
         it "selects to the beginning of the current word", ->
-          set cursor: [0, 2]
-          ensure 'y b', cursor: [0, 1], register: '"': text: 'a'
+          set textC: " a|b cd"; ensure 'y b', textC: " |ab cd", register: '"': text: 'a'
 
       describe "between words", ->
         it "selects to the beginning of the last word", ->
-          set cursor: [0, 4]
-          ensure 'y b', cursor: [0, 1], register: '"': text: 'ab '
+          set textC: " ab |cd"; ensure 'y b', textC: " |ab cd", register: '"': text: 'ab '
 
   describe "the B keybinding", ->
     beforeEach ->
@@ -1095,7 +1104,7 @@ describe "Motion general", ->
 
   describe "the 0 keybinding", ->
     beforeEach ->
-      set text: "  abcde", cursor: [0, 4]
+      set textC: "  ab|cde"
 
     describe "as a motion", ->
       it "moves the cursor to the first column", ->
@@ -1104,6 +1113,134 @@ describe "Motion general", ->
     describe "as a selection", ->
       it 'selects to the first column of the line', ->
         ensure 'd 0', text: 'cde', cursor: [0, 0]
+
+  describe "g 0, g ^ and g $", ->
+    enableSoftWrapAndEnsure = ->
+      editor.setSoftWrapped(true)
+      expect(editor.lineTextForScreenRow(0)).toBe(" 1234567")
+      expect(editor.lineTextForScreenRow(1)).toBe(" 89B1234") # first space is softwrap indentation
+      expect(editor.lineTextForScreenRow(2)).toBe(" 56789C1") # first space is softwrap indentation
+      expect(editor.lineTextForScreenRow(3)).toBe(" 2345678") # first space is softwrap indentation
+      expect(editor.lineTextForScreenRow(4)).toBe(" 9") # first space is softwrap indentation
+
+    beforeEach ->
+      # Force scrollbars to be visible regardless of local system configuration
+      scrollbarStyle = document.createElement('style')
+      scrollbarStyle.textContent = '::-webkit-scrollbar { -webkit-appearance: none }'
+      jasmine.attachToDOM(scrollbarStyle)
+
+
+      set text_: """
+      _123456789B123456789C123456789
+      """
+      jasmine.attachToDOM(getView(atom.workspace))
+      waitsForPromise ->
+        setEditorWidthInCharacters(editor, 10)
+
+    describe "the g 0 keybinding", ->
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = true(default)", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', true)
+
+        describe "softwrap = false, firstColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 3]
+          it "move to column 0 of screen line", -> ensure "g 0", cursor: [0, 0]
+
+        describe "softwrap = false, firstColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to column 0 of screen line", -> ensure "g 0", cursor: [0, 0]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to column 0 of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g 0", cursorScreen: [0, 0]
+            set cursorScreen: [1, 3]; ensure "g 0", cursorScreen: [1, 1] # skip softwrap indentation.
+
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = false", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', false)
+
+        describe "softwrap = false, firstColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 3]
+          it "move to column 0 of screen line", -> ensure "g 0", cursor: [0, 0]
+
+        describe "softwrap = false, firstColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to first visible colum of screen line", -> ensure "g 0", cursor: [0, 10]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to column 0 of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g 0", cursorScreen: [0, 0]
+            set cursorScreen: [1, 3]; ensure "g 0", cursorScreen: [1, 1] # skip softwrap indentation.
+
+    describe "the g ^ keybinding", ->
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = true(default)", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', true)
+
+        describe "softwrap = false, firstColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 3]
+          it "move to first-char of screen line", -> ensure "g ^", cursor: [0, 1]
+
+        describe "softwrap = false, firstColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to first-char of screen line", -> ensure "g ^", cursor: [0, 1]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to first-char of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g ^", cursorScreen: [0, 1]
+            set cursorScreen: [1, 3]; ensure "g ^", cursorScreen: [1, 1] # skip softwrap indentation.
+
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = false", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', false)
+
+        describe "softwrap = false, firstColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 3]
+          it "move to first-char of screen line", -> ensure "g ^", cursor: [0, 1]
+
+        describe "softwrap = false, firstColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to first-char of screen line", -> ensure "g ^", cursor: [0, 10]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to first-char of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g ^", cursorScreen: [0, 1]
+            set cursorScreen: [1, 3]; ensure "g ^", cursorScreen: [1, 1] # skip softwrap indentation.
+
+    describe "the g $ keybinding", ->
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = true(default)", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', true)
+
+        describe "softwrap = false, lastColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 27]
+          it "move to last-char of screen line", -> ensure "g $", cursor: [0, 29]
+
+        describe "softwrap = false, lastColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to last-char of screen line", -> ensure "g $", cursor: [0, 29]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to last-char of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g $", cursorScreen: [0, 7]
+            set cursorScreen: [1, 3]; ensure "g $", cursorScreen: [1, 7]
+
+      describe "allowMoveToOffScreenColumnOnScreenLineMotion = false", ->
+        beforeEach -> settings.set('allowMoveToOffScreenColumnOnScreenLineMotion', false)
+
+        describe "softwrap = false, lastColumnIsVisible = true", ->
+          beforeEach -> set cursor: [0, 27]
+          it "move to last-char of screen line", -> ensure "g $", cursor: [0, 29]
+
+        describe "softwrap = false, lastColumnIsVisible = false", ->
+          beforeEach -> set cursor: [0, 15]; editor.setFirstVisibleScreenColumn(10)
+          it "move to last-char in visible screen line", -> ensure "g $", cursor: [0, 18]
+
+        describe "softwrap = true", ->
+          beforeEach -> enableSoftWrapAndEnsure()
+          it "move to last-char of screen line", ->
+            set cursorScreen: [0, 3]; ensure "g $", cursorScreen: [0, 7]
+            set cursorScreen: [1, 3]; ensure "g $", cursorScreen: [1, 7]
 
   describe "the | keybinding", ->
     beforeEach ->
@@ -1155,14 +1292,6 @@ describe "Motion general", ->
           text: "  ab\n\n1234567890"
           cursor: [0, 3]
 
-  describe "the 0 keybinding", ->
-    beforeEach ->
-      set text: "  a\n", cursor: [0, 2],
-
-    describe "as a motion", ->
-      it "moves the cursor to the beginning of the line", ->
-        ensure '0', cursor: [0, 0]
-
   describe "the - keybinding", ->
     beforeEach ->
       set text: """
@@ -1174,7 +1303,6 @@ describe "Motion general", ->
     describe "from the middle of a line", ->
       beforeEach ->
         set cursor: [1, 3]
-
       describe "as a motion", ->
         it "moves the cursor to the last character of the previous line", ->
           ensure '-', cursor: [0, 0]
@@ -1194,8 +1322,8 @@ describe "Motion general", ->
       describe "as a selection", ->
         it "selects to the first character of the previous line (directly above)", ->
           ensure 'd -', text: "abcdefg\n"
-          # commented out because the column is wrong due to a bug in `k`; re-enable when `k` is fixed
-          #expect(editor.getCursorScreenPosition()).toEqual [0, 2]
+          # FIXME commented out because the column is wrong due to a bug in `k`; re-enable when `k` is fixed
+          # ensure cursor: [0, 2]
 
     describe "from the beginning of a line preceded by an indented line", ->
       beforeEach ->
@@ -1364,8 +1492,9 @@ describe "Motion general", ->
             text: referenceText
             cursor: referenceCursorPosition
 
-  describe "the gg keybinding", ->
+  describe "the gg keybinding with stayOnVerticalMotion = false", ->
     beforeEach ->
+      settings.set('stayOnVerticalMotion', false)
       set
         text: """
            1abc
@@ -1446,8 +1575,9 @@ describe "Motion general", ->
         ensure 'v 2 g _',
           selectedText: "  2  \n 3abc"
 
-  describe "the G keybinding", ->
+  describe "the G keybinding (stayOnVerticalMotion = false)", ->
     beforeEach ->
+      settings.set('stayOnVerticalMotion', false)
       set
         text_: """
         1
@@ -1484,9 +1614,11 @@ describe "Motion general", ->
       it "100%", -> ensure '1 0 0 %', cursor: [999, 0]
       it "120%", -> ensure '1 2 0 %', cursor: [999, 0]
 
-  describe "the H, M, L keybinding", ->
+  describe "the H, M, L keybinding( stayOnVerticalMotio = false )", ->
     [eel] = []
     beforeEach ->
+      settings.set('stayOnVerticalMotion', false)
+
       eel = editorElement
       set
         text: """
@@ -1537,9 +1669,9 @@ describe "Motion general", ->
       it "moves the cursor to the non-blank-char of middle of screen", ->
         ensure 'M', cursor: [4, 2]
 
-  describe "moveToFirstCharacterOnVerticalMotion setting", ->
+  describe "stayOnVerticalMotion setting", ->
     beforeEach ->
-      settings.set('moveToFirstCharacterOnVerticalMotion', false)
+      settings.set('stayOnVerticalMotion', true)
       set
         text: """
           0 000000000000
@@ -1623,26 +1755,35 @@ describe "Motion general", ->
       ensure '` `', cursor: [1, 5]
 
   describe "jump command update ` and ' mark", ->
-    ensureMark = (_keystroke, option) ->
-      keystroke(_keystroke)
-      ensure cursor: option.cursor
-      ensure mark: "`": option.mark
-      ensure mark: "'": option.mark
+    ensureJumpMark = (value) ->
+      ensure mark: "`": value
+      ensure mark: "'": value
 
     ensureJumpAndBack = (keystroke, option) ->
-      initial = editor.getCursorBufferPosition()
-      ensureMark keystroke, cursor: option.cursor, mark: initial
-      afterMove = editor.getCursorBufferPosition()
-      expect(initial.isEqual(afterMove)).toBe(false)
-      ensureMark "` `", cursor: initial, mark: option.cursor
+      afterMove = option.cursor
+      beforeMove = editor.getCursorBufferPosition()
+
+      ensure keystroke, cursor: afterMove
+      ensureJumpMark(beforeMove)
+
+      expect(beforeMove.isEqual(afterMove)).toBe(false)
+
+      ensure "` `", cursor: beforeMove
+      ensureJumpMark(afterMove)
 
     ensureJumpAndBackLinewise = (keystroke, option) ->
-      initial = editor.getCursorBufferPosition()
-      expect(initial.column).not.toBe(0)
-      ensureMark keystroke, cursor: option.cursor, mark: initial
-      afterMove = editor.getCursorBufferPosition()
-      expect(initial.isEqual(afterMove)).toBe(false)
-      ensureMark "' '", cursor: [initial.row, 0], mark: option.cursor
+      afterMove = option.cursor
+      beforeMove = editor.getCursorBufferPosition()
+
+      expect(beforeMove.column).not.toBe(0)
+
+      ensure keystroke, cursor: afterMove
+      ensureJumpMark(beforeMove)
+
+      expect(beforeMove.isEqual(afterMove)).toBe(false)
+
+      ensure "' '", cursor: [beforeMove.row, 0]
+      ensureJumpMark(afterMove)
 
     beforeEach ->
       for mark in "`'"
@@ -1680,18 +1821,18 @@ describe "Motion general", ->
         ensure mark: "`": [0, 0]
         set cursor: initial
 
-      it "G jump&back", -> ensureJumpAndBack 'G', cursor: [5, 0]
-      it "g g jump&back", -> ensureJumpAndBack "g g", cursor: [0, 0]
-      it "100 % jump&back", -> ensureJumpAndBack "1 0 0 %", cursor: [5, 0]
+      it "G jump&back", -> ensureJumpAndBack 'G', cursor: [5, 3]
+      it "g g jump&back", -> ensureJumpAndBack "g g", cursor: [0, 3]
+      it "100 % jump&back", -> ensureJumpAndBack "1 0 0 %", cursor: [5, 3]
       it ") jump&back", -> ensureJumpAndBack ")", cursor: [5, 6]
       it "( jump&back", -> ensureJumpAndBack "(", cursor: [0, 0]
       it "] jump&back", -> ensureJumpAndBack "]", cursor: [5, 3]
       it "[ jump&back", -> ensureJumpAndBack "[", cursor: [0, 3]
       it "} jump&back", -> ensureJumpAndBack "}", cursor: [5, 6]
       it "{ jump&back", -> ensureJumpAndBack "{", cursor: [0, 0]
-      it "L jump&back", -> ensureJumpAndBack "L", cursor: [5, 0]
-      it "H jump&back", -> ensureJumpAndBack "H", cursor: [0, 0]
-      it "M jump&back", -> ensureJumpAndBack "M", cursor: [2, 0]
+      it "L jump&back", -> ensureJumpAndBack "L", cursor: [5, 3]
+      it "H jump&back", -> ensureJumpAndBack "H", cursor: [0, 3]
+      it "M jump&back", -> ensureJumpAndBack "M", cursor: [2, 3]
       it "* jump&back", -> ensureJumpAndBack "*", cursor: [5, 3]
 
       # [BUG] Strange bug of jasmine or atom's jasmine enhancment?
@@ -1699,33 +1840,33 @@ describe "Motion general", ->
       # Note at Atom v1.11.2
       it "Sharp(#) jump&back", -> ensureJumpAndBack('#', cursor: [0, 3])
 
-      it "/ jump&back", -> ensureJumpAndBack ["/", search: 'oo'], cursor: [5, 3]
-      it "? jump&back", -> ensureJumpAndBack ["?", search: 'oo'], cursor: [0, 3]
+      it "/ jump&back", -> ensureJumpAndBack '/ oo enter', cursor: [5, 3]
+      it "? jump&back", -> ensureJumpAndBack '? oo enter', cursor: [0, 3]
 
       it "n jump&back", ->
         set cursor: [0, 0]
-        ensure ['/', search: 'oo'], cursor: [0, 3]
+        ensure '/ oo enter', cursor: [0, 3]
         ensureJumpAndBack "n", cursor: [3, 3]
         ensureJumpAndBack "N", cursor: [5, 3]
 
       it "N jump&back", ->
         set cursor: [0, 0]
-        ensure ['?', search: 'oo'], cursor: [5, 3]
+        ensure '? oo enter', cursor: [5, 3]
         ensureJumpAndBack "n", cursor: [3, 3]
         ensureJumpAndBack "N", cursor: [0, 3]
 
-      it "G jump&back linewise", -> ensureJumpAndBackLinewise 'G', cursor: [5, 0]
-      it "g g jump&back linewise", -> ensureJumpAndBackLinewise "g g", cursor: [0, 0]
-      it "100 % jump&back linewise", -> ensureJumpAndBackLinewise "1 0 0 %", cursor: [5, 0]
+      it "G jump&back linewise", -> ensureJumpAndBackLinewise 'G', cursor: [5, 3]
+      it "g g jump&back linewise", -> ensureJumpAndBackLinewise "g g", cursor: [0, 3]
+      it "100 % jump&back linewise", -> ensureJumpAndBackLinewise "1 0 0 %", cursor: [5, 3]
       it ") jump&back linewise", -> ensureJumpAndBackLinewise ")", cursor: [5, 6]
       it "( jump&back linewise", -> ensureJumpAndBackLinewise "(", cursor: [0, 0]
       it "] jump&back linewise", -> ensureJumpAndBackLinewise "]", cursor: [5, 3]
       it "[ jump&back linewise", -> ensureJumpAndBackLinewise "[", cursor: [0, 3]
       it "} jump&back linewise", -> ensureJumpAndBackLinewise "}", cursor: [5, 6]
       it "{ jump&back linewise", -> ensureJumpAndBackLinewise "{", cursor: [0, 0]
-      it "L jump&back linewise", -> ensureJumpAndBackLinewise "L", cursor: [5, 0]
-      it "H jump&back linewise", -> ensureJumpAndBackLinewise "H", cursor: [0, 0]
-      it "M jump&back linewise", -> ensureJumpAndBackLinewise "M", cursor: [2, 0]
+      it "L jump&back linewise", -> ensureJumpAndBackLinewise "L", cursor: [5, 3]
+      it "H jump&back linewise", -> ensureJumpAndBackLinewise "H", cursor: [0, 3]
+      it "M jump&back linewise", -> ensureJumpAndBackLinewise "M", cursor: [2, 3]
       it "* jump&back linewise", -> ensureJumpAndBackLinewise "*", cursor: [5, 3]
 
   describe 'the V keybinding', ->

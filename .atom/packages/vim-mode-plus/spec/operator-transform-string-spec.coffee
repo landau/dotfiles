@@ -551,47 +551,131 @@ describe "Operator TransformString", ->
             line )
           """
 
+    describe 'cancellation', ->
+      beforeEach ->
+        set
+          textC: """
+          (a|bc) def
+          (g!hi) jkl
+          (m|no) pqr\n
+          """
+
+      describe 'surround cancellation', ->
+        it "[normal] keep multpcursor on surround cancel", ->
+          ensure "y s escape",
+            textC: """
+            (a|bc) def
+            (g!hi) jkl
+            (m|no) pqr\n
+            """
+            mode: "normal"
+
+        it "[visual] keep multpcursor on surround cancel", ->
+          ensure "v",
+            mode: ["visual", "characterwise"]
+            textC: """
+            (ab|c) def
+            (gh!i) jkl
+            (mn|o) pqr\n
+            """
+            selectedTextOrdered: ["b", "h", "n"]
+          ensure "S escape",
+            mode: ["visual", "characterwise"]
+            textC: """
+            (ab|c) def
+            (gh!i) jkl
+            (mn|o) pqr\n
+            """
+            selectedTextOrdered: ["b", "h", "n"]
+
+      describe 'delete-surround cancellation', ->
+        it "[from normal] keep multpcursor on cancel", ->
+          ensure "d S escape",
+            mode: "normal"
+            textC: """
+            (a|bc) def
+            (g!hi) jkl
+            (m|no) pqr\n
+            """
+
+      describe 'change-surround cancellation', ->
+        it "[from normal] keep multpcursor on cancel of 1st input", ->
+          ensure "c S escape", # On choosing deleting pair-char
+            mode: "normal"
+            textC: """
+            (a|bc) def
+            (g!hi) jkl
+            (m|no) pqr\n
+            """
+        it "[from normal] keep multpcursor on cancel of 2nd input", ->
+          ensure "c S (",
+            selectedTextOrdered: ["(abc)", "(ghi)", "(mno)"] # early select(for better UX) effect.
+
+          ensure "escape", # On choosing deleting pair-char
+            mode: "normal"
+            textC: """
+            (a|bc) def
+            (g!hi) jkl
+            (m|no) pqr\n
+            """
+
+      describe 'surround-word cancellation', ->
+        beforeEach ->
+          atom.keymaps.add "surround-test",
+            'atom-text-editor.vim-mode-plus.normal-mode':
+              'y s w': 'vim-mode-plus:surround-word'
+
+        it "[from normal] keep multpcursor on cancel", ->
+          ensure "y s w", selectedTextOrdered: ["abc", "ghi", "mno"] # early select(for better UX) effect.
+          ensure "escape",
+            mode: "normal"
+            textC: """
+            (a|bc) def
+            (g!hi) jkl
+            (m|no) pqr\n
+            """
+
     describe 'alias keymap for surround, change-surround, delete-surround', ->
       it "surround by aliased char", ->
-        set textC: "|abc"; ensure ['y s i w', input: 'b'], text: "(abc)"
-        set textC: "|abc"; ensure ['y s i w', input: 'B'], text: "{abc}"
-        set textC: "|abc"; ensure ['y s i w', input: 'r'], text: "[abc]"
-        set textC: "|abc"; ensure ['y s i w', input: 'a'], text: "<abc>"
+        set textC: "|abc"; ensure 'y s i w b', text: "(abc)"
+        set textC: "|abc"; ensure 'y s i w B', text: "{abc}"
+        set textC: "|abc"; ensure 'y s i w r', text: "[abc]"
+        set textC: "|abc"; ensure 'y s i w a', text: "<abc>"
       it "delete surround by aliased char", ->
-        set textC: "|(abc)"; ensure ['d S', input: 'b'], text: "abc"
-        set textC: "|{abc}"; ensure ['d S', input: 'B'], text: "abc"
-        set textC: "|[abc]"; ensure ['d S', input: 'r'], text: "abc"
-        set textC: "|<abc>"; ensure ['d S', input: 'a'], text: "abc"
+        set textC: "|(abc)"; ensure 'd S b', text: "abc"
+        set textC: "|{abc}"; ensure 'd S B', text: "abc"
+        set textC: "|[abc]"; ensure 'd S r', text: "abc"
+        set textC: "|<abc>"; ensure 'd S a', text: "abc"
       it "change surround by aliased char", ->
-        set textC: "|(abc)"; ensure ['c S', input: 'bB'], text: "{abc}"
-        set textC: "|(abc)"; ensure ['c S', input: 'br'], text: "[abc]"
-        set textC: "|(abc)"; ensure ['c S', input: 'ba'], text: "<abc>"
+        set textC: "|(abc)"; ensure 'c S b B', text: "{abc}"
+        set textC: "|(abc)"; ensure 'c S b r', text: "[abc]"
+        set textC: "|(abc)"; ensure 'c S b a', text: "<abc>"
 
-        set textC: "|{abc}"; ensure ['c S', input: 'Bb'], text: "(abc)"
-        set textC: "|{abc}"; ensure ['c S', input: 'Br'], text: "[abc]"
-        set textC: "|{abc}"; ensure ['c S', input: 'Ba'], text: "<abc>"
+        set textC: "|{abc}"; ensure 'c S B b', text: "(abc)"
+        set textC: "|{abc}"; ensure 'c S B r', text: "[abc]"
+        set textC: "|{abc}"; ensure 'c S B a', text: "<abc>"
 
-        set textC: "|[abc]"; ensure ['c S', input: 'rb'], text: "(abc)"
-        set textC: "|[abc]"; ensure ['c S', input: 'rB'], text: "{abc}"
-        set textC: "|[abc]"; ensure ['c S', input: 'ra'], text: "<abc>"
+        set textC: "|[abc]"; ensure 'c S r b', text: "(abc)"
+        set textC: "|[abc]"; ensure 'c S r B', text: "{abc}"
+        set textC: "|[abc]"; ensure 'c S r a', text: "<abc>"
 
-        set textC: "|<abc>"; ensure ['c S', input: 'ab'], text: "(abc)"
-        set textC: "|<abc>"; ensure ['c S', input: 'aB'], text: "{abc}"
-        set textC: "|<abc>"; ensure ['c S', input: 'ar'], text: "[abc]"
+        set textC: "|<abc>"; ensure 'c S a b', text: "(abc)"
+        set textC: "|<abc>"; ensure 'c S a B', text: "{abc}"
+        set textC: "|<abc>"; ensure 'c S a r', text: "[abc]"
 
     describe 'surround', ->
       it "surround text object with ( and repeatable", ->
-        ensure ['y s i w', input: '('],
+        ensure 'y s i w (',
           textC: "|(apple)\npairs: [brackets]\npairs: [brackets]\n( multi\n  line )"
         ensure 'j .',
           text: "(apple)\n(pairs): [brackets]\npairs: [brackets]\n( multi\n  line )"
       it "surround text object with { and repeatable", ->
-        ensure ['y s i w', input: '{'],
+        ensure 'y s i w {',
           textC: "|{apple}\npairs: [brackets]\npairs: [brackets]\n( multi\n  line )"
         ensure 'j .',
           textC: "{apple}\n|{pairs}: [brackets]\npairs: [brackets]\n( multi\n  line )"
       it "surround current-line", ->
-        ensure ['y s s', input: '{'],
+        ensure 'y s s {',
           textC: "|{apple}\npairs: [brackets]\npairs: [brackets]\n( multi\n  line )"
         ensure 'j .',
           textC: "{apple}\n|{pairs: [brackets]}\npairs: [brackets]\n( multi\n  line )"
@@ -612,7 +696,7 @@ describe "Operator TransformString", ->
               grammar: 'source.js'
 
         it "adjustIndentation surrounded text ", ->
-          ensure ['y s i f', input: '{'],
+          ensure 'y s i f {',
             textC: """
               hello = () => {
               |  {
@@ -628,7 +712,7 @@ describe "Operator TransformString", ->
           set text: "s _____ e", cursor: [0, 0]
         describe "with 'f' motion", ->
           it "surround with 'f' motion", ->
-            ensure ['y s f', input: 'e('], text: "(s _____ e)", cursor: [0, 0]
+            ensure 'y s f e (', text: "(s _____ e)", cursor: [0, 0]
 
         describe "with '`' motion", ->
           beforeEach ->
@@ -637,7 +721,7 @@ describe "Operator TransformString", ->
             set cursor: [0, 0]
 
           it "surround with '`' motion", ->
-            ensure ['y s `', input: 'a('], text: "(s _____ )e", cursor: [0, 0]
+            ensure 'y s ` a (', text: "(s _____ )e", cursor: [0, 0]
 
       describe 'charactersToAddSpaceOnSurround setting', ->
         beforeEach ->
@@ -647,45 +731,45 @@ describe "Operator TransformString", ->
 
         describe "char is in charactersToAddSpaceOnSurround", ->
           it "add additional space inside pair char when surround", ->
-            ensure ['y s i w', input: '('], text: "( apple )\norange\nlemmon"
+            ensure 'y s i w (', text: "( apple )\norange\nlemmon"
             keystroke 'j'
-            ensure ['y s i w', input: '{'], text: "( apple )\n{ orange }\nlemmon"
+            ensure 'y s i w {', text: "( apple )\n{ orange }\nlemmon"
             keystroke 'j'
-            ensure ['y s i w', input: '['], text: "( apple )\n{ orange }\n[ lemmon ]"
+            ensure 'y s i w [', text: "( apple )\n{ orange }\n[ lemmon ]"
 
         describe "char is not in charactersToAddSpaceOnSurround", ->
           it "add additional space inside pair char when surround", ->
-            ensure ['y s i w', input: ')'], text: "(apple)\norange\nlemmon"
+            ensure 'y s i w )', text: "(apple)\norange\nlemmon"
             keystroke 'j'
-            ensure ['y s i w', input: '}'], text: "(apple)\n{orange}\nlemmon"
+            ensure 'y s i w }', text: "(apple)\n{orange}\nlemmon"
             keystroke 'j'
-            ensure ['y s i w', input: ']'], text: "(apple)\n{orange}\n[lemmon]"
+            ensure 'y s i w ]', text: "(apple)\n{orange}\n[lemmon]"
 
         describe "it distinctively handle aliased keymap", ->
           describe "normal pair-chars are set to add space", ->
             beforeEach ->
               settings.set('charactersToAddSpaceOnSurround', ['(', '{', '[', '<'])
             it "distinctively handle", ->
-              set textC: "|abc"; ensure ['y s i w', input: '('], text: "( abc )"
-              set textC: "|abc"; ensure ['y s i w', input: 'b'], text: "(abc)"
-              set textC: "|abc"; ensure ['y s i w', input: '{'], text: "{ abc }"
-              set textC: "|abc"; ensure ['y s i w', input: 'B'], text: "{abc}"
-              set textC: "|abc"; ensure ['y s i w', input: '['], text: "[ abc ]"
-              set textC: "|abc"; ensure ['y s i w', input: 'r'], text: "[abc]"
-              set textC: "|abc"; ensure ['y s i w', input: '<'], text: "< abc >"
-              set textC: "|abc"; ensure ['y s i w', input: 'a'], text: "<abc>"
+              set textC: "|abc"; ensure 'y s i w (', text: "( abc )"
+              set textC: "|abc"; ensure 'y s i w b', text: "(abc)"
+              set textC: "|abc"; ensure 'y s i w {', text: "{ abc }"
+              set textC: "|abc"; ensure 'y s i w B', text: "{abc}"
+              set textC: "|abc"; ensure 'y s i w [', text: "[ abc ]"
+              set textC: "|abc"; ensure 'y s i w r', text: "[abc]"
+              set textC: "|abc"; ensure 'y s i w <', text: "< abc >"
+              set textC: "|abc"; ensure 'y s i w a', text: "<abc>"
           describe "aliased pair-chars are set to add space", ->
             beforeEach ->
               settings.set('charactersToAddSpaceOnSurround', ['b', 'B', 'r', 'a'])
             it "distinctively handle", ->
-              set textC: "|abc"; ensure ['y s i w', input: '('], text: "(abc)"
-              set textC: "|abc"; ensure ['y s i w', input: 'b'], text: "( abc )"
-              set textC: "|abc"; ensure ['y s i w', input: '{'], text: "{abc}"
-              set textC: "|abc"; ensure ['y s i w', input: 'B'], text: "{ abc }"
-              set textC: "|abc"; ensure ['y s i w', input: '['], text: "[abc]"
-              set textC: "|abc"; ensure ['y s i w', input: 'r'], text: "[ abc ]"
-              set textC: "|abc"; ensure ['y s i w', input: '<'], text: "<abc>"
-              set textC: "|abc"; ensure ['y s i w', input: 'a'], text: "< abc >"
+              set textC: "|abc"; ensure 'y s i w (', text: "(abc)"
+              set textC: "|abc"; ensure 'y s i w b', text: "( abc )"
+              set textC: "|abc"; ensure 'y s i w {', text: "{abc}"
+              set textC: "|abc"; ensure 'y s i w B', text: "{ abc }"
+              set textC: "|abc"; ensure 'y s i w [', text: "[abc]"
+              set textC: "|abc"; ensure 'y s i w r', text: "[ abc ]"
+              set textC: "|abc"; ensure 'y s i w <', text: "<abc>"
+              set textC: "|abc"; ensure 'y s i w a', text: "< abc >"
 
     describe 'map-surround', ->
       beforeEach ->
@@ -736,7 +820,7 @@ describe "Operator TransformString", ->
           "apple"
           "pairs" "tomato"
           "orange"
-          "mil|k"
+          |"milk"
 
           """
 
@@ -745,13 +829,13 @@ describe "Operator TransformString", ->
         set cursor: [1, 8]
 
       it "delete surrounded chars and repeatable", ->
-        ensure ['d S', input: '['],
+        ensure 'd S [',
           text: "apple\npairs: brackets\npairs: [brackets]\n( multi\n  line )"
         ensure 'j l .',
           text: "apple\npairs: brackets\npairs: brackets\n( multi\n  line )"
       it "delete surrounded chars expanded to multi-line", ->
         set cursor: [3, 1]
-        ensure ['d S', input: '('],
+        ensure 'd S (',
           text: "apple\npairs: [brackets]\npairs: [brackets]\n multi\n  line "
       it "delete surrounded chars and trim padding spaces for non-identical pair-char", ->
         set
@@ -760,8 +844,8 @@ describe "Operator TransformString", ->
             {  orange   }\n
             """
           cursor: [0, 0]
-        ensure ['d S', input: '('], text: "apple\n{  orange   }\n"
-        ensure ['j d S', input: '{'], text: "apple\norange\n"
+        ensure 'd S (', text: "apple\n{  orange   }\n"
+        ensure 'j d S {', text: "apple\norange\n"
       it "delete surrounded chars and NOT trim padding spaces for identical pair-char", ->
         set
           text: """
@@ -769,8 +853,8 @@ describe "Operator TransformString", ->
             "  orange   "\n
             """
           cursor: [0, 0]
-        ensure ['d S', input: '`'], text_: '_apple_\n"__orange___"\n'
-        ensure ['j d S', input: '"'], text_: "_apple_\n__orange___\n"
+        ensure 'd S `', text_: '_apple_\n"__orange___"\n'
+        ensure 'j d S "', text_: "_apple_\n__orange___\n"
       it "delete surrounded for multi-line but dont affect code layout", ->
         set
           cursor: [0, 34]
@@ -780,7 +864,7 @@ describe "Operator TransformString", ->
               hello: world
             }
             """
-        ensure ['d S', input: '{'],
+        ensure 'd S {',
           text: [
               "highlightRanges @editor, range, "
               "  timeout: timeout"
@@ -799,7 +883,7 @@ describe "Operator TransformString", ->
             """
           cursor: [0, 1]
       it "change surrounded chars and repeatable", ->
-        ensure ['c S', input: '(['],
+        ensure 'c S ( [',
           text: """
             [apple]
             (grape)
@@ -814,14 +898,14 @@ describe "Operator TransformString", ->
             {orange}
             """
       it "change surrounded chars", ->
-        ensure ['j j c S', input: '<"'],
+        ensure 'j j c S < "',
           text: """
             (apple)
             (grape)
             "lemmon"
             {orange}
             """
-        ensure ['j l c S', input: '{!'],
+        ensure 'j l c S { !',
           text: """
             (apple)
             (grape)
@@ -838,7 +922,7 @@ describe "Operator TransformString", ->
               hello: world
             }
             """
-        ensure ['c S', input: '{('],
+        ensure 'c S { (',
           text: """
             highlightRanges @editor, range, (
               timeout: timeout
@@ -847,35 +931,29 @@ describe "Operator TransformString", ->
             """
 
       describe 'charactersToAddSpaceOnSurround setting', ->
-        ensureChangeSurround = (inputKeystrokes, options) ->
-          set(text: options.initialText, cursor: [0, 0])
-          delete options.initialText
-          keystrokes = ['c S'].concat({input: inputKeystrokes})
-          ensure(keystrokes, options)
-
         beforeEach ->
           settings.set('charactersToAddSpaceOnSurround', ['(', '{', '['])
 
         describe 'when input char is in charactersToAddSpaceOnSurround', ->
           describe 'single line text', ->
             it "add single space around pair regardless of exsiting inner text", ->
-              ensureChangeSurround '({', initialText: "(apple)", text: "{ apple }"
-              ensureChangeSurround '({', initialText: "( apple )", text: "{ apple }"
-              ensureChangeSurround '({', initialText: "(  apple  )", text: "{ apple }"
+              set textC: "|(apple)";     ensure 'c S ( {', text: "{ apple }"
+              set textC: "|( apple )";   ensure 'c S ( {', text: "{ apple }"
+              set textC: "|(  apple  )"; ensure 'c S ( {', text: "{ apple }"
 
           describe 'multi line text', ->
             it "don't sadd single space around pair", ->
-              ensureChangeSurround '({', initialText: "(\napple\n)", text: "{\napple\n}"
+              set textC: "|(\napple\n)"; ensure "c S ( {", text: "{\napple\n}"
 
         describe 'when first input char is not in charactersToAddSpaceOnSurround', ->
           it "remove surrounding space of inner text for identical pair-char", ->
-            ensureChangeSurround '(}', initialText: "(apple)", text: "{apple}"
-            ensureChangeSurround '(}', initialText: "( apple )", text: "{apple}"
-            ensureChangeSurround '(}', initialText: "(  apple  )", text: "{apple}"
+            set textC: "|(apple)";     ensure "c S ( }", text: "{apple}"
+            set textC: "|( apple )";   ensure "c S ( }", text: "{apple}"
+            set textC: "|(  apple  )"; ensure "c S ( }", text: "{apple}"
           it "doesn't remove surrounding space of inner text for non-identical pair-char", ->
-            ensureChangeSurround '"`', initialText: '"apple"', text: "`apple`"
-            ensureChangeSurround '"`', initialText: '"  apple  "', text: "`  apple  `"
-            ensureChangeSurround "\"'", initialText: '"  apple  "', text: "'  apple  '"
+            set textC: '|"apple"';     ensure 'c S " `', text: "`apple`"
+            set textC: '|"  apple  "'; ensure 'c S " `', text: "`  apple  `"
+            set textC: '|"  apple  "'; ensure 'c S " \'', text: "'  apple  '"
 
     describe 'surround-word', ->
       beforeEach ->
@@ -884,12 +962,12 @@ describe "Operator TransformString", ->
             'y s w': 'vim-mode-plus:surround-word'
 
       it "surround a word with ( and repeatable", ->
-        ensure ['y s w', input: '('],
+        ensure 'y s w (',
           textC: "|(apple)\npairs: [brackets]\npairs: [brackets]\n( multi\n  line )"
         ensure 'j .',
           textC: "(apple)\n|(pairs): [brackets]\npairs: [brackets]\n( multi\n  line )"
       it "surround a word with { and repeatable", ->
-        ensure ['y s w', input: '{'],
+        ensure 'y s w {',
           textC: "|{apple}\npairs: [brackets]\npairs: [brackets]\n( multi\n  line )"
         ensure 'j .',
           textC: "{apple}\n|{pairs}: [brackets]\npairs: [brackets]\n( multi\n  line )"
@@ -961,7 +1039,7 @@ describe "Operator TransformString", ->
             """
 
       it "change any surrounded pair found and repeatable", ->
-        ensure ['c s', input: '<'], textC: "|<apple>\n(grape)\n<lemmon>\n{orange}"
+        ensure 'c s <', textC: "|<apple>\n(grape)\n<lemmon>\n{orange}"
         ensure 'j .', textC: "<apple>\n|<grape>\n<lemmon>\n{orange}"
         ensure 'j j .', textC: "<apple>\n<grape>\n<lemmon>\n|<orange>"
 
@@ -977,7 +1055,7 @@ describe "Operator TransformString", ->
           |___(inner)
           ___(inner)
           """
-        ensure ['c s', input: '<'],
+        ensure 'c s <',
           textC: """
           |___<inner>
           ___(inner)
@@ -1028,7 +1106,7 @@ describe "Operator TransformString", ->
 
     it "can use specified register to replace with", ->
       set cursor: [1, 6]
-      ensure ['"', input: 'a', '_ i ('],
+      ensure '" a _ i (',
         mode: 'normal'
         text: originalText.replace('parenthesis', 'A register')
 
@@ -1079,7 +1157,7 @@ describe "Operator TransformString", ->
 
     it "can use specified register to swap with", ->
       set cursor: [1, 6]
-      ensure ['"', input: 'a', 'g p i ('],
+      ensure '" a g p i (',
         mode: 'normal'
         text: originalText.replace('111', 'A register')
         register: 'a': text: '111'
@@ -1200,6 +1278,10 @@ describe "Operator TransformString", ->
           __0|12::345::678::9ab\n
           """
 
+      it "keep multi-cursors on cancel", ->
+        set                    textC: "  0|12\n  345\n  6!78\n  9ab\n  c|de\n  fgh\n"
+        ensure "g J : escape", textC: "  0|12\n  345\n  6!78\n  9ab\n  c|de\n  fgh\n"
+
     describe "JoinByInputWithKeepingSpace", ->
       beforeEach ->
         atom.keymaps.add "test",
@@ -1312,6 +1394,14 @@ describe "Operator TransformString", ->
           e
           f\n
           """
+      it "[from normal] keep multi-cursors on cancel", ->
+        set textC_: "  0|12  345  6!78  9ab  c|de  fgh"
+        ensure "g / : escape", textC_: "  0|12  345  6!78  9ab  c|de  fgh"
+      it "[from visual] keep multi-cursors on cancel", ->
+        set                  textC: "  0|12  345  6!78  9ab  c|de  fgh"
+        ensure "v",          textC: "  01|2  345  67!8  9ab  cd|e  fgh", selectedTextOrdered: ["1", "7", "d"], mode: ["visual", "characterwise"]
+        ensure "g / escape", textC: "  01|2  345  67!8  9ab  cd|e  fgh", selectedTextOrdered: ["1", "7", "d"], mode: ["visual", "characterwise"]
+
     describe "SplitStringWithKeepingSplitter", ->
       it "split string into lines without removing spliter char", ->
         ensure "g ? : enter",
@@ -1330,6 +1420,13 @@ describe "Operator TransformString", ->
           e:
           f\n
           """
+      it "keep multi-cursors on cancel", ->
+        set textC_: "  0|12  345  6!78  9ab  c|de  fgh"
+        ensure "g ? : escape", textC_: "  0|12  345  6!78  9ab  c|de  fgh"
+      it "[from visual] keep multi-cursors on cancel", ->
+        set                  textC: "  0|12  345  6!78  9ab  c|de  fgh"
+        ensure "v",          textC: "  01|2  345  67!8  9ab  cd|e  fgh", selectedTextOrdered: ["1", "7", "d"], mode: ["visual", "characterwise"]
+        ensure "g ? escape", textC: "  01|2  345  67!8  9ab  cd|e  fgh", selectedTextOrdered: ["1", "7", "d"], mode: ["visual", "characterwise"]
 
   describe "SplitArguments, SplitArgumentsWithRemoveSeparator", ->
     beforeEach ->

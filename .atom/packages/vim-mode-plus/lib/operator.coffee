@@ -8,6 +8,7 @@ _ = require 'underscore-plus'
   moveCursorToFirstCharacterAtRow
   ensureEndsWithNewLineForBufferRow
   adjustIndentWithKeepingLayout
+  isSingleLineText
 } = require './utils'
 Base = require './base'
 
@@ -193,7 +194,29 @@ class Operator extends Base
 
   setTextToRegister: (text, selection) ->
     text += "\n" if (@target.isLinewise() and (not text.endsWith('\n')))
-    @vimState.register.set(null, {text, selection}) if text
+    if text
+      @vimState.register.set(null, {text, selection})
+
+      if @vimState.register.isUnnamed()
+        if @instanceof("Delete") or @instanceof("Change")
+          if not @needSaveToNumberedRegister(@target) and isSingleLineText(text) # small-change
+            @vimState.register.set('-', {text, selection})
+          else
+            @vimState.register.set('1', {text, selection})
+
+        else if @instanceof("Yank")
+          @vimState.register.set('0', {text, selection})
+
+  needSaveToNumberedRegister: (target) ->
+    # Used to determine what register to use on change and delete operation.
+    # Following motion should save to 1-9 register regerdless of content is small or big.
+    goesToNumberedRegisterMotionNames = [
+      "MoveToPair" # %
+      "MoveToNextSentence" # (, )
+      "Search" # /, ?, n, N
+      "MoveToNextParagraph" # {, }
+    ]
+    goesToNumberedRegisterMotionNames.some((name) -> target.instanceof(name))
 
   normalizeSelectionsIfNecessary: ->
     if @target?.isMotion() and (@mode is 'visual')
@@ -259,7 +282,8 @@ class Operator extends Base
       # Here we save patterns which represent unioned regex which @occurrenceManager knows.
       @patternForOccurrence ?= @occurrenceManager.buildPattern()
 
-      if @occurrenceManager.select()
+      @occurrenceWise = @wise ? "characterwise"
+      if @occurrenceManager.select(@occurrenceWise)
         @occurrenceSelected = true
         @mutationManager.setCheckpoint('did-select-occurrence')
 
@@ -274,7 +298,7 @@ class Operator extends Base
   restoreCursorPositionsIfNecessary: ->
     return unless @restorePositions
     stay = @stayAtSamePosition ? @getConfig(@stayOptionName) or (@occurrenceSelected and @getConfig('stayOnOccurrence'))
-    wise = if @occurrenceSelected then 'characterwise' else @target.wise
+    wise = if @occurrenceSelected then @occurrenceWise else @target.wise
     @mutationManager.restoreCursorPositions({stay, wise, @setToFirstCharacterOnLinewise})
 
 # Select
@@ -408,11 +432,13 @@ class Delete extends Operator
   setToFirstCharacterOnLinewise: true
 
   execute: ->
-    if @target.wise is 'blockwise'
-      @restorePositions = false
+    @onDidSelectTarget =>
+      @flashTarget = false if (@occurrenceSelected and @occurrenceWise is "linewise")
+
+    @restorePositions = false  if @target.wise is 'blockwise'
     super
 
-  mutateSelection: (selection) =>
+  mutateSelection: (selection) ->
     @setTextToRegisterForSelection(selection)
     selection.deleteSelectedText()
 
@@ -439,6 +465,7 @@ class DeleteLine extends Delete
   @extend()
   wise: 'linewise'
   target: "MoveToRelativeLine"
+  flashTarget: false
 
 # Yank
 # =========================
@@ -543,14 +570,22 @@ class PutBefore extends Operator
   target: 'Empty'
   flashType: 'operator-long'
   restorePositions: false # manage manually
-  flashTarget: true # manage manually
+  flashTarget: false # manage manually
   trackChange: false # manage manually
+
+  initialize: ->
+    @vimState.sequentialPasteManager.onInitialize(this)
 
   execute: ->
     @mutationsBySelection = new Map()
-    {text, type} = @vimState.register.get(null, @editor.getLastSelection())
-    return unless text
-    @onDidFinishMutation(@adjustCursorPosition.bind(this))
+    @sequentialPaste = @vimState.sequentialPasteManager.onExecute(this)
+
+    @onDidFinishMutation =>
+      @adjustCursorPosition() unless @cancelled
+
+    super
+
+    return if @cancelled
 
     @onDidFinishOperation =>
       # TrackChange
@@ -561,8 +596,6 @@ class PutBefore extends Operator
       if @getConfig('flashOnOperate') and @name not in @getConfig('flashOnOperateBlacklist')
         toRange = (selection) => @mutationsBySelection.get(selection)
         @vimState.flash(@editor.getSelections().map(toRange), type: @getFlashType())
-
-    super
 
   adjustCursorPosition: ->
     for selection in @editor.getSelections() when @mutationsBySelection.has(selection)
@@ -577,14 +610,21 @@ class PutBefore extends Operator
           cursor.setBufferPosition(start)
 
   mutateSelection: (selection) ->
-    {text, type} = @vimState.register.get(null, selection)
+    {text, type} = @vimState.register.get(null, selection, @sequentialPaste)
+    unless text
+      @cancelled = true
+      return
+
     text = _.multiplyString(text, @getCount())
     @linewisePaste = type is 'linewise' or @isMode('visual', 'linewise')
     newRange = @paste(selection, text, {@linewisePaste})
     @mutationsBySelection.set(selection, newRange)
+    @vimState.sequentialPasteManager.savePastedRangeForSelection(selection, newRange)
 
   paste: (selection, text, {linewisePaste}) ->
-    if linewisePaste
+    if @sequentialPaste
+      @pasteCharacterwise(selection, text)
+    else if linewisePaste
       @pasteLinewise(selection, text)
     else
       @pasteCharacterwise(selection, text)
@@ -600,20 +640,16 @@ class PutBefore extends Operator
     {cursor} = selection
     cursorRow = cursor.getBufferRow()
     text += "\n" unless text.endsWith("\n")
-    newRange = null
     if selection.isEmpty()
       if @location is 'before'
-        newRange = insertTextAtBufferPosition(@editor, [cursorRow, 0], text)
-        setBufferRow(cursor, newRange.start.row)
+        insertTextAtBufferPosition(@editor, [cursorRow, 0], text)
       else if @location is 'after'
         targetRow = @getFoldEndRowForRow(cursorRow)
         ensureEndsWithNewLineForBufferRow(@editor, targetRow)
-        newRange = insertTextAtBufferPosition(@editor, [targetRow + 1, 0], text)
+        insertTextAtBufferPosition(@editor, [targetRow + 1, 0], text)
     else
       selection.insertText("\n") unless @isMode('visual', 'linewise')
-      newRange = selection.insertText(text)
-
-    return newRange
+      selection.insertText(text)
 
 class PutAfter extends PutBefore
   @extend()

@@ -14,7 +14,7 @@ function getAdjacentPane(pane) {
   return nextPane || previousPane
 }
 
-function exchangePane({stay = true} = {}) {
+function exchangePane() {
   const activePane = atom.workspace.getActivePane()
   const adjacentPane = getAdjacentPane(activePane)
 
@@ -44,11 +44,6 @@ function setFlexScaleToAllPaneAndPaneAxis(root, value) {
   }
 }
 
-function equalizePanes() {
-  const root = atom.workspace.getActivePane().getContainer().getRoot()
-  setFlexScaleToAllPaneAndPaneAxis(root, 1)
-}
-
 function forEachPaneAxis(base, fn) {
   if (base.children) {
     fn(base)
@@ -56,38 +51,6 @@ function forEachPaneAxis(base, fn) {
       forEachPaneAxis(child, fn)
     }
   }
-}
-
-function maximizePane() {
-  const disposables = new CompositeDisposable()
-
-  const addClassList = (element, classList) => {
-    classList = classList.map(className => `vim-mode-plus--${className}`)
-    element.classList.add(...classList)
-    disposables.add(new Disposable(() => element.classList.remove(...classList)))
-  }
-
-  const workspaceClassList = ["pane-maximized"]
-  if (settings.get("hideTabBarOnMaximizePane")) {
-    workspaceClassList.push("hide-tab-bar")
-  }
-  if (settings.get("hideStatusBarOnMaximizePane")) {
-    workspaceClassList.push("hide-status-bar")
-  }
-  addClassList(atom.workspace.getElement(), workspaceClassList)
-
-  const activePane = atom.workspace.getActivePane()
-  const activePaneElement = activePane.getElement()
-  addClassList(activePaneElement, ["active-pane"])
-
-  const root = activePane.getContainer().getRoot()
-  forEachPaneAxis(root, paneAxis => {
-    const element = paneAxis.getElement()
-    if (element.contains(activePaneElement)) {
-      addClassList(element, ["active-pane-axis"])
-    }
-  })
-  return disposables
 }
 
 function reparentNestedPaneAxis(root) {
@@ -141,9 +104,64 @@ function movePaneToVery(direction) {
   activePane.activate()
 }
 
-module.exports = {
-  exchangePane,
-  equalizePanes,
-  maximizePane,
-  movePaneToVery,
+module.exports = class PaneUtils {
+  exchangePane() {
+    exchangePane()
+  }
+
+  equalizePanes() {
+    const root = atom.workspace.getActivePane().getContainer().getRoot()
+    setFlexScaleToAllPaneAndPaneAxis(root, 1)
+  }
+
+  movePaneToVery(direction) {
+    movePaneToVery(direction)
+  }
+
+  isMaximized() {
+    return atom.workspace.getElement().classList.contains("vim-mode-plus--pane-maximized")
+  }
+
+  maximizePane(centerPane) {
+    if (this.isMaximized()) {
+      this.demaximizePane()
+      return
+    }
+
+    if (centerPane == null) centerPane = settings.get("centerPaneOnMaximizePane")
+
+    const workspaceClassList = [
+      "vim-mode-plus--pane-maximized",
+      settings.get("hideTabBarOnMaximizePane") && "vim-mode-plus--hide-tab-bar",
+      settings.get("hideStatusBarOnMaximizePane") && "vim-mode-plus--hide-status-bar",
+      centerPane && "vim-mode-plus--pane-centered",
+    ].filter(v => v)
+    atom.workspace.getElement().classList.add(...workspaceClassList)
+
+    const activePaneElement = atom.workspace.getActivePane().getElement()
+    activePaneElement.classList.add("vim-mode-plus--active-pane")
+    for (const element of atom.workspace.getElement().getElementsByTagName("atom-pane-axis")) {
+      if (element.contains(activePaneElement)) {
+        element.classList.add("vim-mode-plus--active-pane-axis")
+      }
+    }
+  }
+
+  demaximizePane() {
+    if (this.isMaximized()) {
+      const workspaceElement = atom.workspace.getElement()
+      workspaceElement.classList.remove(
+        "vim-mode-plus--pane-maximized",
+        "vim-mode-plus--hide-tab-bar",
+        "vim-mode-plus--hide-status-bar",
+        "vim-mode-plus--pane-centered"
+      )
+      for (const element of workspaceElement.getElementsByTagName("atom-pane-axis")) {
+        element.classList.remove("vim-mode-plus--active-pane-axis")
+      }
+      for (const element of workspaceElement.getElementsByTagName("atom-pane")) {
+        element.classList.remove("vim-mode-plus--active-pane")
+      }
+    }
+  }
 }

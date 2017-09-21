@@ -102,7 +102,7 @@ class TextObject extends Base
             # So we have to assure all selection have selction property.
             # Maybe this logic can be moved to operation stack.
             for $selection in @swrap.getSelections(@editor)
-              if @getConfig('keepColumnOnSelectTextObject')
+              if @getConfig('stayOnSelectTextObject')
                 $selection.saveProperties() unless $selection.hasProperties()
               else
                 $selection.saveProperties()
@@ -168,7 +168,7 @@ class Pair extends TextObject
   inclusive: true
 
   initialize: ->
-    PairFinder ?= require './pair-finder.coffee'
+    PairFinder ?= require './pair-finder'
     super
 
 
@@ -328,7 +328,7 @@ class Tag extends Pair
 
   getTagStartPoint: (from) ->
     tagRange = null
-    pattern = PairFinder.TagFinder::pattern
+    pattern = PairFinder.TagFinder.pattern
     @scanForward pattern, {from: [from.row, 0]}, ({range, stop}) ->
       if range.containsPoint(from, true)
         tagRange = range
@@ -682,6 +682,19 @@ class PersistentSelection extends TextObject
     if @vimState.hasPersistentSelections()
       @vimState.persistentSelection.setSelectedBufferRanges()
       return true
+
+# Used only by ReplaceWithRegister and PutBefore and its' children.
+class LastPastedRange extends TextObject
+  @extend(false)
+  wise: null
+  selectOnce: true
+
+  selectTextObject: (selection) ->
+    for selection in @editor.getSelections()
+      range = @vimState.sequentialPasteManager.getPastedRangeForSelection(selection)
+      selection.setBufferRange(range)
+
+    return true
 
 class VisibleArea extends TextObject
   @extend(false)

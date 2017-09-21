@@ -78,7 +78,10 @@ class LinguistStrategy extends Strategy {
 				new Disposable(_=> file.unwatchSystem()),
 				file.onDidMove(_=> this.updateSource(file)),
 				file.onDidChangeData(_=> this.updateSource(file)),
-				file.onDidChangeOnDisk(_=> file.loadData(true))
+				file.onDidChangeOnDisk(_=> {
+					try{ file.loadData(true); }
+					catch(e){ disposables.dispose(); }
+				})
 			);
 			file.watchSystem();
 			(file.isDataComplete || file.isOpenInEditor)
@@ -134,9 +137,9 @@ class LinguistStrategy extends Strategy {
 			return [];
 		
 		return fileData
-			.replace(/^[\t ]*#.*$|^\s+|\s+$/gm, "")
+			.replace(/^[\t ]*#.*$|^[ \t]+|[ \t]+$/gm, "")
 			.split(/(?:\r?\n)+/g)
-			.filter(s => /\S+\s+linguist-language=\w+/.test(s))
+			.filter(s => /\S+[ \t]+linguist-language=\w+/.test(s))
 			.map(line => {
 				let [pattern, language] = line.split(/\s+linguist-language=/);
 				
@@ -151,6 +154,7 @@ class LinguistStrategy extends Strategy {
 					return null;
 				
 				pattern = path.dirname(filePath) + "/" + (/^\//.test(pattern) ? "" : "**") + "/" + pattern;
+				pattern = path.resolve(pattern);
 				pattern = Micromatch.makeRe(pattern, {nonegate: true, dot: true});
 				return pattern
 					? [pattern, languageIcon]

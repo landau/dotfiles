@@ -1,5 +1,328 @@
+# 1.7.0:
+- Fix: `f escape f` no longer throw exception when `reuseFindForRepeatFind` was enabled #883
+- New: `insert-at-head-of-target` operator, in the past I removed this operator, but I need this now #881.
+- Improve: Cancelling in the middle of operation no longer clear reset multiple-cursors #882, #885
+  - Motion: Find family `f`, `F`, `t`, `T`
+  - Operator: Replace `r` `surround` family, `split-string` family, `join-by-input` family
+- Improve: No longer hide cursor when focus is at mini-editor.
+  - `/`, `?`: was hidden in all mode in older version.
+  - `f`, `t`: was hidden in `operator-pending-mode` in older version.
+- Improve: cleanup CSS in `vim-mode-plus.less`.
+- Improve: Respect original selection's reversed state on occurrence-operation operation.
+- Doc: Wrote wiki and update README to for `cursor-line` modifying syntax-theme issue #887.
+  - See FAQ section of README: "Flash effect not appear on cursor-line..."
+- Internal: Add debug code to investigate known issue #875(for cursor jumped unexpectedly).
+
+# 1.6.0: Occurrence respects operator-bound-wise. #879
+- Improve: `occurrence-operation` now aware of `operator-bound-wise`.
+  - Behavior diff: Diff appears in `occurrence-operation`.
+    - Old: Always worked as `characterwise`.
+    - New: Works as `linewise` when
+      - `V` operator-modifier is used.
+      - `linewise-bound-operator`(e.g. `g /`, `>` in `normal-mode`, `D`, `Y` in `visual-mode` etc) is used.
+  - What is `occurrence-operation` and `operator-bound-wise` ?
+    - `occurrence-operation`: Operation with `o` modifier(e.g. `c o f`) or operation with preset-occurrence(e.g. `g o c f`).
+    - `operator-bound-wise`: `D`, `C`, `Y` in `visual-mode` and `V` forced operation like `d V p`.
+  - Example(See also animation GIF in PR #879)
+    - Assume non consecutive `console.log` lines scattered in function and you want to bulk appply operation **linewise-ly**.
+    - First place cursor at `console` of `console.log`. Then you can do variety of operation linewise-ly.
+    - `g o v i p D`: Mark occurrence(`g o`), select-paragraph(`v i p`), then `delete-line`(`D`).
+    - `g / o p`: `toggle-line-comments`(`g /`) for `occurrence`(`o`) in paragraph(`p`).
+    - `g U o V p` or `g U V o p`: `upper-case`(`g U`) for `occurrence`(`o`) with force linewise(`V`) in paragraph(`p`).
+  - How this works?
+    - Most operator doesn't have wise in operator-level, in this case operation's wise is determined by target(motion or text-object).
+    - When `V` operator-modifier or `wise-bound-operator` is used, operation's wise is forced to this bound wise.
+    - When `occurrence-operation` is forced `linewise`, it total steps is here.
+      1. Select target(1)
+      2. select occurrences contains in (1)
+      3. range > select linwisely and merge selections with immediately adjacent row.
+  - Takeout
+    - Some operators(e.g. `C`, `Y`, `D`, `g /`, `>`, `<` etc) have pre-bound to `linewise`.
+      - When you use these operation with `o` or `g o`, it works as `linewise`.
+    - You can force wise to `linewise` by `V` operator-modifier, in this case occurrence-operation also works `linewise`.
+    - Also remember you can distinguish [`c` and `C`], [`y` and `Y`], [`d` and `D`] in `visual-linewise` mode.
+      - Use lower letter(`c`, `y`, `d`) if you want `characterwise` behavior.
+      - Use capital letter(`c`, `y`, `d`) if you want `linewise` behavior.
+
+# 1.5.0: Reconcile visual-mode with outer-vmp command in better way. #878
+- Summary: This is ambitious and dangerous change.
+  - If success, lots of potential issue would be fixed.
+  - But dangerous since it use more frequently fired hook(`editor.onDidChangeSelectionRange`).
+    - I'm not 100% sure if this change works properly for all other commands provided by atom-core and packages.
+- Fix: #874 `cmd-d`(`find-and-replace:select-next`) in `normal-mode` respect `SelectNext#wordSelected` state for `find-and-replace`.
+  - Original `cmd-d` select word only(exclude partial matches) if original selection is also created via `cmd-d`.
+  - But this useful feature did not work in vmp's `normal-mode`.
+  - Because when `cmd-d` is executed in `normal-mode`, vmp modify selection internally, which breaks state `find-and-replace` keep internally.
+  - Behavior diff with text `atom atomic atom`.
+    - Old: `cmd-d` twice select 1st and 2nd `atom`. Here, `atom` of `atomic` is selected, bad!.
+    - New: `cmd-d` twice select 1st and 3rd `atom`.
+- Fix: #872 `cmd-f`(`find-and-replace:show`), search word, confirm then `escape` to clear selection no longer reset cursor position to where `cmd-f` was started.
+  - This happens when `cmd-f` started with non-empty selection.
+- Fix: #873 Now whenever outer-vmp command modify selection, vmp starts `visual-mode` accordingly.
+  - How vmp handle temporal selection modification done in single-command?
+  - When outer-vmp command select some range(1) and clear(2) in single-command.
+  - Vmp start `visual-mode` at (1), then reset to `normal-mode` at (2).
+  - This is NOT elegant solution, but there is no other better way.
+  - We cannot determine selection is eventually cleared or not within `editor.onDidChangeSelectionRange` event.
+  - Delaying, debouncing to minimize useless mode-shift is bad for UX, user see slight delay for cursor updated.
+
+# 1.4.0:
+- New: Numbered register(`0-9`) and small delete register(`-`). #871
+  - When are they updated?
+    - `0` is for yank, `1-9` is for `change` and `delete`.
+    - `-` is for small `change` and `delete`, what `small` means is "content is less-than-one-line".
+  - Currently no command to display register's content
+    - Package author can access register by `vimState.register.get(REGISTER_NAME)`.
+- Fix: `f`, `r` did not work correctly when user modified `.plain.text` grammar. #869
+  - This issue only happens when user set `.plain.text` grammar to have `softWrap` to `true` and `softWrapHangingIndent` to non-zero value.
+- New, Experimental: SequentialPaste for `p`, `P` and `replace-with-register`.
+  - Unnamed register(`"`) maintain history at maximum `sequentialPasteMaxHistory`.
+  - When user execute `p` sequentially, it pop content from older history.
+  - Intended to be used as lazy quick escape hatch from very recent unwanted register mutation.
+  - New configuration to control this new feature.
+    - Config: `sequentialPaste`(default `false`) when enabled, pop history on sequential paste by `p`, `P`, and `replace-with-register`.
+    - Config: `sequentialPasteMaxHistory`(default `3`). maintain history specified this value.
+- Improve: `f` family related
+  - Improve: Restore original scrollTop when `findAcrossLines` enabled and cancelled after scroll.
+  - Rename config: `keymapSemicolonToConfirmFind` to `keymapSemicolonToConfirmOnFindInput`(auto-migrate)
+  - Improve: Empty confirm no longer move cursor when `findCharsMax` > 1.
+  - New: Commands `find-next-pre-confirmed` and `find-previous-pre-confirmed`.
+    - Scope: Available when `f` family waiting for input(`atom-text-editor.vim-mode-plus-input.find`).
+    - Keymap: `tab`, and `shift-tab` is mapped by default.
+    - Why?
+      - Allow you to adjust landing target BEFORE confirm to skip un-aimed stop interactively.
+      - In most case, using `;` or `,` after `f` finished is OK.
+      - But when `f` is used with operator, such as `c t f "` and `"` matched earlier spot than you aimed.
+      - This situation is not recoverable/retry-able by `.` repeat, but manually avoid-able by new commands.
+  - New, Experimental: Conditional keymap `keymapSemicolonAndCommaToFindPreConfirmedOnFindInput`(default `false`).
+    - When enabled, `;` and `,` is mapped to new `find-next-pre-confirmed` and `find-previous-pre-confirmed`.
+  - Maintenance: Remove `[EXPERIMENTAL]` tag from description of `findAcrossLines` settings, since we found it useful.
+  - Improve: Fix several highlight inconsistencies.
+- Fix: Incorrect cursor rendering when `automaticallyEscapeInsertModeOnActivePaneItemChange` is enabled. #855
+  - When `automaticallyEscapeInsertModeOnActivePaneItemChange` is set and active-tab change and back.
+  - Cursor rendered odd way.
+  - This is started from Atom v1.19.0 with new editor-rendering change.
+  - To workaround issue, now use more appropriate `onDidStopChangingActivePaneItem` hook.
+- New, Experimental: Conditional keymap `keymapIAndAToInsertAtTargetWhenHasOccurrence`(default `false`). #862
+  - This is revival of old default keymap which is removed because it was too aggressive, confusing as default-keymap.
+  - When enabled and edigtor has `preset-occurrence` marker, `I` and `A` behave as operator which take `target`.
+  - e.g. `I p`, `A p` to insert at start or end of `preset-occurrence` in paragraph(`p`).
+- Improve: Now `maximize-pane` no longer automatically `de-maximized` on active pane item change(tab-change). #866
+  - So user can switch active tab with keep maximized.
+  - This was original behavioral design I intended. Noticed it's broken(not sure when, or initially broken), so fixed.
+- Improve: `move-to-next-occurrence`, `move-to-previous-occurrence` now visit in ordered by buffer position. #864
+  - Following behavioral change is noticeable only when user create multiple `preset-occurrence` for different word.
+    - old: `tab`, `shift-tab` visit `preset-occurrence` in created order.
+    - new: `tab`, `shift-tab` visit `preset-occurrence` in ordered by buffer position.
+- Internal: Cleanup RegisterManager code to reduce my confusion.
+
+# 1.3.3:
+- Improve: highlight-find-char now highlight unconfirmed-current-match differently( with thicker border ).
+  - You now visually notified "no extra keytype is required to land this position" while typing.
+
+# 1.3.2:
+- Improve: highlight-find-char now highlight all chars in next lines when `findAcrossLines` was set.
+  - This gives important feedback for your keystroke when your eye is needling destination keyword while typing.
+
+# 1.3.1:
+- Fix: Fix confusing description in setting, no behavioral diff.
+
+# 1.3.0:
+- Breaking, New: `findCharsMax` options to find arbitrary length of chars by `f`.
+  - Involves renaming, auto-value-conversion of existing configuration introduced in v1.1.0( yesterday ).
+  - New, Rename: `findCharsMax`: default `1`.
+    - If `find`'s input reaches this length, confirm without waiting explicit `enter`.
+    - So default `f a`(move to `a` char) is behavior when `findCharsMax` is `1`.
+    - By setting bigger number(such as `100`) with also enabling `findConfirmByTimeout`, you can expect FIXED timing of confirmation against your input.
+      - FIXED-timing-gap for "f > chars-input > wait > land(always by timeout)" flow.
+    - Old `findByTwoChars = true` is equals to `findCharsMax = 2`, and migrated on first time activation.
+  - Rename: `findByTwoCharsAutoConfirmTimeout` to `findConfirmByTimeout`( generalize naming )
+
+# 1.2.0:
+- New, Experimental: `findAcrossLines`: default `false`
+  - When `true`, `f` searches over next lines. Affects `f`, `F`, `t`, `T`.
+  - [Collecting feedback] twitter: @t9md or https://github.com/t9md/atom-vim-mode-plus/issues/851
+    - Not sure if this is really necessary feature since `/` and `?` is available for multi-line search.
+- Breaking: New default: `flashOnMoveToOccurrence` = `true`
+  - When preset-occurrence( `g o` ) is exist on editor, you can move between occurrences by `tab` and `shift-tab`
+  - When set to `true`, flash occurrence under cursor after move
+  - This feature is NOT new, Just "flashing by default" is new change in this release.
+
+# 1.1.1:
+- Fix: Fix confusing description in setting, no behavioral diff.
+
+# 1.1.0: This release is all for better `f` by making it tunable
+
+- [CAUTION: added at release of v1.3.0]: Config option name changed.
+  - I basically don't want update old CHANGELOG, but this is for reducing confusion.
+  - Because of short release timing gap with braking config params change.
+    - v1.1.0: 2017.9.1
+    - v1.3.0: 2017.9.2
+  - When you read this below, keep in mind, change in available config params.
+    - Parameterized: `findByTwoChars = true` to `findCharsMax = 2`
+    - Renamed: `findByTwoCharsAutoConfirmTimeout` to `findConfirmByTimeout`
+
+- New: [Summary] Now `f` is **tunable**. #852.
+  - Inspired pure-vim's plugins: `clever-f`, `vim-seek`, `vim-sneak`.
+  - Highlighting find-char. It help you to pre-determine consequence of repeat by `;`, `,` and `.`.
+  - Aiming to get both benefit of two-char-find(`vim-seek`, `vim-sneak`) and one-char-find( vim's default ).
+    - Even after two-char-find was enabled, you can auto-confirm one-char input by specified timeout.
+  - Can reuse `f`, `F`, `t`, `T` as `repeat-find` like `clever-f`.
+  - Maybe reading test-spec for these feature is clearer than reading following explanation.
+    - https://github.com/t9md/atom-vim-mode-plus/blob/396514199f08e0901d2af918782c6d8a28efc9e7/spec/motion-find-spec.coffee#L291-L369
+- Config: [Detail] Following configuration option is available to **tune** `f`.
+  - `keymapSemicolonToConfirmFind`: default `false`.
+    - See explanation for `findByTwoChars`.
+  - `ignoreCaseForFind`: default `false`
+  - `useSmartcaseForFind`: default `false`
+  - `highlightFindChar`: default `true`
+    - Highlight find char, fadeout automatically( this auto-disappearing behavior/duration is not configurable ).
+      - Fadeout in 2 second when used as motion.
+      - Fadeout in 4 second when used as operator-target.
+  - `findByTwoChars`: default `false`
+    - When enabled, `f` accept TWO chars.
+      - Pros. Greatly reduces possible matches, avoid being stopped at earlier spot than where you aimed.
+      - Cons. Require explicit **confirmation** by `enter` for single char-input. You might mitigate frustration by.
+        - Confirm by `;`, easier to type and well blend to forwarding `repeat-find`( `;` ).
+          - Enable "keymap `;` to confirm `find` motion"( `keymapSemicolonToConfirmFind` ) configuration.
+          - e.g. `f a ;` to move to `a`( better than `f a enter`?). `f a ; ;` to move to 2nd `a`(well blended to default repeat-find(`;`)).
+        - Enable auto confirm by timeout( See. `findByTwoCharsAutoConfirmTimeout` )
+  - `findByTwoCharsAutoConfirmTimeout`: default `0`.
+    - "When `findByTwoChars` was enabled, automatically confirm single-char input on timeout( msec ).
+    - `0` means no timeout.
+  - `reuseFindForRepeatFind`: default `false`
+    - When `true` you can repeat last-find by `f` and `F`(also `t` and `T`).
+    - You still can use `,` and `;`.
+    - e.g. `f a f` move cursor to 2nd `a`.
+  - My configuration( I'm still in-eval phase, don't take this as recommendation ).
+    ```coffeescript
+    keymapSemicolonToConfirmFind: true
+    findByTwoChars: true # [converted] to `findCharsMax = 2`
+    findByTwoCharsAutoConfirmTimeout: 500 # [converted] to `findConfirmByTimeout = 500`
+    reuseFindForRepeatFind: true
+    useSmartcaseForFind: true
+    ```
+
+# 1.0.0: New default `stayOn` all `true`.
+- Version: Decided to bump major version.
+- Breaking: Default config change/Renamed config name.
+  - Summary:
+    - Now all `stayOn` prefixed configuration have new default `false`.
+    - New default behavior is NOT compatible with pure-Vim.
+      - Set all `stayOn` prefixed configuration to `false` to revert to previous behavior.
+    - Some configuration parameter name is renamed to have `stayOn` prefix.
+      - Automatically migrate existing config on activation of vmp.
+    - What is `stayOnXXX` configuration?
+      - Respect original cursor position as much as possible after operation( select, move, operate ).
+      - It keep both cursor's row and column or column only( if vertical move was necessary ).
+  - Config params renamed and changed default value
+    - New default: `incrementalSearch` = `true`
+    - New default: `stayOnTransformString` = `true`
+    - New default: `stayOnYank` = `true`
+    - New default: `stayOnDelete` = `true`
+    - Renamed/New default: `keepColumnOnSelectTextObject` > `stayOnSelectTextObject` = `true`
+    - Renamed/New default: `moveToFirstCharacterOnVerticalMotion` !> `stayOnVerticalMotion` = `true`
+      - Renamed with meaning inverted: `!moveToFirstCharacterOnVerticalMotion === stayOnVerticalMotion`
+
+# 0.99.1:
+- Fix: Attempt to user non-yet-supported register( such as `" 0 y` ) no longer throw exception.
+  - This is regression introduced in v0.98.0. #844.
+- Fix: Quickly switching active tab and back no longer re-start remaining flash animation #846.
+  - In previous version of vmp, You can see remaining flash re-triggered by(just an example)
+    1. `y i p` see yanked paragraph is flashed.
+    2. `cmd-shfit-]`( `pane:show-next-item` ), `cmd-shfit-]`( `pane:show-previous-item` ) quickly.
+    3. When you come back to original editor, once fadeout-ed flash is re-started. But no longer from this version.
+
+# 0.99.0:
+- Fix: Incorrect mouse selection when editor was soft-wrapped.
+- Improve: Make conditional keymaps config's title and description more user friendly.
+- New: Conditional keymap config `keymapYToYankToLastCharacterOfLine`(default `false`).
+  - By default `Y` behaves as `y y`.
+  - This is not consistent with `C` and `D` which behaves `c $` and `d $`.
+  - By enabling this `Y` behaves as `y $`.
+- New: Screen line based column motion commands `g 0`, `g ^` and `g $`.
+  Commands:
+    - `move-to-beginning-of-screen-line`( keymap `g 0` )
+    - `move-to-first-character-of-screen-line`( keymap `g ^` )
+    - `move-to-last-character-of-screen-line`( keymap `g $` )
+  Config: `allowMoveToOffScreenColumnOnScreenLineMotion`( vim-mode-plus original, intentionally differentiate default behavior from pure-Vim ).
+    - Affects how `g 0`, `g ^` and `g $` find destination position.
+    - When a line is wider than the screen width(no-wrapped line a)
+      - `true`(default): move to off-screen column.
+      - `false`: move to on-screen(visible) column( = Vim default ).
+    - Behavioral difference appears only when
+      - Line is not wrapped.
+      - Destination column is off-screen(invisible because of the line is wider than screen width).
+        - for `g 0`: column-0 is off-screen
+          - `true`: move to column-0.
+          - `false`: move to first-visible-column.
+        - for `g ^`: first-char-column is off-screen
+          - `true`: move to first-char-column.
+          - `false`: move to first-visible-char-column.
+        - for `g $`: last-char-column is off-screen
+          - `true`: move to last-char-column.
+          - `false`: move to last-visible-char-column.
+
+# 0.98.0:
+- Improve: Now `r`, `f`, `F`, `t`, `T` and `surround` use mini-editor to read user-input. #838
+  - Benefit?
+    - Old: User cannot input non ascii char. It used keybinding to read user-input.
+    - New: User can input non ascii char and also can paste from clipboard( `cmd-v` ).
+  - Limitation
+    - When user set keymap like `f a`, original `f` command no longer work properly( You cannot use `f b`, `f c`, etc... ).
+    - This is Atom's keymap system's limitation which cannot follow activeElement change when replaying keystroke on partial-match.
+  -  Still `m`, ``` ` ```, `'` read char through keybinding intentionally.
+    - These command use ascii char only.
+    - To allow user to set `m` prefix keymap like `m X` without breaking whole `m` feature.
+
+# 0.97.2:
+- Fix: Clicking find-and-replace's project-find result view throw exception when `projectSearchResultsPaneSplitDirection` set to `none`(default). #830.
+  - Because, it opens matched entry on **same pane** and fire `mouseup` only(without preceeding `mousedown` event) on newly opened editor.
+  - Now vmp guard wired mouse-event by explicitly manage next expecting mouse-event.
+
+# 0.97.1:
+- Fix: When `startInInsertMode` was `true` clicking editor in `insert-mode` throw exception but no longer. #830.
+
+# 0.97.0:
+- Maintenance: Rewrite big amount of part from CoffeScript to JavaScript.
+  - Spec files are not re-written yet(and no plan at this point).
+  - Now files under lib/ directory are 29(JavaScript) vs 9(CoffeScript).
+  - Rewritten is done in following processare
+    - 1. Translate by decaffeinate command provided by decaffeinate project(thanks!).
+    - 2. Manual cleanup.
+  - Sorry If I create some regression.
+- Improve: Hide mode-string in status-bar while non-editor-item become active item(e.g. settings-view).
+- Breaking: Rename and change behavior of `vim-mode-plus:clear-persistent-selection` to `vim-mode-plus:clear-persistent-selections`.
+  - How?
+    - Old: clear persistent selections for all editors in workspace.
+    - New: clear persistent selections for current active editor.
+  - Why I changed
+    - Old behavior is inconsistent with other similar command.
+    - I couldn't imagine practical scenario where old behavior shines.
+- Improve: `maximize-pane` #828, #829
+  - New: Config option `centerPaneOnMaximizePane` ( default `true` ). by @dcalhoun
+    - Old behavior: Text in editor is always centered.
+    - New behavior: Text in editor is centered if `centerPaneOnMaximizePane` is `true`.
+  - New: Command `vim-mode-plus:maximize-pane-without-center`(default keymap: `ctrl-w Z`).
+  - Confusing?
+    - If you never need centering effect, set `centerPaneOnMaximizePane` to `false` and use `vim-mode-plus:maximize-pane` command.
+    - If you sometime want to centering, but sometime don't want centering
+      - Leave `centerPaneOnMaximizePane` to `true`( default )
+      - Use `maximize-pane`(`cmd-enter` or `ctrl-w z`) and `maximize-pane-without-center`(`ctrl-w Z`) command respectively."
+- Internal, Dev, Breaking: Remove introspection report generating command, which was important in early phase of vmp, but no longer.
+- Dev: `write-command-table` no longer throw exception on first use after restart.
+- Tweak: Change normal operator flash duration from 0.3s to 0.5s.
+- Improve: Mouse #826
+  - Fix: click in `visual.blockwise` mode no longer move cursor to first line of editor.
+  - Now mouse action appropriately modify selection and enter `visual-mode` if necessary.
+    - `shift-click`
+    - `click`(mousedown -> mouseup)
+    - `drag`(mousedown -> mousemove -> mouseup).
+    - double click: Atom select clicked word, vmp update visual-mode.
+    - triple click: Atom select clicked row, vmp update visual-mode.
+
 # 0.96.2:
-- Improve: #819 TextObject function for `language-rust` now alsow works on Windows platform.
+- Improve: #819 TextObject function for `language-rust` now also works on Windows platform.
 
 - Fix: `g q q` now work again. `g w w` also work now.
 # 0.96.1:

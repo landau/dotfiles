@@ -106,7 +106,7 @@ alias pgres='postgres -D /usr/local/var/postgres'
 alias pp='underscore print --color'
 alias tree="tree -I 'node_modules'"
 alias yt='youtube-dl -t'
-alias ytmp3='youtube-dl --audio-format=mp3 -x -t'
+alias ytmp3='youtube-dl --audio-format=mp3 -x -o "%(title)s-%(id)s.%(ext)s"'
 alias zshconfig="vim ~/.zshrc"
 alias openchrome='open -a "Google Chrome"'
 alias open-gh-socket='ssh -M git@github.com'

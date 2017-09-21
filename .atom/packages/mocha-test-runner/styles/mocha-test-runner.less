@@ -1,0 +1,77 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/stylesheets/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+atom-panel .mocha-test-runner ,
+.tool-panel .mocha-test-runner {
+  text-shadow: none;
+}
+
+.mocha-test-runner {
+
+  /deep/ ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  /deep/ ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  display: -webkit-flex;
+  -webkit-flex-direction: column;
+  min-height: @font-size + 2 * @component-padding;
+
+  .panel {
+
+    display: -webkit-flex;
+    -webkit-flex-grow: 1;
+    -webkit-flex-direction: column;
+    background-color: #181818;
+
+    margin: 0;
+
+    .close-icon {
+
+      padding: @component-icon-padding;
+      cursor: initial;
+
+      &:before {
+        font-family: 'Octicons Regular';
+        -webkit-font-smoothing: antialiased;
+        width: 12px;
+        content: "\f081";
+      }
+
+      &:hover {
+        color: #fff;
+      }
+
+    }
+
+    .heading {
+      flex-shrink: 0;
+      padding: @component-padding;
+      color: black;
+      cursor: row-resize;
+    }
+
+    .panel-body {
+      padding: 0;
+      overflow-y: scroll;
+    }
+
+  }
+
+  .results {
+    background-color: #181818;
+    color: #F8F8F8;
+    font-size: @font-size;
+
+    a {
+      color: #F8F8F8;
+    }
+  }
+
+}

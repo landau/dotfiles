@@ -9,7 +9,6 @@ settings = require './settings'
 [
   CSON
   path
-  Input
   selectList
   getEditorState  # set by Base.init()
 ] = [] # set null
@@ -18,11 +17,16 @@ VMP_LOADING_FILE = null
 VMP_LOADED_FILES = []
 
 loadVmpOperationFile = (filename) ->
+  # Call to loadVmpOperationFile can be nested.
+  # 1. require("./operator-transform-string")
+  # 2. in operator-transform-string.coffee call Base.getClass("Operator") cause operator.coffee required.
+  # So we have to save original VMP_LOADING_FILE and restore it after require finished.
+  vmpLoadingFileOriginal = VMP_LOADING_FILE
   VMP_LOADING_FILE = filename
-  loaded = require(filename)
-  VMP_LOADING_FILE = null
+  require(filename)
+  VMP_LOADING_FILE = vmpLoadingFileOriginal
+
   VMP_LOADED_FILES.push(filename)
-  loaded
 
 OperationAbortedError = null
 
@@ -137,10 +141,6 @@ class Base
     klass = Base.getClass(name)
     new klass(@vimState, properties)
 
-  newInputUI: ->
-    Input ?= require './input'
-    new Input(@vimState)
-
   # FIXME: This is used to clone Motion::Search to support `n` and `N`
   # But manual reseting and overriding property is bug prone.
   # Should extract as search spec object and use it by
@@ -154,7 +154,7 @@ class Base
     new klass(vimState, properties)
 
   cancelOperation: ->
-    @vimState.operationStack.cancel()
+    @vimState.operationStack.cancel(this)
 
   processOperation: ->
     @vimState.operationStack.process()
@@ -162,22 +162,20 @@ class Base
   focusSelectList: (options={}) ->
     @onDidCancelSelectList =>
       @cancelOperation()
-    selectList ?= require './select-list'
+    selectList ?= new (require './select-list')
     selectList.show(@vimState, options)
 
   input: null
-  focusInput: (options) ->
-    inputUI = @newInputUI()
-    inputUI.onDidConfirm (input) =>
-      @input = input
-      @processOperation()
+  focusInput: (options = {}) ->
+    options.onConfirm ?= (@input) => @processOperation()
+    options.onCancel ?= => @cancelOperation()
+    options.onChange ?= (input) => @vimState.hover.set(input)
+    @vimState.focusInput(options)
 
-    if options?.charsMax > 1
-      inputUI.onDidChange (input) =>
-        @vimState.hover.set(input)
-
-    inputUI.onDidCancel(@cancelOperation.bind(this))
-    inputUI.focus(options)
+  readChar: ->
+    @vimState.readChar
+      onConfirm: (@input) => @processOperation()
+      onCancel: => @cancelOperation()
 
   getVimEofBufferPosition: ->
     @utils.getVimEofBufferPosition(@editor)
@@ -378,6 +376,7 @@ class Base
   # For demo-mode pkg integration
   @operationKind: null
   @getKindForCommandName: (command) ->
+    command = command.replace(/^vim-mode-plus:/, "")
     _ = _plus()
     name = _.capitalize(_.camelize(command))
     if name of classRegistry

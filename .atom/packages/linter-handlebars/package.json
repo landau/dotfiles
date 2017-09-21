@@ -1,0 +1,762 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+        "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+        "type": "local"
+      },
+      "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-117723-15986-utdpnp.vbacl680k9"
+    ]
+  ],
+  "_from": "../d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+  "_id": "linter-handlebars@2.5.0",
+  "_inCache": true,
+  "_location": "/linter-handlebars",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+    "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+  "_shasum": "9ca2beecb0527d2a989de87b66cef47741ccb742",
+  "_shrinkwrap": null,
+  "_spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-117723-15986-1v26wua.3nkuqe61or/package.tgz",
+  "_where": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-117723-15986-utdpnp.vbacl680k9",
+  "bugs": {
+    "url": "https://github.com/josa42/atom-linter-handlebars/issues"
+  },
+  "dependencies": {
+    "atom-package-deps": "^4.0.1",
+    "handlebars": "^4.0.5",
+    "xregexp": "^3.1.0"
+  },
+  "description": "Lint `handlebars` on the fly, using handlebars",
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-config-standard": "^10.2.1",
+    "eslint-plugin-import": "^2.3.0",
+    "eslint-plugin-node": "^5.0.0",
+    "eslint-plugin-promise": "^3.5.0",
+    "eslint-plugin-standard": "^3.0.1"
+  },
+  "engines": {
+    "atom": ">0.50.0"
+  },
+  "homepage": "https://github.com/josa42/atom-linter-handlebars#readme",
+  "license": "MIT",
+  "main": "./lib/init",
+  "name": "linter-handlebars",
+  "optionalDependencies": {},
+  "package-deps": [
+    "linter"
+  ],
+  "providedServices": {
+    "linter": {
+      "versions": {
+        "1.0.0": "provideLinter"
+      }
+    }
+  },
+  "readme": "# linter-handlebars\n\n[![Travis](https://img.shields.io/travis/josa42/atom-linter-handlebars/master.svg)](https://github.com/josa42/atom-linter-handlebars)\n[![apm](https://img.shields.io/apm/v/linter-handlebars.svg)](https://atom.io/packages/linter-handlebars)\n[![apm](https://img.shields.io/apm/dm/linter-handlebars.svg)](https://atom.io/packages/linter-handlebars)\n[![apm](https://img.shields.io/apm/l/linter-handlebars.svg)](https://github.com/josa42/atom-linter-handlebars/blob/master/LICENSE.md)\n\nThis linter plugin for [Linter](https://github.com/atom-community/linter) provides an interface to [handlebars](http://handlebarsjs.com/).\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josa42/atom-linter-handlebars.git"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "version": "2.5.0",
+  "_atomModuleCache": {
+    "version": 1,
+    "dependencies": [
+      {
+        "name": "align-text",
+        "version": "0.1.4",
+        "path": "node_modules/align-text/index.js"
+      },
+      {
+        "name": "amdefine",
+        "version": "1.0.1",
+        "path": "node_modules/amdefine/amdefine.js"
+      },
+      {
+        "name": "async",
+        "version": "1.5.2",
+        "path": "node_modules/async/lib/async.js"
+      },
+      {
+        "name": "atom-package-deps",
+        "version": "4.6.0",
+        "path": "node_modules/atom-package-deps/lib/index.js"
+      },
+      {
+        "name": "atom-package-path",
+        "version": "1.1.0",
+        "path": "node_modules/atom-package-path/lib/index.js"
+      },
+      {
+        "name": "camelcase",
+        "version": "1.2.1",
+        "path": "node_modules/camelcase/index.js"
+      },
+      {
+        "name": "center-align",
+        "version": "0.1.3",
+        "path": "node_modules/center-align/index.js"
+      },
+      {
+        "name": "cliui",
+        "version": "2.1.0",
+        "path": "node_modules/cliui/index.js"
+      },
+      {
+        "name": "wordwrap",
+        "version": "0.0.2",
+        "path": "node_modules/cliui/node_modules/wordwrap/index.js"
+      },
+      {
+        "name": "consistent-env",
+        "version": "1.3.1",
+        "path": "node_modules/consistent-env/lib/index.js"
+      },
+      {
+        "name": "decamelize",
+        "version": "1.2.0",
+        "path": "node_modules/decamelize/index.js"
+      },
+      {
+        "name": "handlebars",
+        "version": "4.0.10",
+        "path": "node_modules/handlebars/lib/index.js"
+      },
+      {
+        "name": "is-buffer",
+        "version": "1.1.5",
+        "path": "node_modules/is-buffer/index.js"
+      },
+      {
+        "name": "is-utf8",
+        "version": "0.2.1",
+        "path": "node_modules/is-utf8/is-utf8.js"
+      },
+      {
+        "name": "kind-of",
+        "version": "3.2.2",
+        "path": "node_modules/kind-of/index.js"
+      },
+      {
+        "name": "lazy-cache",
+        "version": "1.0.4",
+        "path": "node_modules/lazy-cache/index.js"
+      },
+      {
+        "name": "lodash.uniq",
+        "version": "4.5.0",
+        "path": "node_modules/lodash.uniq/index.js"
+      },
+      {
+        "name": "longest",
+        "version": "1.0.1",
+        "path": "node_modules/longest/index.js"
+      },
+      {
+        "name": "minimist",
+        "version": "0.0.10",
+        "path": "node_modules/minimist/index.js"
+      },
+      {
+        "name": "optimist",
+        "version": "0.6.1",
+        "path": "node_modules/optimist/index.js"
+      },
+      {
+        "name": "repeat-string",
+        "version": "1.6.1",
+        "path": "node_modules/repeat-string/index.js"
+      },
+      {
+        "name": "right-align",
+        "version": "0.1.3",
+        "path": "node_modules/right-align/index.js"
+      },
+      {
+        "name": "sb-callsite",
+        "version": "1.1.2",
+        "path": "node_modules/sb-callsite/lib/main.js"
+      },
+      {
+        "name": "sb-exec",
+        "version": "3.1.0",
+        "path": "node_modules/sb-exec/lib/index.js"
+      },
+      {
+        "name": "sb-fs",
+        "version": "3.0.0",
+        "path": "node_modules/sb-fs/lib/index.js"
+      },
+      {
+        "name": "sb-memoize",
+        "version": "1.0.2",
+        "path": "node_modules/sb-memoize/lib/index.js"
+      },
+      {
+        "name": "sb-npm-path",
+        "version": "2.0.0",
+        "path": "node_modules/sb-npm-path/lib/index.js"
+      },
+      {
+        "name": "sb-promisify",
+        "version": "2.0.2",
+        "path": "node_modules/sb-promisify/lib/index.js"
+      },
+      {
+        "name": "semver",
+        "version": "5.4.1",
+        "path": "node_modules/semver/semver.js"
+      },
+      {
+        "name": "source-map",
+        "version": "0.4.4",
+        "path": "node_modules/source-map/lib/source-map.js"
+      },
+      {
+        "name": "strip-bom-buf",
+        "version": "1.0.0",
+        "path": "node_modules/strip-bom-buf/index.js"
+      },
+      {
+        "name": "uglify-js",
+        "version": "2.8.29",
+        "path": "node_modules/uglify-js/tools/node.js"
+      },
+      {
+        "name": "source-map",
+        "version": "0.5.7",
+        "path": "node_modules/uglify-js/node_modules/source-map/source-map.js"
+      },
+      {
+        "name": "uglify-to-browserify",
+        "version": "1.0.2",
+        "path": "node_modules/uglify-to-browserify/index.js"
+      },
+      {
+        "name": "window-size",
+        "version": "0.1.0",
+        "path": "node_modules/window-size/index.js"
+      },
+      {
+        "name": "wordwrap",
+        "version": "0.0.3",
+        "path": "node_modules/wordwrap/index.js"
+      },
+      {
+        "name": "xregexp",
+        "version": "3.2.0",
+        "path": "node_modules/xregexp/xregexp-all.js"
+      },
+      {
+        "name": "yargs",
+        "version": "3.10.0",
+        "path": "node_modules/yargs/index.js"
+      }
+    ],
+    "extensions": {
+      ".js": [
+        "lib/init.js",
+        "lib/linter-handlebars-provider.js",
+        "node_modules/align-text/index.js",
+        "node_modules/amdefine/amdefine.js",
+        "node_modules/amdefine/intercept.js",
+        "node_modules/async/dist/async.js",
+        "node_modules/async/dist/async.min.js",
+        "node_modules/async/lib/async.js",
+        "node_modules/atom-package-deps/lib/helpers.js",
+        "node_modules/atom-package-deps/lib/index.js",
+        "node_modules/atom-package-deps/lib/types.js",
+        "node_modules/atom-package-deps/lib/view.js",
+        "node_modules/atom-package-path/lib/index.js",
+        "node_modules/camelcase/index.js",
+        "node_modules/center-align/index.js",
+        "node_modules/center-align/utils.js",
+        "node_modules/cliui/index.js",
+        "node_modules/cliui/node_modules/wordwrap/example/center.js",
+        "node_modules/cliui/node_modules/wordwrap/example/meat.js",
+        "node_modules/cliui/node_modules/wordwrap/index.js",
+        "node_modules/consistent-env/lib/helpers.js",
+        "node_modules/consistent-env/lib/index.js",
+        "node_modules/decamelize/index.js",
+        "node_modules/handlebars/dist/amd/handlebars/base.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/ast.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/base.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/code-gen.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/compiler.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/helpers.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/javascript-compiler.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/parser.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/printer.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/visitor.js",
+        "node_modules/handlebars/dist/amd/handlebars/compiler/whitespace-control.js",
+        "node_modules/handlebars/dist/amd/handlebars/decorators/inline.js",
+        "node_modules/handlebars/dist/amd/handlebars/decorators.js",
+        "node_modules/handlebars/dist/amd/handlebars/exception.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/block-helper-missing.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/each.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/helper-missing.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/if.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/log.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/lookup.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers/with.js",
+        "node_modules/handlebars/dist/amd/handlebars/helpers.js",
+        "node_modules/handlebars/dist/amd/handlebars/logger.js",
+        "node_modules/handlebars/dist/amd/handlebars/no-conflict.js",
+        "node_modules/handlebars/dist/amd/handlebars/runtime.js",
+        "node_modules/handlebars/dist/amd/handlebars/safe-string.js",
+        "node_modules/handlebars/dist/amd/handlebars/utils.js",
+        "node_modules/handlebars/dist/amd/handlebars.js",
+        "node_modules/handlebars/dist/amd/handlebars.runtime.js",
+        "node_modules/handlebars/dist/amd/precompiler.js",
+        "node_modules/handlebars/dist/cjs/handlebars/base.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/ast.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/base.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/code-gen.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/compiler.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/helpers.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/javascript-compiler.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/parser.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/printer.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/visitor.js",
+        "node_modules/handlebars/dist/cjs/handlebars/compiler/whitespace-control.js",
+        "node_modules/handlebars/dist/cjs/handlebars/decorators/inline.js",
+        "node_modules/handlebars/dist/cjs/handlebars/decorators.js",
+        "node_modules/handlebars/dist/cjs/handlebars/exception.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/block-helper-missing.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/each.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/helper-missing.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/if.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/log.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/lookup.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers/with.js",
+        "node_modules/handlebars/dist/cjs/handlebars/helpers.js",
+        "node_modules/handlebars/dist/cjs/handlebars/logger.js",
+        "node_modules/handlebars/dist/cjs/handlebars/no-conflict.js",
+        "node_modules/handlebars/dist/cjs/handlebars/runtime.js",
+        "node_modules/handlebars/dist/cjs/handlebars/safe-string.js",
+        "node_modules/handlebars/dist/cjs/handlebars/utils.js",
+        "node_modules/handlebars/dist/cjs/handlebars.js",
+        "node_modules/handlebars/dist/cjs/handlebars.runtime.js",
+        "node_modules/handlebars/dist/cjs/precompiler.js",
+        "node_modules/handlebars/dist/handlebars.amd.js",
+        "node_modules/handlebars/dist/handlebars.amd.min.js",
+        "node_modules/handlebars/dist/handlebars.js",
+        "node_modules/handlebars/dist/handlebars.min.js",
+        "node_modules/handlebars/dist/handlebars.runtime.amd.js",
+        "node_modules/handlebars/dist/handlebars.runtime.amd.min.js",
+        "node_modules/handlebars/dist/handlebars.runtime.js",
+        "node_modules/handlebars/dist/handlebars.runtime.min.js",
+        "node_modules/handlebars/lib/handlebars/base.js",
+        "node_modules/handlebars/lib/handlebars/compiler/ast.js",
+        "node_modules/handlebars/lib/handlebars/compiler/base.js",
+        "node_modules/handlebars/lib/handlebars/compiler/code-gen.js",
+        "node_modules/handlebars/lib/handlebars/compiler/compiler.js",
+        "node_modules/handlebars/lib/handlebars/compiler/helpers.js",
+        "node_modules/handlebars/lib/handlebars/compiler/javascript-compiler.js",
+        "node_modules/handlebars/lib/handlebars/compiler/parser.js",
+        "node_modules/handlebars/lib/handlebars/compiler/printer.js",
+        "node_modules/handlebars/lib/handlebars/compiler/visitor.js",
+        "node_modules/handlebars/lib/handlebars/compiler/whitespace-control.js",
+        "node_modules/handlebars/lib/handlebars/decorators/inline.js",
+        "node_modules/handlebars/lib/handlebars/decorators.js",
+        "node_modules/handlebars/lib/handlebars/exception.js",
+        "node_modules/handlebars/lib/handlebars/helpers/block-helper-missing.js",
+        "node_modules/handlebars/lib/handlebars/helpers/each.js",
+        "node_modules/handlebars/lib/handlebars/helpers/helper-missing.js",
+        "node_modules/handlebars/lib/handlebars/helpers/if.js",
+        "node_modules/handlebars/lib/handlebars/helpers/log.js",
+        "node_modules/handlebars/lib/handlebars/helpers/lookup.js",
+        "node_modules/handlebars/lib/handlebars/helpers/with.js",
+        "node_modules/handlebars/lib/handlebars/helpers.js",
+        "node_modules/handlebars/lib/handlebars/logger.js",
+        "node_modules/handlebars/lib/handlebars/no-conflict.js",
+        "node_modules/handlebars/lib/handlebars/runtime.js",
+        "node_modules/handlebars/lib/handlebars/safe-string.js",
+        "node_modules/handlebars/lib/handlebars/utils.js",
+        "node_modules/handlebars/lib/handlebars.js",
+        "node_modules/handlebars/lib/handlebars.runtime.js",
+        "node_modules/handlebars/lib/index.js",
+        "node_modules/handlebars/lib/precompiler.js",
+        "node_modules/handlebars/runtime.js",
+        "node_modules/is-buffer/index.js",
+        "node_modules/is-utf8/is-utf8.js",
+        "node_modules/kind-of/index.js",
+        "node_modules/lazy-cache/index.js",
+        "node_modules/lodash.uniq/index.js",
+        "node_modules/longest/index.js",
+        "node_modules/minimist/example/parse.js",
+        "node_modules/minimist/index.js",
+        "node_modules/optimist/example/bool.js",
+        "node_modules/optimist/example/boolean_double.js",
+        "node_modules/optimist/example/boolean_single.js",
+        "node_modules/optimist/example/default_hash.js",
+        "node_modules/optimist/example/default_singles.js",
+        "node_modules/optimist/example/divide.js",
+        "node_modules/optimist/example/line_count.js",
+        "node_modules/optimist/example/line_count_options.js",
+        "node_modules/optimist/example/line_count_wrap.js",
+        "node_modules/optimist/example/nonopt.js",
+        "node_modules/optimist/example/reflect.js",
+        "node_modules/optimist/example/short.js",
+        "node_modules/optimist/example/string.js",
+        "node_modules/optimist/example/usage-options.js",
+        "node_modules/optimist/example/xup.js",
+        "node_modules/optimist/index.js",
+        "node_modules/repeat-string/index.js",
+        "node_modules/right-align/index.js",
+        "node_modules/sb-callsite/lib/main.js",
+        "node_modules/sb-exec/decls/jasmine.js",
+        "node_modules/sb-exec/lib/helpers.js",
+        "node_modules/sb-exec/lib/index.js",
+        "node_modules/sb-exec/lib/types.js",
+        "node_modules/sb-fs/lib/index.js",
+        "node_modules/sb-memoize/lib/index.js",
+        "node_modules/sb-npm-path/decls/jasmine.js",
+        "node_modules/sb-npm-path/lib/helpers.js",
+        "node_modules/sb-npm-path/lib/index.js",
+        "node_modules/sb-promisify/lib/index.js",
+        "node_modules/semver/semver.js",
+        "node_modules/source-map/build/assert-shim.js",
+        "node_modules/source-map/build/mini-require.js",
+        "node_modules/source-map/build/suffix-browser.js",
+        "node_modules/source-map/build/test-prefix.js",
+        "node_modules/source-map/build/test-suffix.js",
+        "node_modules/source-map/lib/source-map/array-set.js",
+        "node_modules/source-map/lib/source-map/base64-vlq.js",
+        "node_modules/source-map/lib/source-map/base64.js",
+        "node_modules/source-map/lib/source-map/binary-search.js",
+        "node_modules/source-map/lib/source-map/mapping-list.js",
+        "node_modules/source-map/lib/source-map/quick-sort.js",
+        "node_modules/source-map/lib/source-map/source-map-consumer.js",
+        "node_modules/source-map/lib/source-map/source-map-generator.js",
+        "node_modules/source-map/lib/source-map/source-node.js",
+        "node_modules/source-map/lib/source-map/util.js",
+        "node_modules/source-map/lib/source-map.js",
+        "node_modules/strip-bom-buf/index.js",
+        "node_modules/uglify-js/bin/extract-props.js",
+        "node_modules/uglify-js/lib/ast.js",
+        "node_modules/uglify-js/lib/compress.js",
+        "node_modules/uglify-js/lib/mozilla-ast.js",
+        "node_modules/uglify-js/lib/output.js",
+        "node_modules/uglify-js/lib/parse.js",
+        "node_modules/uglify-js/lib/propmangle.js",
+        "node_modules/uglify-js/lib/scope.js",
+        "node_modules/uglify-js/lib/sourcemap.js",
+        "node_modules/uglify-js/lib/transform.js",
+        "node_modules/uglify-js/lib/utils.js",
+        "node_modules/uglify-js/node_modules/source-map/dist/source-map.debug.js",
+        "node_modules/uglify-js/node_modules/source-map/dist/source-map.js",
+        "node_modules/uglify-js/node_modules/source-map/dist/source-map.min.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/array-set.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/base64-vlq.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/base64.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/binary-search.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/mapping-list.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/quick-sort.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/source-map-consumer.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/source-map-generator.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/source-node.js",
+        "node_modules/uglify-js/node_modules/source-map/lib/util.js",
+        "node_modules/uglify-js/node_modules/source-map/source-map.js",
+        "node_modules/uglify-js/tools/exports.js",
+        "node_modules/uglify-js/tools/node.js",
+        "node_modules/uglify-to-browserify/index.js",
+        "node_modules/window-size/index.js",
+        "node_modules/wordwrap/example/center.js",
+        "node_modules/wordwrap/example/meat.js",
+        "node_modules/wordwrap/index.js",
+        "node_modules/xregexp/src/addons/build.js",
+        "node_modules/xregexp/src/addons/matchrecursive.js",
+        "node_modules/xregexp/src/addons/unicode-base.js",
+        "node_modules/xregexp/src/addons/unicode-blocks.js",
+        "node_modules/xregexp/src/addons/unicode-categories.js",
+        "node_modules/xregexp/src/addons/unicode-properties.js",
+        "node_modules/xregexp/src/addons/unicode-scripts.js",
+        "node_modules/xregexp/src/index.js",
+        "node_modules/xregexp/src/xregexp.js",
+        "node_modules/xregexp/xregexp-all.js",
+        "node_modules/yargs/index.js",
+        "node_modules/yargs/lib/completion.js",
+        "node_modules/yargs/lib/parser.js",
+        "node_modules/yargs/lib/usage.js",
+        "node_modules/yargs/lib/validation.js"
+      ],
+      ".json": [
+        "node_modules/align-text/package.json",
+        "node_modules/amdefine/package.json",
+        "node_modules/async/package.json",
+        "node_modules/atom-package-deps/.eslintrc.json",
+        "node_modules/atom-package-deps/package.json",
+        "node_modules/atom-package-path/package.json",
+        "node_modules/camelcase/package.json",
+        "node_modules/center-align/package.json",
+        "node_modules/cliui/node_modules/wordwrap/package.json",
+        "node_modules/cliui/package.json",
+        "node_modules/consistent-env/.eslintrc.json",
+        "node_modules/consistent-env/package.json",
+        "node_modules/decamelize/package.json",
+        "node_modules/handlebars/package.json",
+        "node_modules/is-buffer/package.json",
+        "node_modules/is-utf8/package.json",
+        "node_modules/kind-of/package.json",
+        "node_modules/lazy-cache/package.json",
+        "node_modules/lodash.uniq/package.json",
+        "node_modules/longest/package.json",
+        "node_modules/minimist/package.json",
+        "node_modules/optimist/package.json",
+        "node_modules/repeat-string/package.json",
+        "node_modules/right-align/package.json",
+        "node_modules/sb-callsite/package.json",
+        "node_modules/sb-exec/.eslintrc.json",
+        "node_modules/sb-exec/package.json",
+        "node_modules/sb-fs/package.json",
+        "node_modules/sb-memoize/.eslintrc.json",
+        "node_modules/sb-memoize/package.json",
+        "node_modules/sb-npm-path/.eslintrc.json",
+        "node_modules/sb-npm-path/package.json",
+        "node_modules/sb-promisify/package.json",
+        "node_modules/semver/package.json",
+        "node_modules/source-map/package.json",
+        "node_modules/strip-bom-buf/package.json",
+        "node_modules/uglify-js/node_modules/source-map/package.json",
+        "node_modules/uglify-js/package.json",
+        "node_modules/uglify-js/tools/domprops.json",
+        "node_modules/uglify-to-browserify/package.json",
+        "node_modules/window-size/package.json",
+        "node_modules/wordwrap/package.json",
+        "node_modules/xregexp/package.json",
+        "node_modules/yargs/package.json",
+        "package-lock.json",
+        "package.json"
+      ]
+    },
+    "folders": [
+      {
+        "paths": [
+          "lib",
+          "",
+          "spec"
+        ],
+        "dependencies": {
+          "atom-package-deps": "^4.0.1",
+          "handlebars": "^4.0.5",
+          "xregexp": "^3.1.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/align-text"
+        ],
+        "dependencies": {
+          "kind-of": "^3.0.2",
+          "longest": "^1.0.1",
+          "repeat-string": "^1.5.2"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/atom-package-deps",
+          "node_modules/atom-package-deps/lib"
+        ],
+        "dependencies": {
+          "atom-package-path": "^1.1.0",
+          "sb-exec": "^3.0.1",
+          "sb-fs": "^3.0.0",
+          "semver": "^5.3.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/atom-package-path/lib",
+          "node_modules/atom-package-path",
+          "node_modules/atom-package-path/spec"
+        ],
+        "dependencies": {
+          "sb-callsite": "^1.1.2"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/center-align"
+        ],
+        "dependencies": {
+          "align-text": "^0.1.3",
+          "lazy-cache": "^1.0.3"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/cliui",
+          "node_modules/cliui/test"
+        ],
+        "dependencies": {
+          "center-align": "^0.1.1",
+          "right-align": "^0.1.1",
+          "wordwrap": "0.0.2"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/consistent-env",
+          "node_modules/consistent-env/lib"
+        ],
+        "dependencies": {
+          "lodash.uniq": "^4.5.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/handlebars/dist/amd/handlebars",
+          "node_modules/handlebars/dist/amd/handlebars/compiler",
+          "node_modules/handlebars/dist/amd/handlebars/decorators",
+          "node_modules/handlebars/dist/amd/handlebars/helpers",
+          "node_modules/handlebars/dist/amd",
+          "node_modules/handlebars/dist/cjs/handlebars",
+          "node_modules/handlebars/dist/cjs/handlebars/compiler",
+          "node_modules/handlebars/dist/cjs/handlebars/decorators",
+          "node_modules/handlebars/dist/cjs/handlebars/helpers",
+          "node_modules/handlebars/dist/cjs",
+          "node_modules/handlebars/dist",
+          "node_modules/handlebars/lib/handlebars",
+          "node_modules/handlebars/lib/handlebars/compiler",
+          "node_modules/handlebars/lib/handlebars/decorators",
+          "node_modules/handlebars/lib/handlebars/helpers",
+          "node_modules/handlebars/lib",
+          "node_modules/handlebars"
+        ],
+        "dependencies": {
+          "async": "^1.4.0",
+          "optimist": "^0.6.1",
+          "source-map": "^0.4.4",
+          "uglify-js": "^2.6"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/kind-of"
+        ],
+        "dependencies": {
+          "is-buffer": "^1.1.5"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/optimist/example",
+          "node_modules/optimist",
+          "node_modules/optimist/test/_",
+          "node_modules/optimist/test"
+        ],
+        "dependencies": {
+          "minimist": "~0.0.1",
+          "wordwrap": "~0.0.2"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/right-align"
+        ],
+        "dependencies": {
+          "align-text": "^0.1.1"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/sb-exec",
+          "node_modules/sb-exec/decls",
+          "node_modules/sb-exec/lib"
+        ],
+        "dependencies": {
+          "consistent-env": "^1.2.0",
+          "lodash.uniq": "^4.5.0",
+          "sb-npm-path": "^2.0.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/sb-fs/lib",
+          "node_modules/sb-fs"
+        ],
+        "dependencies": {
+          "sb-promisify": "^2.0.1",
+          "strip-bom-buf": "^1.0.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/sb-npm-path",
+          "node_modules/sb-npm-path/decls",
+          "node_modules/sb-npm-path/lib"
+        ],
+        "dependencies": {
+          "sb-memoize": "^1.0.2",
+          "sb-promisify": "^2.0.1"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/source-map/build",
+          "node_modules/source-map/lib/source-map",
+          "node_modules/source-map/lib",
+          "node_modules/source-map"
+        ],
+        "dependencies": {
+          "amdefine": ">=0.0.4"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/strip-bom-buf"
+        ],
+        "dependencies": {
+          "is-utf8": "^0.2.1"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/uglify-js/bin",
+          "node_modules/uglify-js/lib",
+          "node_modules/uglify-js",
+          "node_modules/uglify-js/tools"
+        ],
+        "dependencies": {
+          "source-map": "~0.5.1",
+          "uglify-to-browserify": "~1.0.0",
+          "yargs": "~3.10.0"
+        }
+      },
+      {
+        "paths": [
+          "node_modules/yargs",
+          "node_modules/yargs/lib"
+        ],
+        "dependencies": {
+          "camelcase": "^1.0.2",
+          "cliui": "^2.1.0",
+          "decamelize": "^1.0.0",
+          "window-size": "0.1.0"
+        }
+      }
+    ]
+  }
+}
