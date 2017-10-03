@@ -28,6 +28,7 @@ class TextObject extends Base
   wise: 'characterwise'
   supportCount: false # FIXME #472, #66
   selectOnce: false
+  selectSucceeded: false
 
   @deriveInnerAndA: ->
     @generateClass("A" + @name, false)
@@ -61,14 +62,12 @@ class TextObject extends Base
     @wise = wise # FIXME currently not well supported
 
   resetState: ->
-    @selectSucceeded = null
+    @selectSucceeded = false
 
   execute: ->
-    @resetState()
-
     # Whennever TextObject is executed, it has @operator
     # Called from Operator::selectTarget()
-    #  - `v i p`, is `Select` operator with @target = `InnerParagraph`.
+    #  - `v i p`, is `SelectInVisualMode` operator with @target = `InnerParagraph`.
     #  - `d i p`, is `Delete` operator with @target = `InnerParagraph`.
     if @operator?
       @select()
@@ -92,7 +91,7 @@ class TextObject extends Base
     # Some TextObject's wise is NOT deterministic. It has to be detected from selected range.
     @wise ?= @swrap.detectWise(@editor)
 
-    if @mode is 'visual'
+    if @operator.instanceof("SelectBase")
       if @selectSucceeded
         switch @wise
           when 'characterwise'

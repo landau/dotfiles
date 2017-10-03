@@ -1,0 +1,1 @@
+module.exports = process.env.quokkaDebug ? require('./src/index') : require('./build/quokka');

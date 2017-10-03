@@ -40,6 +40,7 @@ class Motion extends Base
   verticalMotion: false
   moveSucceeded: null
   moveSuccessOnLinewise: false
+  selectSucceeded: false
 
   constructor: ->
     super
@@ -58,6 +59,9 @@ class Motion extends Base
       else
         @inclusive = not @inclusive
     @wise = wise
+
+  resetState: ->
+    @selectSucceeded = false
 
   setBufferPositionSafely: (cursor, point) ->
     cursor.setBufferPosition(point) if point?
@@ -85,13 +89,15 @@ class Motion extends Base
 
   # NOTE: Modify selection by modtion, selection is already "normalized" before this function is called.
   select: ->
-    isOrWasVisual = @mode is 'visual' or @is('CurrentSelection') # need to care was visual for `.` repeated.
+    isOrWasVisual = @operator?.instanceof('SelectBase') or @is('CurrentSelection') # need to care was visual for `.` repeated.
     for selection in @editor.getSelections()
       selection.modifySelection =>
         @moveWithSaveJump(selection.cursor)
 
-      succeeded = @moveSucceeded ? not selection.isEmpty() or (@moveSuccessOnLinewise and @isLinewise())
-      if isOrWasVisual or (succeeded and (@inclusive or @isLinewise()))
+      selectSucceeded = @moveSucceeded ? not selection.isEmpty() or (@isLinewise() and @moveSuccessOnLinewise)
+      @selectSucceeded or= selectSucceeded
+
+      if isOrWasVisual or (selectSucceeded and (@inclusive or @isLinewise()))
         $selection = @swrap(selection)
         $selection.saveProperties(true) # save property of "already-normalized-selection"
         $selection.applyWise(@wise)
@@ -181,7 +187,7 @@ class MoveLeft extends Motion
 class MoveRight extends Motion
   @extend()
   canWrapToNextLine: (cursor) ->
-    if @isAsTargetExceptSelect() and not cursor.isAtEndOfLine()
+    if @isAsTargetExceptSelectInVisualMode() and not cursor.isAtEndOfLine()
       false
     else
       @getConfig('wrapLeftRightMotion')
@@ -304,7 +310,7 @@ class MoveUpToEdge extends Motion
       false
 
   isStoppablePoint: (point) ->
-    if @isNonWhiteSpacePoint(point)
+    if @isNonWhiteSpacePoint(point) or @isFirstRowOrLastRowAndStoppable(point)
       true
     else
       leftPoint = point.translate([0, -1])
@@ -314,6 +320,15 @@ class MoveUpToEdge extends Motion
   isNonWhiteSpacePoint: (point) ->
     char = getTextInScreenRange(@editor, Range.fromPointWithDelta(point, 0, 1))
     char? and /\S/.test(char)
+
+  isFirstRowOrLastRowAndStoppable: (point) ->
+    # In normal-mode we adjust cursor by moving-left if cursor at EOL of non-blank row.
+    # So explicitly guard to not answer it stoppable.
+    if @isMode('normal') and pointIsAtEndOfLineAtNonEmptyRow(@editor, point)
+      false
+    else
+      point.isEqual(@editor.clipScreenPosition(point)) and
+        ((point.row is 0) or (point.row is @getVimLastScreenRow()))
 
 class MoveDownToEdge extends MoveUpToEdge
   @extend()
@@ -363,15 +378,15 @@ class MoveToNextWord extends Motion
     return if pointIsAtVimEndOfFile(@editor, cursorPosition)
     wasOnWhiteSpace = pointIsOnWhiteSpace(@editor, cursorPosition)
 
-    isAsTargetExceptSelect = @isAsTargetExceptSelect()
+    isAsTargetExceptSelectInVisualMode = @isAsTargetExceptSelectInVisualMode()
     @moveCursorCountTimes cursor, ({isFinal}) =>
       cursorPosition = cursor.getBufferPosition()
-      if isEmptyRow(@editor, cursorPosition.row) and isAsTargetExceptSelect
+      if isEmptyRow(@editor, cursorPosition.row) and isAsTargetExceptSelectInVisualMode
         point = cursorPosition.traverse([1, 0])
       else
         pattern = @wordRegex ? cursor.wordRegExp()
         point = @getPoint(pattern, cursorPosition)
-        if isFinal and isAsTargetExceptSelect
+        if isFinal and isAsTargetExceptSelectInVisualMode
           if @operator.is('Change') and (not wasOnWhiteSpace)
             point = cursor.getEndOfCurrentWordBufferPosition({@wordRegex})
           else
@@ -763,7 +778,7 @@ class MoveToTopOfScreen extends Motion
     @setCursorBufferRow(cursor, bufferRow)
 
   getScrolloff: ->
-    if @isAsTargetExceptSelect()
+    if @isAsTargetExceptSelectInVisualMode()
       0
     else
       @scrolloff
@@ -953,7 +968,7 @@ class Find extends Motion
   execute: ->
     super
     decorationType = "post-confirm"
-    decorationType += " long" if @isAsTargetExceptSelect()
+    decorationType += " long" if (@operator? and not @operator?.instanceof("SelectBase"))
     @editor.component.getNextUpdatePromise().then =>
       @highlightTextInCursorRows(@input, decorationType)
 

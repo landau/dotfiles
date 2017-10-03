@@ -76,6 +76,7 @@ class Base
 
   # To override
   initialize: ->
+  resetState: ->
 
   # Operation processor execute only when isComplete() return true.
   # If false, operation processor postpone its execution.
@@ -96,8 +97,9 @@ class Base
   repeated: false
   target: null # Set in Operator
   operator: null # Set in operator's target( Motion or TextObject )
-  isAsTargetExceptSelect: ->
-    @operator? and not @operator.instanceof('Select')
+
+  isAsTargetExceptSelectInVisualMode: ->
+    @operator? and not @operator.instanceof('SelectInVisualMode')
 
   abort: ->
     OperationAbortedError ?= require './errors'

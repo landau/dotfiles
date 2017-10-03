@@ -301,54 +301,63 @@ class Operator extends Base
     wise = if @occurrenceSelected then @occurrenceWise else @target.wise
     @mutationManager.restoreCursorPositions({stay, wise, @setToFirstCharacterOnLinewise})
 
-# Select
-# When text-object is invoked from normal or viusal-mode, operation would be
-#  => Select operator with target=text-object
-# When motion is invoked from visual-mode, operation would be
-#  => Select operator with target=motion)
-# ================================
-# Select is used in TWO situation.
-# - visual-mode operation
-#   - e.g: `v l`, `V j`, `v i p`...
-# - Directly invoke text-object from normal-mode
-#   - e.g: Invoke `Inner Paragraph` from command-palette.
-class Select extends Operator
+class SelectBase extends Operator
   @extend(false)
   flashTarget: false
   recordable: false
-  acceptPresetOccurrence: false
-  acceptPersistentSelection: false
 
   execute: ->
-    @startMutation(@selectTarget.bind(this))
+    @startMutation => @selectTarget()
 
-    if @target.isTextObject() and @target.selectSucceeded
-      @editor.scrollToCursorPosition()
-      @activateModeIfNecessary('visual', @target.wise)
+    if (@target.selectSucceeded)
+      @editor.scrollToCursorPosition() if @target.isTextObject()
+      wise = if @occurrenceSelected then @occurrenceWise else @target.wise
+      @activateModeIfNecessary('visual', wise)
+    else
+      @cancelOperation()
 
-class SelectLatestChange extends Select
+class Select extends SelectBase
+  @extend()
+  execute: ->
+    for $selection in @swrap.getSelections(@editor) when not $selection.hasProperties()
+      $selection.saveProperties()
+    super
+
+class SelectLatestChange extends SelectBase
   @extend()
   @description: "Select latest yanked or changed range"
   target: 'ALatestChange'
 
-class SelectPreviousSelection extends Select
+class SelectPreviousSelection extends SelectBase
   @extend()
   target: "PreviousSelection"
 
-class SelectPersistentSelection extends Select
+class SelectPersistentSelection extends SelectBase
   @extend()
   @description: "Select persistent-selection and clear all persistent-selection, it's like convert to real-selection"
   target: "APersistentSelection"
+  acceptPersistentSelection: false
 
-class SelectOccurrence extends Operator
+class SelectOccurrence extends SelectBase
   @extend()
   @description: "Add selection onto each matching word within target range"
   occurrence: true
 
-  execute: ->
-    @startMutation =>
-      if @selectTarget()
-        @activateModeIfNecessary('visual', 'characterwise')
+# SelectInVisualMode: used in visual-mode
+# When text-object is invoked from normal or viusal-mode, operation would be
+#  => SelectInVisualMode operator with target=text-object
+# When motion is invoked from visual-mode, operation would be
+#  => SelectInVisualMode operator with target=motion)
+# ================================
+# SelectInVisualMode is used in TWO situation.
+# - visual-mode operation
+#   - e.g: `v l`, `V j`, `v i p`...
+# - Directly invoke text-object from normal-mode
+#   - e.g: Invoke `Inner Paragraph` from command-palette.
+class SelectInVisualMode extends SelectBase
+  @extend(false)
+  acceptPresetOccurrence: false
+  acceptPersistentSelection: false
 
 # Persistent Selection
 # =========================
@@ -368,13 +377,10 @@ class TogglePersistentSelection extends CreatePersistentSelection
   isComplete: ->
     point = @editor.getCursorBufferPosition()
     @markerToRemove = @persistentSelection.getMarkerAtPoint(point)
-    if @markerToRemove
-      true
-    else
-      super
+    @markerToRemove? or super
 
   execute: ->
-    if @markerToRemove
+    if @markerToRemove?
       @markerToRemove.destroy()
     else
       super

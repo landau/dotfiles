@@ -3,8 +3,12 @@
 module.exports =
 Operator:
   file: "./operator"
+SelectBase:
+  file: "./operator"
 Select:
   file: "./operator"
+  commandName: "vim-mode-plus:select"
+  commandScope: "atom-text-editor"
 SelectLatestChange:
   file: "./operator"
   commandName: "vim-mode-plus:select-latest-change"
@@ -21,6 +25,8 @@ SelectOccurrence:
   file: "./operator"
   commandName: "vim-mode-plus:select-occurrence"
   commandScope: "atom-text-editor"
+SelectInVisualMode:
+  file: "./operator"
 CreatePersistentSelection:
   file: "./operator"
   commandName: "vim-mode-plus:create-persistent-selection"
@@ -171,6 +177,10 @@ InsertAtEndOfOccurrence:
   file: "./operator-insert"
   commandName: "vim-mode-plus:insert-at-end-of-occurrence"
   commandScope: "atom-text-editor"
+InsertAtHeadOfOccurrence:
+  file: "./operator-insert"
+  commandName: "vim-mode-plus:insert-at-head-of-occurrence"
+  commandScope: "atom-text-editor"
 InsertAtStartOfSubwordOccurrence:
   file: "./operator-insert"
   commandName: "vim-mode-plus:insert-at-start-of-subword-occurrence"
@@ -178,6 +188,10 @@ InsertAtStartOfSubwordOccurrence:
 InsertAtEndOfSubwordOccurrence:
   file: "./operator-insert"
   commandName: "vim-mode-plus:insert-at-end-of-subword-occurrence"
+  commandScope: "atom-text-editor"
+InsertAtHeadOfSubwordOccurrence:
+  file: "./operator-insert"
+  commandName: "vim-mode-plus:insert-at-head-of-subword-occurrence"
   commandScope: "atom-text-editor"
 InsertAtStartOfSmartWord:
   file: "./operator-insert"

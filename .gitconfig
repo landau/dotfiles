@@ -29,6 +29,8 @@
     pm = push origin master
     # Push somewhere
     po = push origin
+    # pull from fork
+    fpull = pull fork master
     # rebase
     prom = pull --rebase origin master
     fprom = pull --rebase fork master
