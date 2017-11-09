@@ -64,7 +64,7 @@ module.exports = class Developer {
 
   setGlobalVimState() {
     global.vimState = getEditorState(atom.workspace.getActiveTextEditor())
-    console.log("set global.vimState for debug", global.vimState);
+    console.log("set global.vimState for debug", global.vimState)
   }
 
   reportRequireCache({focus, excludeNodModules}) {
@@ -119,7 +119,9 @@ module.exports = class Developer {
 
   reload(reloadDependencies) {
     function deleteRequireCacheForPathPrefix(prefix) {
-      Object.keys(require.cache).filter(p => p.startsWith(prefix)).forEach(p => delete require.cache[p])
+      Object.keys(require.cache)
+        .filter(p => p.startsWith(prefix))
+        .forEach(p => delete require.cache[p])
     }
 
     const packagesNeedReload = ["vim-mode-plus"]
@@ -170,11 +172,12 @@ module.exports = class Developer {
 
     const registry = Base.getClassRegistry()
     return Object.keys(registry)
-      .filter(name => registry[name].isCommand())
+      .filter(name => registry[name].command)
       .map(name => commandSpecForClass(registry[name]))
 
     function compactSelector(selector) {
-      const regex = new RegExp(`(${_.keys(SelectorMap).map(_.escapeRegExp).join("|")})`, "g")
+      const sources = _.keys(SelectorMap).map(_.escapeRegExp)
+      const regex = new RegExp(`(${sources.join("|")})`, "g")
       return selector
         .split(/,\s*/g)
         .map(scope => scope.replace(/:not\((.*?)\)/g, "!$1").replace(regex, s => SelectorMap[s]))
@@ -183,13 +186,17 @@ module.exports = class Developer {
 
     function compactKeystrokes(keystrokes) {
       const specialChars = "\\`*_{}[]()#+-.!"
-      const specialCharsRegexp = new RegExp(`${specialChars.split("").map(_.escapeRegExp).join("|")}`, "g")
-      const modifierKeyRegexp = new RegExp(`(${_.keys(ModifierKeyMap).map(_.escapeRegExp).join("|")})`)
+
+      const modifierKeyRegexSources = _.keys(ModifierKeyMap).map(_.escapeRegExp)
+      const modifierKeyRegex = new RegExp(`(${modifierKeyRegexSources.join("|")})`)
+      const specialCharsRegexSources = specialChars.split("").map(_.escapeRegExp)
+      const specialCharsRegex = new RegExp(`(${specialCharsRegexSources.join("|")})`, "g")
+
       return (
         keystrokes
           // .replace(/(`|_)/g, '\\$1')
-          .replace(modifierKeyRegexp, s => ModifierKeyMap[s])
-          .replace(new RegExp(`(${specialCharsRegexp})`, "g"), "\\$1")
+          .replace(modifierKeyRegex, s => ModifierKeyMap[s])
+          .replace(specialCharsRegex, "\\$1")
           .replace(/\|/g, "&#124;")
           .replace(/\s+/, "")
       )
@@ -201,7 +208,7 @@ module.exports = class Developer {
       ancestors.pop()
       const kind = ancestors.pop().name
       const commandName = klass.getCommandName()
-      const description = klass.getDesctiption() ? klass.getDesctiption().replace(/\n/g, "<br/>") : undefined
+      // const description = klass.getDesctiption() ? klass.getDesctiption().replace(/\n/g, "<br/>") : undefined
 
       const keymaps = getKeyBindingForCommand(commandName, {packageName: "vim-mode-plus"})
       const keymap = keymaps

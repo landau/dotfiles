@@ -1,37 +1,27 @@
 {getVimState} = require './spec-helper'
 
 describe "Scrolling", ->
-  [set, ensure, keystroke, editor, editorElement, vimState] = []
+  [set, ensure, editor, editorElement, vimState] = []
 
   beforeEach ->
     getVimState (state, vim) ->
       vimState = state
       {editor, editorElement} = vimState
-      {set, ensure, keystroke} = vim
+      {set, ensure} = vim
       jasmine.attachToDOM(editorElement)
 
   describe "scrolling keybindings", ->
     beforeEach ->
-      if editorElement.measureDimensions?
-        # For Atom-v1.19
-        {component} = editor
-        component.element.style.height = component.getLineHeight() * 5 + 'px'
-        editorElement.measureDimensions()
-        initialRowRange = [0, 5]
-
-      else # For Atom-v1.18
-        # [TODO] Remove when v.1.19 become stable
-        editor.setLineHeightInPixels(10)
-        editorElement.setHeight(10 * 5)
-        atom.views.performDocumentPoll()
-        initialRowRange = [0, 4]
+      {component} = editor
+      component.element.style.height = component.getLineHeight() * 5 + 'px'
+      editorElement.measureDimensions()
+      initialRowRange = [0, 5]
 
       set
-        cursor: [1, 2]
-        text: """
+        textC: """
           100
           200
-          300
+          30|0
           400
           500
           600
@@ -44,73 +34,52 @@ describe "Scrolling", ->
 
     describe "the ctrl-e and ctrl-y keybindings", ->
       it "moves the screen up and down by one and keeps cursor onscreen", ->
-        ensure 'ctrl-e', cursor: [2, 2]
+        ensure 'ctrl-e', cursor: [3, 2]
         expect(editor.getFirstVisibleScreenRow()).toBe 1
         expect(editor.getLastVisibleScreenRow()).toBe 6
 
-        ensure '2 ctrl-e', cursor: [4, 2]
+        ensure '2 ctrl-e', cursor: [5, 2]
         expect(editor.getFirstVisibleScreenRow()).toBe 3
         expect(editor.getLastVisibleScreenRow()).toBe 8
 
-        ensure '2 ctrl-y', cursor: [2, 2]
+        ensure '2 ctrl-y', cursor: [4, 2]
         expect(editor.getFirstVisibleScreenRow()).toBe 1
         expect(editor.getLastVisibleScreenRow()).toBe 6
 
-  describe "scroll cursor keybindings", ->
+  describe "redraw-cursor-line keybindings", ->
+    _ensure = (keystroke, {scrollTop, moveToFirstChar}) ->
+      ensure(keystroke)
+      expect(editorElement.setScrollTop).toHaveBeenCalledWith(scrollTop)
+      if moveToFirstChar
+        expect(editor.moveToFirstCharacterOfLine).toHaveBeenCalled()
+      else
+        expect(editor.moveToFirstCharacterOfLine).not.toHaveBeenCalled()
+
     beforeEach ->
       editor.setText [1..200].join("\n")
       editorElement.style.lineHeight = "20px"
 
       editorElement.setHeight(20 * 10)
-
-      if editorElement.measureDimensions?
-        # For Atom-v1.19
-        editorElement.measureDimensions()
-      else # For Atom-v1.18
-        # [TODO] Remove when v.1.19 become stable
-        editorElement.component.sampleFontStyling()
+      editorElement.measureDimensions()
 
       spyOn(editor, 'moveToFirstCharacterOfLine')
       spyOn(editorElement, 'setScrollTop')
-      spyOn(editorElement, 'getFirstVisibleScreenRow').andReturn(90)
-      spyOn(editorElement, 'getLastVisibleScreenRow').andReturn(110)
+      spyOn(editor, 'getFirstVisibleScreenRow').andReturn(90)
+      spyOn(editor, 'getLastVisibleScreenRow').andReturn(110)
       spyOn(editorElement, 'pixelPositionForScreenPosition').andReturn({top: 1000, left: 0})
 
-    describe "the z<CR> keybinding", ->
-      it "moves the screen to position cursor at the top of the window and moves cursor to first non-blank in the line", ->
-        keystroke 'z enter'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(960)
-        expect(editor.moveToFirstCharacterOfLine).toHaveBeenCalled()
-
-    describe "the zt keybinding", ->
-      it "moves the screen to position cursor at the top of the window and leave cursor in the same column", ->
-        keystroke 'z t'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(960)
-        expect(editor.moveToFirstCharacterOfLine).not.toHaveBeenCalled()
-
-    describe "the z. keybinding", ->
-      it "moves the screen to position cursor at the center of the window and moves cursor to first non-blank in the line", ->
-        keystroke 'z .'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(900)
-        expect(editor.moveToFirstCharacterOfLine).toHaveBeenCalled()
-
-    describe "the zz keybinding", ->
-      it "moves the screen to position cursor at the center of the window and leave cursor in the same column", ->
-        keystroke 'z z'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(900)
-        expect(editor.moveToFirstCharacterOfLine).not.toHaveBeenCalled()
-
-    describe "the z- keybinding", ->
-      it "moves the screen to position cursor at the bottom of the window and moves cursor to first non-blank in the line", ->
-        keystroke 'z -'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(860)
-        expect(editor.moveToFirstCharacterOfLine).toHaveBeenCalled()
-
-    describe "the zb keybinding", ->
-      it "moves the screen to position cursor at the bottom of the window and leave cursor in the same column", ->
-        keystroke 'z b'
-        expect(editorElement.setScrollTop).toHaveBeenCalledWith(860)
-        expect(editor.moveToFirstCharacterOfLine).not.toHaveBeenCalled()
+    describe "at top", ->
+      it "without move cursor", ->   _ensure 'z t',     scrollTop: 960, moveToFirstChar: false
+      it "with move to 1st char", -> _ensure 'z enter', scrollTop: 960, moveToFirstChar: true
+    describe "at upper-middle", ->
+      it "without move cursor", ->   _ensure 'z u',     scrollTop: 950, moveToFirstChar: false
+      it "with move to 1st char", -> _ensure 'z space', scrollTop: 950, moveToFirstChar: true
+    describe "at middle", ->
+      it "without move cursor", ->   _ensure 'z z',     scrollTop: 900, moveToFirstChar: false
+      it "with move to 1st char", -> _ensure 'z .',     scrollTop: 900, moveToFirstChar: true
+    describe "at bottom", ->
+      it "without move cursor", ->   _ensure 'z b',     scrollTop: 860, moveToFirstChar: false
+      it "with move to 1st char", -> _ensure 'z -',     scrollTop: 860, moveToFirstChar: true
 
   describe "horizontal scroll cursor keybindings", ->
     beforeEach ->
@@ -118,13 +87,7 @@ describe "Scrolling", ->
       editorElement.setHeight(600)
       editorElement.style.lineHeight = "10px"
       editorElement.style.font = "16px monospace"
-
-      if editorElement.measureDimensions?
-        # For Atom-v1.19
-        editorElement.measureDimensions()
-      else # For Atom-v1.18
-        # [TODO] Remove when v.1.19 become stable
-        atom.views.performDocumentPoll()
+      editorElement.measureDimensions()
 
       text = ""
       for i in [100..199]
@@ -133,12 +96,13 @@ describe "Scrolling", ->
       editor.setCursorBufferPosition([0, 0])
 
     describe "the zs keybinding", ->
+      startPosition = null
+
       zsPos = (pos) ->
         editor.setCursorBufferPosition([0, pos])
-        keystroke 'z s'
+        ensure 'z s'
         editorElement.getScrollLeft()
 
-      startPosition = NaN
       beforeEach ->
         startPosition = editorElement.getScrollLeft()
 
@@ -178,49 +142,33 @@ describe "Scrolling", ->
     describe "the ze keybinding", ->
       zePos = (pos) ->
         editor.setCursorBufferPosition([0, pos])
-        keystroke 'z e'
+        ensure 'z e'
         editorElement.getScrollLeft()
 
-      startPosition = NaN
+      startPosition = null
 
       beforeEach ->
         startPosition = editorElement.getScrollLeft()
 
       it "does nothing near the start of the line", ->
-        pos1 = zePos(1)
-        expect(pos1).toEqual(startPosition)
-
-        pos40 = zePos(40)
-        expect(pos40).toEqual(startPosition)
+        expect(zePos(1)).toEqual(startPosition)
+        expect(zePos(40)).toEqual(startPosition)
 
       it "moves the cursor the nearest it can to the right edge of the editor", ->
         pos110 = zePos(110)
         expect(pos110).toBeGreaterThan(startPosition)
-
-        pos109 = zePos(109)
-        expect(pos110 - pos109).toEqual(9)
+        expect(pos110 - zePos(109)).toEqual(10)
 
       # FIXME description is no longer appropriate
       it "does nothing when very near the end of the line", ->
         posEnd = zePos(399)
-        expect(editor.getCursorBufferPosition()).toEqual [0, 399]
-
-        pos397 = zePos(397)
-        expect(pos397).toBeLessThan(posEnd)
-        expect(editor.getCursorBufferPosition()).toEqual [0, 397]
-
+        expect(zePos(397)).toBeLessThan(posEnd)
         pos380 = zePos(380)
         expect(pos380).toBeLessThan(posEnd)
-
-        pos382 = zePos(382)
-        expect(pos382 - pos380).toEqual(19)
+        expect(zePos(382) - pos380).toEqual(19)
 
       it "does nothing if all lines are short", ->
         editor.setText('short')
         startPosition = editorElement.getScrollLeft()
-        pos1 = zePos(1)
-        expect(pos1).toEqual(startPosition)
-        expect(editor.getCursorBufferPosition()).toEqual [0, 1]
-        pos10 = zePos(10)
-        expect(pos10).toEqual(startPosition)
-        expect(editor.getCursorBufferPosition()).toEqual [0, 4]
+        expect(zePos(1)).toEqual(startPosition)
+        expect(zePos(10)).toEqual(startPosition)

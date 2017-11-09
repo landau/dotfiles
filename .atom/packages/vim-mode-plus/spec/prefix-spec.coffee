@@ -2,13 +2,13 @@
 settings = require '../lib/settings'
 
 describe "Prefixes", ->
-  [set, ensure, keystroke, editor, editorElement, vimState] = []
+  [set, ensure, ensureWait, editor, editorElement, vimState] = []
 
   beforeEach ->
     getVimState (state, vim) ->
       vimState = state
       {editor, editorElement} = vimState
-      {set, ensure, keystroke} = vim
+      {set, ensure, ensureWait} = vim
 
   describe "Repeat", ->
     describe "with operations", ->
@@ -42,12 +42,12 @@ describe "Prefixes", ->
     describe "the a register", ->
       it "saves a value for future reading", ->
         set    register: a: text: 'new content'
-        ensure register: a: text: 'new content'
+        ensure null, register: a: text: 'new content'
 
       it "overwrites a value previously in the register", ->
         set    register: a: text: 'content'
         set    register: a: text: 'new content'
-        ensure register: a: text: 'new content'
+        ensure null, register: a: text: 'new content'
 
     describe "with yank command", ->
       beforeEach ->
@@ -57,7 +57,7 @@ describe "Prefixes", ->
           aaa bbb ccc
           """
       it "save to pre specified register", ->
-        ensure '" a y i w', register: a: text: 'aaa'
+        ensure '" a y i w',   register: a: text: 'aaa'
         ensure 'w " b y i w', register: b: text: 'bbb'
         ensure 'w " c y i w', register: c: text: 'ccc'
 
@@ -77,7 +77,7 @@ describe "Prefixes", ->
 
       describe "when specified register have no text", ->
         it "can paste from a register", ->
-          ensure mode: "normal"
+          ensure null, mode: "normal"
           ensure '" a p',
             textC: """
             anew conten|tbc
@@ -102,28 +102,28 @@ describe "Prefixes", ->
     describe "the B register", ->
       it "saves a value for future reading", ->
         set    register: B: text: 'new content'
-        ensure register: b: text: 'new content'
-        ensure register: B: text: 'new content'
+        ensure null, register: b: text: 'new content'
+        ensure null, register: B: text: 'new content'
 
       it "appends to a value previously in the register", ->
         set    register: b: text: 'content'
         set    register: B: text: 'new content'
-        ensure register: b: text: 'contentnew content'
+        ensure null, register: b: text: 'contentnew content'
 
       it "appends linewise to a linewise value previously in the register", ->
         set    register: b: text: 'content\n', type: 'linewise'
         set    register: B: text: 'new content'
-        ensure register: b: text: 'content\nnew content\n'
+        ensure null, register: b: text: 'content\nnew content\n'
 
       it "appends linewise to a character value previously in the register", ->
         set    register: b: text: 'content'
         set    register: B: text: 'new content\n', type: 'linewise'
-        ensure register: b: text: 'content\nnew content\n'
+        ensure null, register: b: text: 'content\nnew content\n'
 
     describe "the * register", ->
       describe "reading", ->
         it "is the same the system clipboard", ->
-          ensure register: '*': text: 'initial clipboard content', type: 'characterwise'
+          ensure null, register: '*': text: 'initial clipboard content', type: 'characterwise'
 
       describe "writing", ->
         beforeEach ->
@@ -139,7 +139,7 @@ describe "Prefixes", ->
     describe "the + register", ->
       describe "reading", ->
         it "is the same the system clipboard", ->
-          ensure register:
+          ensure null, register:
             '*': text: 'initial clipboard content', type: 'characterwise'
 
       describe "writing", ->
@@ -152,12 +152,12 @@ describe "Prefixes", ->
     describe "the _ register", ->
       describe "reading", ->
         it "is always the empty string", ->
-          ensure register: '_': text: ''
+          ensure null, register: '_': text: ''
 
       describe "writing", ->
         it "throws away anything written to it", ->
           set register:    '_': text: 'new content'
-          ensure register: '_': text: ''
+          ensure null, register: '_': text: ''
 
     describe "the % register", ->
       beforeEach ->
@@ -165,17 +165,17 @@ describe "Prefixes", ->
 
       describe "reading", ->
         it "returns the filename of the current editor", ->
-          ensure register: '%': text: '/Users/atom/known_value.txt'
+          ensure null, register: '%': text: '/Users/atom/known_value.txt'
 
       describe "writing", ->
         it "throws away anything written to it", ->
           set    register: '%': text: 'new content'
-          ensure register: '%': text: '/Users/atom/known_value.txt'
+          ensure null, register: '%': text: '/Users/atom/known_value.txt'
 
     describe "the numbered 0-9 register", ->
       describe "0", ->
         it "keep most recent yank-ed text", ->
-          ensure register: '"': {text: 'initial clipboard content'}, '0': {text: undefined}
+          ensure null, register: '"': {text: 'initial clipboard content'}, '0': {text: undefined}
           set textC: "|000"
           ensure "y w", register: '"': {text: "000"}, '0': {text: "000"}
           ensure "y l", register: '"': {text: "0"}, '0': {text: "0"}
@@ -317,44 +317,38 @@ describe "Prefixes", ->
 
     describe "the ctrl-r command in insert mode", ->
       beforeEach ->
-        set register: '"': text: '345'
-        set register: 'a': text: 'abc'
-        set register: '*': text: 'abc'
         atom.clipboard.write "clip"
-        set text: "012\n", cursor: [0, 2]
+        set
+          register:
+            '"': text: '345'
+            'a': text: 'abc'
+            '*': text: 'abc'
+        set textC: "01|2\n"
         ensure 'i', mode: 'insert'
 
       describe "useClipboardAsDefaultRegister = true", ->
-        beforeEach ->
+        it "inserts from \" paste clipboard content", ->
           settings.set 'useClipboardAsDefaultRegister', true
-          set register: '"': text: '345'
           atom.clipboard.write "clip"
-
-        it "inserts contents from clipboard with \"", ->
-          ensure 'ctrl-r "', text: '01clip2\n'
+          ensureWait 'ctrl-r "', text: '01clip2\n'
 
       describe "useClipboardAsDefaultRegister = false", ->
-        beforeEach ->
+        it "inserts from \" register ", ->
           settings.set 'useClipboardAsDefaultRegister', false
           set register: '"': text: '345'
           atom.clipboard.write "clip"
+          ensureWait 'ctrl-r "', text: '013452\n'
 
-        it "inserts contents from \" with \"", ->
-          ensure 'ctrl-r "', text: '013452\n'
-
-      it "inserts contents of the 'a' register", ->
-        ensure 'ctrl-r a', text: '01abc2\n'
-
-      it "is cancelled with the escape key", ->
-        ensure 'ctrl-r escape',
-          text: '012\n'
-          mode: 'insert'
-          cursor: [0, 2]
+      describe "insert from named register", ->
+        it "insert from 'a'", ->
+          ensureWait 'ctrl-r a', textC: '01abc|2\n', mode: 'insert'
+        it "cancel with escape", ->
+          ensureWait 'ctrl-r escape', textC: '01|2\n', mode: 'insert'
 
     describe "per selection clipboard", ->
       ensurePerSelectionRegister = (texts...) ->
         for selection, i in editor.getSelections()
-          ensure register: '*': {text: texts[i], selection: selection}
+          ensure null, register: '*': {text: texts[i], selection: selection}
 
       beforeEach ->
         settings.set 'useClipboardAsDefaultRegister', true
@@ -372,7 +366,7 @@ describe "Prefixes", ->
           expect(clipboardBySelection.size).toBe(0)
           expect(subscriptionBySelection.size).toBe(0)
 
-          keystroke "y i w"
+          ensure "y i w"
           ensurePerSelectionRegister('012', 'abc', 'def')
 
           expect(clipboardBySelection.size).toBe(3)
@@ -383,7 +377,7 @@ describe "Prefixes", ->
 
       describe "Yank", ->
         it "save text to per selection register", ->
-          keystroke "y i w"
+          ensure "y i w"
           ensurePerSelectionRegister('012', 'abc', 'def')
 
       describe "Delete family", ->
@@ -419,7 +413,7 @@ describe "Prefixes", ->
         it "insert from per selection registe", ->
           ensure "d i w", text: ":\n:\n:\n"
           ensure 'a', mode: 'insert'
-          ensure 'ctrl-r "',
+          ensureWait 'ctrl-r "',
             text: """
               :012
               :abc
@@ -438,3 +432,113 @@ describe "Prefixes", ->
       ensure 'd 2 w', text: "222 333 444 555 666 777 888 999"
     it "repeat operator and motion respectively", ->
       ensure '3 d 2 w', text: "666 777 888 999"
+  describe "Count modifier", ->
+    beforeEach ->
+      set
+        text: "000 111 222 333 444 555 666 777 888 999"
+        cursor: [0, 0]
+
+    it "repeat operator", ->
+      ensure '3 d w', text: "333 444 555 666 777 888 999"
+    it "repeat motion", ->
+      ensure 'd 2 w', text: "222 333 444 555 666 777 888 999"
+    it "repeat operator and motion respectively", ->
+      ensure '3 d 2 w', text: "666 777 888 999"
+
+  describe "blackholeRegisteredOperators settings", ->
+    originalText = "initial clipboard content"
+    beforeEach ->
+      set
+        textC: "a|bc"
+
+    describe "when false(default)", ->
+      it "default",  -> ensure null,  register: {'"': text: originalText}
+      it 'c update', -> ensure 'c l', register: {'"': text: 'b'}
+      it 'C update', -> ensure 'C',   register: {'"': text: 'bc'}
+      it 'x update', -> ensure 'x',   register: {'"': text: 'b'}
+      it 'X update', -> ensure 'X',   register: {'"': text: 'a'}
+      it 'y update', -> ensure 'y l', register: {'"': text: 'b'}
+      it 'Y update', -> ensure 'Y',   register: {'"': text: "abc\n"}
+      it 's update', -> ensure 's',   register: {'"': text: 'b'}
+      it 'S update', -> ensure 'S',   register: {'"': text: 'abc\n'}
+      it 'd update', -> ensure 'd l', register: {'"': text: 'b'}
+      it 'D update', -> ensure 'D',   register: {'"': text: 'bc'}
+
+    describe "when true(default)", ->
+      describe "blackhole all", ->
+        beforeEach ->
+          settings.set "blackholeRegisteredOperators", [
+            "change" # c
+            "change-to-last-character-of-line" # C
+            "change-line" # C in visual
+            "change-occurrence"
+            "change-occurrence-from-search"
+            "delete" # d
+            "delete-to-last-character-of-line" # D
+            "delete-line" # D in visual
+            "delete-right" # x
+            "delete-left" # X
+            "substitute" # s
+            "substitute-line" # S
+            "yank" # y
+            "yank-line" # Y
+            # "delete*"
+            # "change*"
+            # "yank*"
+            # "substitute*"
+          ]
+
+        it "default",      -> ensure null,  register: {'"': text: originalText}
+        it 'c NOT update', -> ensure 'c l', register: {'"': text: originalText}
+        it 'C NOT update', -> ensure 'C',   register: {'"': text: originalText}
+        it 'x NOT update', -> ensure 'x',   register: {'"': text: originalText}
+        it 'X NOT update', -> ensure 'X',   register: {'"': text: originalText}
+        it 'y NOT update', -> ensure 'y l', register: {'"': text: originalText}
+        it 'Y NOT update', -> ensure 'Y',   register: {'"': text: originalText}
+        it 's NOT update', -> ensure 's',   register: {'"': text: originalText}
+        it 'S NOT update', -> ensure 'S',   register: {'"': text: originalText}
+        it 'd NOT update', -> ensure 'd l', register: {'"': text: originalText}
+        it 'D NOT update', -> ensure 'D',   register: {'"': text: originalText}
+
+      describe "blackhole selectively", ->
+        beforeEach ->
+          settings.set "blackholeRegisteredOperators", [
+            "change-to-last-character-of-line" # C
+            "delete-right" # x
+            "substitute" # s
+          ]
+
+        it "default",      -> ensure null,  register: {'"': text: originalText}
+        it 'c update',     -> ensure 'c l', register: {'"': text: 'b'}
+        it 'C NOT update', -> ensure 'C',   register: {'"': text: originalText}
+        it 'x NOT update', -> ensure 'x',   register: {'"': text: originalText}
+        it 'X update',     -> ensure 'X',   register: {'"': text: 'a'}
+        it 'y update',     -> ensure 'y l', register: {'"': text: 'b'}
+        it 'Y update',     -> ensure 'Y',   register: {'"': text: "abc\n"}
+        it 's NOT update', -> ensure 's',   register: {'"': text: originalText}
+        it 'S update',     -> ensure 'S',   register: {'"': text: 'abc\n'}
+        it 'd update',     -> ensure 'd l', register: {'"': text: 'b'}
+        it 'D update',     -> ensure 'D',   register: {'"': text: 'bc'}
+
+      describe "blackhole by wildcard", ->
+        beforeEach ->
+          settings.set "blackholeRegisteredOperators", [
+            "change*" # C
+            "delete*" # x
+            # "substitute*" # s
+            # "yank*"
+          ]
+
+        it "default",               -> ensure null,      register: {'"': text: originalText}
+        it 'c NOT update',          -> ensure 'c l',     register: {'"': text: originalText}
+        it 'c update if specified', -> ensure '" a c l', register: {'a': text: "b"}
+        it 'c NOT update',          -> ensure 'c l',     register: {'"': text: originalText}
+        it 'C NOT update',          -> ensure 'C',       register: {'"': text: originalText}
+        it 'x NOT update',          -> ensure 'x',       register: {'"': text: originalText}
+        it 'X NOT update',          -> ensure 'X',       register: {'"': text: originalText}
+        it 'y update',              -> ensure 'y l',     register: {'"': text: 'b'}
+        it 'Y update',              -> ensure 'Y',       register: {'"': text: "abc\n"}
+        it 's update',              -> ensure 's',       register: {'"': text: 'b'}
+        it 'S update',              -> ensure 'S',       register: {'"': text: 'abc\n'}
+        it 'd NOT update',          -> ensure 'd l',     register: {'"': text: originalText}
+        it 'D NOT update',          -> ensure 'D',       register: {'"': text: originalText}

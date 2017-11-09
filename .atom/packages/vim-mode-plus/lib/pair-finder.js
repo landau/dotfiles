@@ -3,7 +3,7 @@ const _ = require("underscore-plus")
 const {
   isEscapedCharRange,
   collectRangeInBufferRow,
-  scanEditorInDirection,
+  scanEditor,
   getLineTextToBufferPosition,
 } = require("./utils")
 
@@ -70,7 +70,7 @@ class PairFinder {
     // it is forwarding pair, so stoppable unless @allowForwarding
     const findingNonForwardingClosingQuote = this instanceof QuoteFinder && which === "close" && !this.allowForwarding
     const {allowNextLine} = this
-    scanEditorInDirection(this.editor, direction, this.getPattern(), {from, allowNextLine}, event => {
+    scanEditor(this.editor, direction, this.getPattern(), {from, allowNextLine}, event => {
       const {range, stop} = event
 
       if (isEscapedCharRange(this.editor, range)) return
@@ -258,7 +258,10 @@ class TagFinder extends PairFinder {
   }
 
   spliceStack(stack, eventState) {
-    const pairEventState = stack.slice().reverse().find(state => state.name === eventState.name)
+    const pairEventState = stack
+      .slice()
+      .reverse()
+      .find(state => state.name === eventState.name)
     if (pairEventState) stack.splice(stack.indexOf(pairEventState))
     return pairEventState
   }

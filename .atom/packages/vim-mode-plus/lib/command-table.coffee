@@ -25,7 +25,7 @@ SelectOccurrence:
   file: "./operator"
   commandName: "vim-mode-plus:select-occurrence"
   commandScope: "atom-text-editor"
-SelectInVisualMode:
+VisualModeSelect:
   file: "./operator"
 CreatePersistentSelection:
   file: "./operator"
@@ -119,6 +119,8 @@ AddBlankLineAbove:
   file: "./operator"
   commandName: "vim-mode-plus:add-blank-line-above"
   commandScope: "atom-text-editor"
+ActivateInsertModeBase:
+  file: "./operator-insert"
 ActivateInsertMode:
   file: "./operator-insert"
   commandName: "vim-mode-plus:activate-insert-mode"
@@ -299,6 +301,18 @@ CompactSpaces:
   file: "./operator-transform-string"
   commandName: "vim-mode-plus:compact-spaces"
   commandScope: "atom-text-editor"
+AlignOccurrence:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:align-occurrence"
+  commandScope: "atom-text-editor"
+AlignOccurrenceByPadLeft:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:align-occurrence-by-pad-left"
+  commandScope: "atom-text-editor"
+AlignOccurrenceByPadRight:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:align-occurrence-by-pad-right"
+  commandScope: "atom-text-editor"
 RemoveLeadingWhiteSpaces:
   file: "./operator-transform-string"
   commandName: "vim-mode-plus:remove-leading-white-spaces"
@@ -328,6 +342,10 @@ TransformSmartWordBySelectList:
 ReplaceWithRegister:
   file: "./operator-transform-string"
   commandName: "vim-mode-plus:replace-with-register"
+  commandScope: "atom-text-editor"
+ReplaceOccurrenceWithRegister:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:replace-occurrence-with-register"
   commandScope: "atom-text-editor"
 SwapWithRegister:
   file: "./operator-transform-string"
@@ -398,6 +416,10 @@ ChangeSurroundAnyPair:
 ChangeSurroundAnyPairAllowForwarding:
   file: "./operator-transform-string"
   commandName: "vim-mode-plus:change-surround-any-pair-allow-forwarding"
+  commandScope: "atom-text-editor"
+JoinTarget:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:join-target"
   commandScope: "atom-text-editor"
 Join:
   file: "./operator-transform-string"
@@ -474,6 +496,14 @@ SortCaseInsensitively:
 SortByNumber:
   file: "./operator-transform-string"
   commandName: "vim-mode-plus:sort-by-number"
+  commandScope: "atom-text-editor"
+NumberingLines:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:numbering-lines"
+  commandScope: "atom-text-editor"
+DuplicateWithCommentOutOriginal:
+  file: "./operator-transform-string"
+  commandName: "vim-mode-plus:duplicate-with-comment-out-original"
   commandScope: "atom-text-editor"
 Motion:
   file: "./motion"
@@ -645,10 +675,6 @@ MoveToFirstCharacterOfLineAndDown:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-first-character-of-line-and-down"
   commandScope: "atom-text-editor"
-MoveToFirstLine:
-  file: "./motion"
-  commandName: "vim-mode-plus:move-to-first-line"
-  commandScope: "atom-text-editor"
 MoveToScreenColumn:
   file: "./motion"
 MoveToBeginningOfScreenLine:
@@ -663,6 +689,10 @@ MoveToLastCharacterOfScreenLine:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-last-character-of-screen-line"
   commandScope: "atom-text-editor"
+MoveToFirstLine:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-first-line"
+  commandScope: "atom-text-editor"
 MoveToLastLine:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-last-line"
@@ -673,7 +703,7 @@ MoveToLineByPercent:
   commandScope: "atom-text-editor"
 MoveToRelativeLine:
   file: "./motion"
-MoveToRelativeLineMinimumOne:
+MoveToRelativeLineMinimumTwo:
   file: "./motion"
 MoveToTopOfScreen:
   file: "./motion"
@@ -704,6 +734,14 @@ ScrollHalfScreenDown:
 ScrollHalfScreenUp:
   file: "./motion"
   commandName: "vim-mode-plus:scroll-half-screen-up"
+  commandScope: "atom-text-editor"
+ScrollQuarterScreenDown:
+  file: "./motion"
+  commandName: "vim-mode-plus:scroll-quarter-screen-down"
+  commandScope: "atom-text-editor"
+ScrollQuarterScreenUp:
+  file: "./motion"
+  commandName: "vim-mode-plus:scroll-quarter-screen-up"
   commandScope: "atom-text-editor"
 Find:
   file: "./motion"
@@ -760,6 +798,14 @@ MoveToPreviousFunction:
 MoveToNextFunction:
   file: "./motion"
   commandName: "vim-mode-plus:move-to-next-function"
+  commandScope: "atom-text-editor"
+MoveToPreviousFunctionAndRedrawCursorLineAtUpperMiddle:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-previous-function-and-redraw-cursor-line-at-upper-middle"
+  commandScope: "atom-text-editor"
+MoveToNextFunctionAndRedrawCursorLineAtUpperMiddle:
+  file: "./motion"
+  commandName: "vim-mode-plus:move-to-next-function-and-redraw-cursor-line-at-upper-middle"
   commandScope: "atom-text-editor"
 MoveToPositionByScope:
   file: "./motion"
@@ -1203,41 +1249,47 @@ ReplaceModeBackspace:
   file: "./misc-command"
   commandName: "vim-mode-plus:replace-mode-backspace"
   commandScope: "atom-text-editor.vim-mode-plus.insert-mode.replace"
-ScrollWithoutChangingCursorPosition:
+MiniScrollDown:
   file: "./misc-command"
-ScrollDown:
-  file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-down"
+  commandName: "vim-mode-plus:mini-scroll-down"
   commandScope: "atom-text-editor"
-ScrollUp:
+MiniScrollUp:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-up"
+  commandName: "vim-mode-plus:mini-scroll-up"
   commandScope: "atom-text-editor"
-ScrollCursor:
+RedrawCursorLine:
   file: "./misc-command"
-ScrollCursorToTop:
+RedrawCursorLineAtTop:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-top"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-top"
   commandScope: "atom-text-editor"
-ScrollCursorToTopLeave:
+RedrawCursorLineAtTopAndMoveToFirstCharacterOfLine:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-top-leave"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-top-and-move-to-first-character-of-line"
   commandScope: "atom-text-editor"
-ScrollCursorToBottom:
+RedrawCursorLineAtUpperMiddle:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-bottom"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-upper-middle"
   commandScope: "atom-text-editor"
-ScrollCursorToBottomLeave:
+RedrawCursorLineAtUpperMiddleAndMoveToFirstCharacterOfLine:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-bottom-leave"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-upper-middle-and-move-to-first-character-of-line"
   commandScope: "atom-text-editor"
-ScrollCursorToMiddle:
+RedrawCursorLineAtMiddle:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-middle"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-middle"
   commandScope: "atom-text-editor"
-ScrollCursorToMiddleLeave:
+RedrawCursorLineAtMiddleAndMoveToFirstCharacterOfLine:
   file: "./misc-command"
-  commandName: "vim-mode-plus:scroll-cursor-to-middle-leave"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-middle-and-move-to-first-character-of-line"
+  commandScope: "atom-text-editor"
+RedrawCursorLineAtBottom:
+  file: "./misc-command"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-bottom"
+  commandScope: "atom-text-editor"
+RedrawCursorLineAtBottomAndMoveToFirstCharacterOfLine:
+  file: "./misc-command"
+  commandName: "vim-mode-plus:redraw-cursor-line-at-bottom-and-move-to-first-character-of-line"
   commandScope: "atom-text-editor"
 ScrollCursorToLeft:
   file: "./misc-command"

@@ -10,7 +10,7 @@ const timeoutByFlashType = {
   screen: 300,
   "undo-redo": 500,
   "undo-redo-multiple-changes": 500,
-  "undo-redo-multiple-delete": 500,
+  "undo-redo-multiple-deletes": 500,
 }
 
 function addDemoSuffix(decoration) {
@@ -45,27 +45,29 @@ module.exports = class FlashManager {
     }, timeout)
   }
 
-  flash(ranges, {type}) {
-    ranges = (Array.isArray(ranges) ? ranges : [ranges]).filter(isNotEmpty)
-    if (!ranges.length) return
-
-    const markerOptions = {invalidate: "touch"}
-
+  destroyPreviousMarkerForTypeIfNecessary(type) {
     if (this.markersByType.has(type)) {
       this.markersByType.get(type).forEach(marker => marker.destroy())
       // Reflect to element before adding next css class. Important to **re-start** keyframe animation.
       this.vimState.editor.component.updateSync()
     }
+  }
 
-    const markers = ranges.map(range => this.editor.markBufferRange(range, markerOptions))
+  flash(ranges, {type}) {
+    ranges = (Array.isArray(ranges) ? ranges : [ranges]).filter(isNotEmpty)
+    if (!ranges.length) return
+
+    this.destroyPreviousMarkerForTypeIfNecessary(type)
+    const markers = ranges.map(range => this.editor.markBufferRange(range, {invalidate: "touch"}))
     // hold as state to clear all markers onDidStopChangingActivePaneItem. t9md/vim-mode-plus#846.
     this.markersByType.set(type, markers)
 
-    const decorationOptions = {
-      type: "highlight",
-      class: "vim-mode-plus-flash " + type,
-    }
-    const decorations = markers.map(marker => this.editor.decorateMarker(marker, decorationOptions))
+    const decorations = markers.map(marker =>
+      this.editor.decorateMarker(marker, {
+        type: "highlight",
+        class: "vim-mode-plus-flash " + type,
+      })
+    )
 
     const timeout = timeoutByFlashType[type]
     if (this.vimState.globalState.get("demoModeIsActive")) {

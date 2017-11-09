@@ -1,0 +1,66 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+        "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+        "type": "local"
+      },
+      "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-11797-9283-fumpnb.k1n2ucv7vi"
+    ]
+  ],
+  "_from": "../d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+  "_id": "language-graphql@0.9.0",
+  "_inCache": true,
+  "_location": "/language-graphql",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+    "spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+    "type": "local"
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+  "_shasum": "ac70155e11f8d00a4d16220324542f8bfb0c3826",
+  "_shrinkwrap": null,
+  "_spec": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/d-11797-9283-wy1v3w.svvwtxogvi/package.tgz",
+  "_where": "/private/var/folders/bw/5z0g3d2d1mq9hgc4f4v75pn9ghqw1w/T/apm-install-dir-11797-9283-fumpnb.k1n2ucv7vi",
+  "bugs": {
+    "url": "https://github.com/rmosolgo/language-graphql/issues"
+  },
+  "dependencies": {},
+  "description": "Syntax highlighting for GraphQL queries",
+  "devDependencies": {
+    "atom-grammar-test": "^0.6.3"
+  },
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "homepage": "https://github.com/rmosolgo/language-graphql#readme",
+  "keywords": [
+    "language",
+    "grammar",
+    "graphql",
+    "atom"
+  ],
+  "license": "MIT",
+  "name": "language-graphql",
+  "optionalDependencies": {},
+  "readme": "# language-graphql [![Build Status](https://travis-ci.org/rmosolgo/language-graphql.svg?branch=master)](https://travis-ci.org/rmosolgo/language-graphql)  [![Version](https://img.shields.io/apm/v/language-graphql.svg)](https://atom.io/packages/language-graphql)\n\nAtom syntax highlighting for GraphQL, ported from [language-babel](https://github.com/gandm/language-babel).\n\n![image](https://cloud.githubusercontent.com/assets/2231765/21265892/9ed466cc-c371-11e6-934f-1579baf24309.png)\n\n## Todo\n\n- Autocompletion based on a JSON or pretty-printed schema.\n\n## Development\n\n- Run tests: `apm test`\n- Open with grammar reloading:\n  - Add the project to Atom's packages `apm link .`\n  - Open the project in development mode `atom --dev .`\n  - Create a `scratch.graphql` file to check highlighting\n\n## License\n\nMIT\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rmosolgo/language-graphql.git"
+  },
+  "version": "0.9.0"
+}

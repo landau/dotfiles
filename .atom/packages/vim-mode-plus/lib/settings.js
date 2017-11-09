@@ -19,6 +19,11 @@ const RENAMED_PARAMS = [
   {oldName: "keepColumnOnSelectTextObject", newName: "stayOnSelectTextObject"},
   {oldName: "moveToFirstCharacterOnVerticalMotion", newName: "stayOnVerticalMotion", setValueBy: invertValue},
   {oldName: "keymapSemicolonToConfirmFind", newName: "keymapSemicolonToConfirmOnFindInput"},
+  {
+    oldName: "dontUpdateRegisterOnChangeOrSubstitute",
+    newName: "blackholeRegisteredOperators",
+    setValueBy: enabled => (enabled ? ["change*", "substitute*"] : undefined),
+  },
 ]
 
 class Settings {
@@ -44,6 +49,20 @@ class Settings {
         },
       ],
     })
+  }
+
+  notifyCoffeeScriptNoLongerSupportedToExtendVMP() {
+    if (!this.get("notifiedCoffeeScriptNoLongerSupportedToExtendVMP")) {
+      this.set("notifiedCoffeeScriptNoLongerSupportedToExtendVMP", true)
+      const message = [
+        this.scope,
+        "- From vmp-v.1.9.0 all operations are defined as ES6 class which is NOT extend-able by CoffeeScript.",
+        "- If you have vmp custom operations in your `init.coffee`. Those are no longer work(You might saw error already).",
+        "- Sorry for not providing gradual migration path, I couldn't find the way and also I'm lazy.",
+        "- See [CHANGELOG](https://github.com/t9md/atom-vim-mode-plus/blob/master/CHANGELOG.md) and [Wiki](https://github.com/t9md/atom-vim-mode-plus/wiki/ExtendVimModePlusInInitFile) for detail.",
+      ].join("\n")
+      atom.notifications.addInfo(message, {dismissable: true})
+    }
   }
 
   migrateRenamedParams() {
@@ -113,6 +132,10 @@ class Settings {
 
   observe(param, fn) {
     return atom.config.observe(`${this.scope}.${param}`, fn)
+  }
+
+  onDidChange(param, fn) {
+    return atom.config.onDidChange(`${this.scope}.${param}`, fn)
   }
 
   observeConditionalKeymaps() {
@@ -276,10 +299,11 @@ module.exports = new Settings("vim-mode-plus", {
   },
   groupChangesWhenLeavingInsertMode: true,
   useClipboardAsDefaultRegister: true,
-  dontUpdateRegisterOnChangeOrSubstitute: {
-    default: false,
+  blackholeRegisteredOperators: {
+    default: [],
+    items: {type: "string"},
     description:
-      "When enabled, `change` and `substitute` no longer update register content<br>Affects `c`, `C`, `s`, `S` operator.",
+      "Comma separated list of operator command name to disable register update.<br>e.g. `delete-right, delete-left, delete, substitute`<br>Also you can use special value(`delete*`, `change*`, `substitute*`) to specify all same-family operators.",
   },
   startInInsertMode: false,
   startInInsertModeScopes: {
@@ -466,6 +490,26 @@ module.exports = new Settings("vim-mode-plus", {
     default: 500,
     description: "Smooth scroll duration( msec ) for `ctrl-d` and `ctrl-u`",
   },
+  smoothScrollOnRedrawCursorLine: {
+    default: false,
+    description: "For `z t`, `z enter`, `z u`, `z space`, `z z`, `z .`, `z b`, `z - `",
+  },
+  smoothScrollOnRedrawCursorLineDuration: {
+    default: 300,
+    description: "Smooth scroll duration( msec ) for `z` beginning `redraw-cursor-line` command familiy",
+  },
+  smoothScrollOnMiniScroll: {
+    default: false,
+    description: "For `ctrl-e` and `ctrl-y`",
+  },
+  smoothScrollOnMiniScrollDuration: {
+    default: 200,
+    description: "Smooth scroll duration( msec ) for `ctrl-e` and `ctrl-y`",
+  },
+  defaultScrollRowsOnMiniScroll: {
+    default: 1,
+    description: "Default amount of screen rows used in `ctrl-e` and `ctrl-y`",
+  },
   statusBarModeStringStyle: {
     default: "short",
     enum: ["short", "long"],
@@ -474,6 +518,10 @@ module.exports = new Settings("vim-mode-plus", {
     default: 2000,
     description:
       "When attempt to create occurrence-marker exceeding this threshold, vmp asks confirmation to continue<br>This is to prevent editor from freezing while creating tons of markers.<br>Affects: `g o` or `o` modifier(e.g. `c o p`)",
+  },
+  notifiedCoffeeScriptNoLongerSupportedToExtendVMP: {
+    // TODO: Remove in future:(added at v1.19.0 release).
+    default: false,
   },
   debug: {
     default: false,

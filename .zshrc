@@ -10,8 +10,16 @@ export CLICOLOR=1
 export TERM=xterm-256color
 ulimit -n 2560
 
+. /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
+
 # Set name of the theme to load. Look in ~/.oh-my-zsh/themes/
-ZSH_THEME="minimal"
+#ZSH_THEME="minimal"
+#ZSH_THEME="agnoster"
+ZSH_THEME="powerlevel9k/powerlevel9k"
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs)
+POWERLEVEL9K_HIDE_BRANCH_ICON=true
+POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
 
 source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 source ~/.work
@@ -81,7 +89,7 @@ COMPLETION_WAITING_DOTS="true"
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git nyan node npm nvm github git-extras brew osx python z web-search)
+plugins=(zsh-autosuggestions git nyan node npm nvm github git-extras brew osx python z web-search)
 
 cdpath=(~/web ~/work ~/oss)
 

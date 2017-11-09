@@ -6,13 +6,13 @@ const READ_ONLY_REGISTERS_REGEX = /[%_]/
 // TODO: Vim support following registers.
 // x: complete, -: partially
 //  [x] 1. The unnamed register ""
-//  [ ] 2. 10 numbered registers "0 to "9
-//  [ ] 3. The small delete register "-
+//  [x] 2. 10 numbered registers "0 to "9
+//  [x] 3. The small delete register "-
 //  [x] 4. 26 named registers "a to "z or "A to "Z
 //  [-] 5. three read-only registers ":, "., "%
 //  [ ] 6. alternate buffer register "#
 //  [ ] 7. the expression register "=
-//  [ ] 8. The selection and drop registers "*, "+ and "~
+//  [?] 8. The selection and drop registers "*, "+ and "~
 //  [x] 9. The black hole register "_
 //  [ ] 10. Last search pattern register "/
 
@@ -221,14 +221,15 @@ module.exports = class RegisterManager {
       this.editorElement.classList.toggle("with-register", true)
       this.vimState.hover.set('"' + this.name)
     } else {
+      this.vimState.hover.set('"')
+      const cancel = () => this.vimState.hover.reset()
       this.vimState.readChar({
         onConfirm: name => {
           if (this.isValidName(name)) this.setName(name)
-          else this.vimState.hover.reset()
+          else cancel()
         },
-        onCancel: () => this.vimState.hover.reset(),
+        onCancel: cancel
       })
-      this.vimState.hover.set('"')
     }
   }
 }

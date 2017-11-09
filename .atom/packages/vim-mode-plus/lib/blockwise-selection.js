@@ -1,12 +1,12 @@
 const _ = require("underscore-plus")
 
-const {sortRanges, assertWithException, trimRange, getRange} = require("./utils")
+const {sortRanges, assertWithException, trimRange, getList} = require("./utils")
 const settings = require("./settings")
 const blockwiseSelectionsByEditor = new Map()
 
 let __swrap
 function swrap(...args) {
-  if (__swrap == null) __swrap = require("./selection-wrapper")
+  if (!__swrap) __swrap = require("./selection-wrapper")
   return __swrap(...args)
 }
 
@@ -80,18 +80,21 @@ module.exports = class BlockwiseSelection {
         endColumn = end.column + 1
       }
 
-      const ranges = getRange(start.row, end.row).map(row => [[row, startColumn], [row, endColumn]])
+      const ranges = getList(start.row, end.row).map(row => [[row, startColumn], [row, endColumn]])
       selection.setBufferRange(ranges.shift(), {reversed})
       this.selections = [selection, ...ranges.map(range => this.editor.addSelectionForBufferRange(range, {reversed}))]
     }
 
     this.updateGoalColumn()
 
-    this.getSelections().map(swrap).filter(v => v).forEach($selection => {
-      $selection.saveProperties() // TODO#698  remove this?
-      $selection.getProperties().head.column = headColumn
-      $selection.getProperties().tail.column = tailColumn
-    })
+    this.getSelections()
+      .map(swrap)
+      .filter(v => v)
+      .forEach($selection => {
+        $selection.saveProperties() // TODO#698  remove this?
+        $selection.getProperties().head.column = headColumn
+        $selection.getProperties().tail.column = tailColumn
+      })
     this.constructor.saveSelection(this)
   }
 

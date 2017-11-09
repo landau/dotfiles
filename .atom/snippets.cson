@@ -68,7 +68,7 @@
     'prefix': 'chai-expect'
     'body': """
       const { describe, it } = require('mocha');
-      const {expect} = require('chai');
+      const { expect } = require('chai');
       const sinon = require('sinon');
       $1
       """
@@ -78,4 +78,23 @@
       /**
       * $1
       */
+      """
+  '.then':
+    'prefix': '.then'
+    'body': """
+      .then($1 => $2)
+      """
+  '.then2':
+    'prefix': '.then2'
+    'body': """
+      .then($1 =>{
+        $2
+      })
+      """
+  '.catch':
+    'prefix': '.catch'
+    'body': """
+      .catch(err => {
+        $1
+      })
       """
