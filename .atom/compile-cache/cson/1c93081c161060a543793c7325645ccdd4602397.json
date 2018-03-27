@@ -1,0 +1,1 @@
+{".source.js, .source.jsx, .source.ts":{"setTimeout":{"prefix":"st","body":"setTimeout(function() {\n\t${0:// body...}\n}, ${1:delay});"}}}

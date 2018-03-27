@@ -1,0 +1,1 @@
+{".source.js, .source.jsx, .source.ts":{"addEventListener":{"prefix":"ae","body":"${1:document}.addEventListener('${2:event}', function(e) {\n\t${0:// body...}\n});"}}}

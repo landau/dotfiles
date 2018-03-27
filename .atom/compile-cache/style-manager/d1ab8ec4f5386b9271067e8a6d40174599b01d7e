@@ -1,0 +1,1 @@
+{"source":".atom-clock {\n  display: inline-block;\n  margin-left: 10px;\n  position: relative;\n}\n.atom-clock .icon:before {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n  top: 1px;\n  margin-right: 3px;\n}\n"}

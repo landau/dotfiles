@@ -1,0 +1,1 @@
+{".source.js, .source.jsx, .source.ts":{"anonymous function":{"prefix":"afn","body":"function(${1:arguments}) {\n\t${0:// body...}\n}"}}}

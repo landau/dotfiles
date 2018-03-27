@@ -1,0 +1,15 @@
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports.resetConfig = resetConfig;
+
+var _libInit = require('../lib/init');
+
+'use babel';
+
+function resetConfig() {
+  Object.keys(_libInit.config || {}).forEach(function (key) {
+    return atom.config.set('linter-handlebars.#{key}', _libInit.config[key]['default']);
+  });
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi9Vc2Vycy90bGFuZGF1Ly5hdG9tL3BhY2thZ2VzL2xpbnRlci1oYW5kbGViYXJzL3NwZWMvdGVzdC1oZWxwZXIuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7dUJBRXVCLGFBQWE7O0FBRnBDLFdBQVcsQ0FBQTs7QUFJSixTQUFTLFdBQVcsR0FBSTtBQUM3QixRQUFNLENBQUMsSUFBSSxDQUFDLG1CQUFVLEVBQUUsQ0FBQyxDQUN0QixPQUFPLENBQUMsVUFBQyxHQUFHLEVBQUs7QUFDaEIsV0FBTyxJQUFJLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQywwQkFBMEIsRUFBRSxnQkFBTyxHQUFHLENBQUMsV0FBUSxDQUFDLENBQUE7R0FDeEUsQ0FBQyxDQUFBO0NBQ0wiLCJmaWxlIjoiL1VzZXJzL3RsYW5kYXUvLmF0b20vcGFja2FnZXMvbGludGVyLWhhbmRsZWJhcnMvc3BlYy90ZXN0LWhlbHBlci5qcyIsInNvdXJjZXNDb250ZW50IjpbIid1c2UgYmFiZWwnXG5cbmltcG9ydCB7IGNvbmZpZyB9IGZyb20gJy4uL2xpYi9pbml0J1xuXG5leHBvcnQgZnVuY3Rpb24gcmVzZXRDb25maWcgKCkge1xuICBPYmplY3Qua2V5cyhjb25maWcgfHwge30pXG4gICAgLmZvckVhY2goKGtleSkgPT4ge1xuICAgICAgcmV0dXJuIGF0b20uY29uZmlnLnNldCgnbGludGVyLWhhbmRsZWJhcnMuI3trZXl9JywgY29uZmlnW2tleV0uZGVmYXVsdClcbiAgICB9KVxufVxuIl19
