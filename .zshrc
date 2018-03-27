@@ -1,14 +1,24 @@
 #d Path to your oh-my-zsh configuration.
 ZSH=$HOME/.oh-my-zsh
 export PATH=/usr/local/bin:$PATH
-export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
+#export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 export PATH=$PATH:/usr/local/bin
 export PATH=/Users/tlandau/dev/mongo3.4.2/bin:$PATH
 export EDITOR=vim
-export LEIN_FAST_TRAMPOLINE=y
+#export LEIN_FAST_TRAMPOLINE=y
 export CLICOLOR=1
 export TERM=xterm-256color
 ulimit -n 2560
+
+# Enable persistent REPL history for `node`.
+export NODE_REPL_HISTORY=~/.node_history;
+# Allow 32³ entries; the default is 1000.
+export NODE_REPL_HISTORY_SIZE='32768';
+
+# Increase Bash history size. Allow 32³ entries; the default is 500.
+export HISTSIZE='32768';
+export HISTFILESIZE="${HISTSIZE}";
+export SAVEHIST="${HISTSIZE}";
 
 . /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
 
@@ -16,14 +26,57 @@ ulimit -n 2560
 #ZSH_THEME="minimal"
 #ZSH_THEME="agnoster"
 ZSH_THEME="powerlevel9k/powerlevel9k"
+#POWERLEVEL9K_MODE="awesome-patched"
+POWERLEVEL9K_MODE='awesome-fontconfig'
+
+POWERLEVEL9K_STATUS_VERBOSE=false
+POWERLEVEL9K_STATUS_ERROR_BACKGROUND="black"
+POWERLEVEL9K_STATUS_ERROR_FOREGROUND="red"
+POWERLEVEL9K_STATUS_OK_BACKGROUND="black"
+POWERLEVEL9K_STATUS_OK_FOREGROUND="green"
+
+# Disable dir/git icons
+POWERLEVEL9K_HOME_ICON=''
+POWERLEVEL9K_HOME_SUB_ICON=''
+POWERLEVEL9K_FOLDER_ICON=''
+
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs)
-POWERLEVEL9K_HIDE_BRANCH_ICON=true
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status time)
+
 POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
+POWERLEVEL9K_PROMPT_ON_NEWLINE=true
+
+POWERLEVEL9K_DIR_HOME_BACKGROUND="black"
+POWERLEVEL9K_DIR_HOME_FOREGROUND="249"
+POWERLEVEL9K_DIR_HOME_SUBFOLDER_BACKGROUND="black"
+POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="249"
+#POWERLEVEL9K_DIR_DEFAULT_BACKGROUND="black"
+#POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="249"
+
+#POWERLEVEL9K_NVM_BACKGROUND="black"
+#POWERLEVEL9K_NVM_FOREGROUND="249"
+#POWERLEVEL9K_NVM_VISUAL_IDENTIFIER_COLOR="green"
+
+POWERLEVEL9K_VCS_GIT_ICON=''
+POWERLEVEL9l_VCS_GIT_GITHUB_ICON=''
+POWERLEVEL9l_VCS_GITHUB_ICON=''
+POWERLEVEL9K_HIDE_BRANCH_ICON=true
+POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='red'
+POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='yellow'
+POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
+#POWERLEVEL9K_VCS_STAGED_ICON='\u00b1'
+#POWERLEVEL9K_VCS_UNTRACKED_ICON='\u25CF'
+#POWERLEVEL9K_VCS_UNSTAGED_ICON='\u00b1'
+#POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='\u2193'
+#POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='\u2191'
+POWERLEVEL9K_VCS_HIDE_TAGS=true
+
+POWERLEVEL9K_TIME_FORMAT="%D{%H:%M}"
 
 source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 source ~/.work
 source $ZSH/oh-my-zsh.sh
+source ~/.fonts/*.sh
 
 #source ~/.nvm/nvm.sh
 
@@ -32,21 +85,6 @@ lazynvm() {
   export NVM_DIR=~/.nvm
   [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 }
-
-#nvm() {
-#  lazynvm 
-#  nvm $@
-#}
-# 
-#node() {
-#  lazynvm
-#  node $@
-#}
-# 
-#npm() {
-#  lazynvm
-#  npm $@
-#}
 
 set -a NODE_GLOBALS
 NODE_GLOBALS=(`find ~/.nvm/versions/node -maxdepth 3 -type l -wholename '*/bin/*' | xargs -n1 basename | sort | uniq`)
@@ -109,12 +147,12 @@ alias mongod='sudo mongod --fork --logpath /var/log/mongodb.log'
 alias nodet='nodemon --exec "npm tst --silent"'
 alias nodeyun="nodemon -x 'node . | ./node_modules/.bin/bunyan'"
 alias npmr="npm run"
-alias npmre='rm -rf node_modules && npm i'
+alias npmre='rm package-lock.json && rm -rf node_modules && npm i'
 alias pgres='postgres -D /usr/local/var/postgres'
 alias pp='underscore print --color'
 alias tree="tree -I 'node_modules'"
-alias yt='youtube-dl -t'
-alias ytmp3='youtube-dl --audio-format=mp3 -x -o "%(title)s-%(id)s.%(ext)s"'
+alias yt='youtube-dl -o "%(title)s.%(ext)s"'
+alias ytmp3='youtube-dl --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
 alias zshconfig="vim ~/.zshrc"
 alias openchrome='open -a "Google Chrome"'
 alias open-gh-socket='ssh -M git@github.com'
@@ -415,3 +453,7 @@ function oauth {
 }
 
 alias dynamo="cd /Users/tlandau/Downloads/dynamodb_local_latest && java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar -sharedDb"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# added by travis gem
+[ -f /Users/tlandau/.travis/travis.sh ] && source /Users/tlandau/.travis/travis.sh

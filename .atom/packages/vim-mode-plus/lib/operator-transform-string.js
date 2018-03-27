@@ -1,14 +1,14 @@
 "use babel"
 
-const _ = require("underscore-plus")
-const {BufferedProcess, Range} = require("atom")
+const changeCase = require("change-case")
 
-const Base = require("./base")
-const Operator = Base.getClass("Operator")
+const {BufferedProcess, Range} = require("atom")
+const {Operator} = require("./operator")
 
 // TransformString
 // ================================
 class TransformString extends Operator {
+  static command = false
   static stringTransformers = []
   trackChange = true
   stayOptionName = "stayOnTransformString"
@@ -43,48 +43,67 @@ class TransformString extends Operator {
     }
   }
 }
-TransformString.register(false)
 
-class ToggleCase extends TransformString {
-  static displayName = "Toggle ~"
-
+class ChangeCase extends TransformString {
+  static command = false
   getNewText(text) {
-    return text.replace(/./g, this.utils.toggleCaseForCharacter)
+    const functionName = this.functionName || changeCase.lowerCaseFirst(this.name)
+    // HACK: IMO `changeCase` does aggressive transformation(remove punctuation, remove white spaces...)
+    // make changeCase less aggressive by targeting narrower charset.
+    const regex = /\w+(:?[-./]?[\w+])*/g
+    return text.replace(regex, match => changeCase[functionName](match))
   }
 }
-ToggleCase.register()
 
-class ToggleCaseAndMoveRight extends ToggleCase {
+class NoCase extends ChangeCase {}
+class DotCase extends ChangeCase {
+  static displayNameSuffix = "."
+}
+class SwapCase extends ChangeCase {
+  static displayNameSuffix = "~"
+}
+class PathCase extends ChangeCase {
+  static displayNameSuffix = "/"
+}
+class UpperCase extends ChangeCase {}
+class LowerCase extends ChangeCase {}
+class CamelCase extends ChangeCase {}
+class SnakeCase extends ChangeCase {
+  static displayNameSuffix = "_"
+}
+class TitleCase extends ChangeCase {}
+class ParamCase extends ChangeCase {
+  static displayNameSuffix = "-"
+}
+class HeaderCase extends ChangeCase {}
+class PascalCase extends ChangeCase {}
+class ConstantCase extends ChangeCase {}
+class SentenceCase extends ChangeCase {}
+class UpperCaseFirst extends ChangeCase {}
+class LowerCaseFirst extends ChangeCase {}
+
+class DashCase extends ChangeCase {
+  static displayNameSuffix = "-"
+  functionName = "paramCase"
+}
+class ToggleCase extends ChangeCase {
+  static displayNameSuffix = "~"
+  functionName = "swapCase"
+}
+
+class ToggleCaseAndMoveRight extends ChangeCase {
+  functionName = "swapCase"
   flashTarget = false
   restorePositions = false
   target = "MoveRight"
 }
-ToggleCaseAndMoveRight.register()
-
-class UpperCase extends TransformString {
-  static displayName = "Upper"
-
-  getNewText(text) {
-    return text.toUpperCase()
-  }
-}
-UpperCase.register()
-
-class LowerCase extends TransformString {
-  static displayName = "Lower"
-
-  getNewText(text) {
-    return text.toLowerCase()
-  }
-}
-LowerCase.register()
 
 // Replace
 // -------------------------
 class Replace extends TransformString {
   flashCheckpoint = "did-select-occurrence"
   autoIndentNewline = true
-  readInputAfterExecute = true
+  readInputAfterSelect = true
 
   getNewText(text) {
     if (this.target.name === "MoveRightBufferColumn" && text.length !== this.getCount()) {
@@ -98,12 +117,10 @@ class Replace extends TransformString {
     return text.replace(/./g, input)
   }
 }
-Replace.register()
 
 class ReplaceCharacter extends Replace {
   target = "MoveRightBufferColumn"
 }
-ReplaceCharacter.register()
 
 // -------------------------
 // DUP meaning with SplitString need consolidate.
@@ -112,74 +129,28 @@ class SplitByCharacter extends TransformString {
     return text.split("").join(" ")
   }
 }
-SplitByCharacter.register()
-
-class CamelCase extends TransformString {
-  static displayName = "Camelize"
-  getNewText(text) {
-    return _.camelize(text)
-  }
-}
-CamelCase.register()
-
-class SnakeCase extends TransformString {
-  static displayName = "Underscore _"
-  getNewText(text) {
-    return _.underscore(text)
-  }
-}
-SnakeCase.register()
-
-class PascalCase extends TransformString {
-  static displayName = "Pascalize"
-  getNewText(text) {
-    return _.capitalize(_.camelize(text))
-  }
-}
-PascalCase.register()
-
-class DashCase extends TransformString {
-  static displayName = "Dasherize -"
-  getNewText(text) {
-    return _.dasherize(text)
-  }
-}
-DashCase.register()
-
-class TitleCase extends TransformString {
-  static displayName = "Titlize"
-  getNewText(text) {
-    return _.humanizeEventName(_.dasherize(text))
-  }
-}
-TitleCase.register()
 
 class EncodeUriComponent extends TransformString {
-  static displayName = "Encode URI Component %"
+  static displayNameSuffix = "%"
   getNewText(text) {
     return encodeURIComponent(text)
   }
 }
-EncodeUriComponent.register()
 
 class DecodeUriComponent extends TransformString {
-  static displayName = "Decode URI Component %%"
+  static displayNameSuffix = "%%"
   getNewText(text) {
     return decodeURIComponent(text)
   }
 }
-DecodeUriComponent.register()
 
 class TrimString extends TransformString {
-  static displayName = "Trim string"
   getNewText(text) {
     return text.trim()
   }
 }
-TrimString.register()
 
 class CompactSpaces extends TransformString {
-  static displayName = "Compact space"
   getNewText(text) {
     if (text.match(/^[ ]+$/)) {
       return " "
@@ -192,23 +163,20 @@ class CompactSpaces extends TransformString {
     }
   }
 }
-CompactSpaces.register()
 
 class AlignOccurrence extends TransformString {
   occurrence = true
   whichToPad = "auto"
 
   getSelectionTaker() {
-    const selectionsByRow = _.groupBy(
-      this.editor.getSelectionsOrderedByBufferPosition(),
-      selection => selection.getBufferRange().start.row
-    )
-
-    return () => {
-      const rows = Object.keys(selectionsByRow)
-      const selections = rows.map(row => selectionsByRow[row].shift()).filter(s => s)
-      return selections
+    const selectionsByRow = {}
+    for (const selection of this.editor.getSelectionsOrderedByBufferPosition()) {
+      const row = selection.getBufferRange().start.row
+      if (!(row in selectionsByRow)) selectionsByRow[row] = []
+      selectionsByRow[row].push(selection)
     }
+    const allRows = Object.keys(selectionsByRow)
+    return () => allRows.map(row => selectionsByRow[row].shift()).filter(s => s)
   }
 
   getWichToPadForText(text) {
@@ -264,17 +232,14 @@ class AlignOccurrence extends TransformString {
     return whichToPad === "start" ? padding + text : text + padding
   }
 }
-AlignOccurrence.register()
 
 class AlignOccurrenceByPadLeft extends AlignOccurrence {
   whichToPad = "start"
 }
-AlignOccurrenceByPadLeft.register()
 
 class AlignOccurrenceByPadRight extends AlignOccurrence {
   whichToPad = "end"
 }
-AlignOccurrenceByPadRight.register()
 
 class RemoveLeadingWhiteSpaces extends TransformString {
   wise = "linewise"
@@ -288,29 +253,27 @@ class RemoveLeadingWhiteSpaces extends TransformString {
     )
   }
 }
-RemoveLeadingWhiteSpaces.register()
 
 class ConvertToSoftTab extends TransformString {
   static displayName = "Soft Tab"
   wise = "linewise"
 
   mutateSelection(selection) {
-    return this.scanForward(/\t/g, {scanRange: selection.getBufferRange()}, ({range, replace}) => {
+    this.scanEditor("forward", /\t/g, {scanRange: selection.getBufferRange()}, ({range, replace}) => {
       // Replace \t to spaces which length is vary depending on tabStop and tabLenght
       // So we directly consult it's screen representing length.
       const length = this.editor.screenRangeForBufferRange(range).getExtent().column
-      return replace(" ".repeat(length))
+      replace(" ".repeat(length))
     })
   }
 }
-ConvertToSoftTab.register()
 
 class ConvertToHardTab extends TransformString {
   static displayName = "Hard Tab"
 
   mutateSelection(selection) {
     const tabLength = this.editor.getTabLength()
-    this.scanForward(/[ \t]+/g, {scanRange: selection.getBufferRange()}, ({range, replace}) => {
+    this.scanEditor("forward", /[ \t]+/g, {scanRange: selection.getBufferRange()}, ({range, replace}) => {
       const {start, end} = this.editor.screenRangeForBufferRange(range)
       let startColumn = start.column
       const endColumn = end.column
@@ -336,10 +299,10 @@ class ConvertToHardTab extends TransformString {
     })
   }
 }
-ConvertToHardTab.register()
 
 // -------------------------
 class TransformStringByExternalCommand extends TransformString {
+  static command = false
   autoIndent = true
   command = "" // e.g. command: 'sort'
   args = [] // e.g args: ['-rn']
@@ -356,8 +319,7 @@ class TransformStringByExternalCommand extends TransformString {
   }
 
   async execute() {
-    this.normalizeSelectionsIfNecessary()
-    this.createBufferCheckpoint("undo")
+    this.preSelect()
 
     if (this.selectTarget()) {
       for (const selection of this.editor.getSelections()) {
@@ -369,10 +331,8 @@ class TransformStringByExternalCommand extends TransformString {
       }
       this.mutationManager.setCheckpoint("did-finish")
       this.restoreCursorPositionsIfNecessary()
-      this.groupChangesSinceBufferCheckpoint("undo")
     }
-    this.emitDidFinishMutation()
-    this.activateMode("normal")
+    this.postMutate()
   }
 
   runExternalCommand(options) {
@@ -400,7 +360,6 @@ class TransformStringByExternalCommand extends TransformString {
     return exitPromise
   }
 }
-TransformStringByExternalCommand.register(false)
 
 // -------------------------
 class TransformStringBySelectList extends TransformString {
@@ -420,12 +379,16 @@ class TransformStringBySelectList extends TransformString {
 
   static getSelectListItems() {
     if (!this.selectListItems) {
-      this.selectListItems = this.stringTransformers.map(klass => ({
-        klass: klass,
-        displayName: klass.hasOwnProperty("displayName")
-          ? klass.displayName
-          : _.humanizeEventName(_.dasherize(klass.name)),
-      }))
+      this.selectListItems = this.stringTransformers.map(klass => {
+        const suffix = klass.hasOwnProperty("displayNameSuffix") ? " " + klass.displayNameSuffix : ""
+
+        return {
+          klass: klass,
+          displayName: klass.hasOwnProperty("displayName")
+            ? klass.displayName + suffix
+            : this._.humanizeEventName(this._.dasherize(klass.name)) + suffix,
+        }
+      })
     }
     return this.selectListItems
   }
@@ -434,17 +397,14 @@ class TransformStringBySelectList extends TransformString {
     throw new Error(`${this.name} should not be executed`)
   }
 }
-TransformStringBySelectList.register()
 
 class TransformWordBySelectList extends TransformStringBySelectList {
   target = "InnerWord"
 }
-TransformWordBySelectList.register()
 
 class TransformSmartWordBySelectList extends TransformStringBySelectList {
   target = "InnerSmartWord"
 }
-TransformSmartWordBySelectList.register()
 
 // -------------------------
 class ReplaceWithRegister extends TransformString {
@@ -471,12 +431,10 @@ class ReplaceWithRegister extends TransformString {
     return value ? value.text : ""
   }
 }
-ReplaceWithRegister.register()
 
 class ReplaceOccurrenceWithRegister extends ReplaceWithRegister {
   occurrence = true
 }
-ReplaceOccurrenceWithRegister.register()
 
 // Save text to register before replace
 class SwapWithRegister extends TransformString {
@@ -486,7 +444,6 @@ class SwapWithRegister extends TransformString {
     return newText
   }
 }
-SwapWithRegister.register()
 
 // Indent < TransformString
 // -------------------------
@@ -500,8 +457,7 @@ class Indent extends TransformString {
     if (this.target.name === "CurrentSelection") {
       let oldText
       // limit to 100 to avoid freezing by accidental big number.
-      const count = this.utils.limitNumber(this.getCount(), {max: 100})
-      this.countTimes(count, ({stop}) => {
+      this.countTimes(this.limitNumber(this.getCount(), {max: 100}), ({stop}) => {
         oldText = selection.getText()
         this.indent(selection)
         if (selection.getText() === oldText) stop()
@@ -515,21 +471,18 @@ class Indent extends TransformString {
     selection.indentSelectedRows()
   }
 }
-Indent.register()
 
 class Outdent extends Indent {
   indent(selection) {
     selection.outdentSelectedRows()
   }
 }
-Outdent.register()
 
 class AutoIndent extends Indent {
   indent(selection) {
     selection.autoIndentSelectedRows()
   }
 }
-AutoIndent.register()
 
 class ToggleLineComments extends TransformString {
   flashTarget = false
@@ -541,23 +494,21 @@ class ToggleLineComments extends TransformString {
     selection.toggleLineComments()
   }
 }
-ToggleLineComments.register()
 
 class Reflow extends TransformString {
   mutateSelection(selection) {
     atom.commands.dispatch(this.editorElement, "autoflow:reflow-selection")
   }
 }
-Reflow.register()
 
 class ReflowWithStay extends Reflow {
   stayAtSamePosition = true
 }
-ReflowWithStay.register()
 
 // Surround < TransformString
 // -------------------------
 class SurroundBase extends TransformString {
+  static command = false
   surroundAction = null
   pairs = [["(", ")"], ["{", "}"], ["[", "]"], ["<", ">"]]
   pairsByAlias = {
@@ -606,29 +557,24 @@ class SurroundBase extends TransformString {
     }
   }
 }
-SurroundBase.register(false)
 
 class Surround extends SurroundBase {
   surroundAction = "surround"
-  readInputAfterExecute = true
+  readInputAfterSelect = true
 }
-Surround.register()
 
 class SurroundWord extends Surround {
   target = "InnerWord"
 }
-SurroundWord.register()
 
 class SurroundSmartWord extends Surround {
   target = "InnerSmartWord"
 }
-SurroundSmartWord.register()
 
 class MapSurround extends Surround {
   occurrence = true
   patternForOccurrence = /\w+/g
 }
-MapSurround.register()
 
 // Delete Surround
 // -------------------------
@@ -646,42 +592,36 @@ class DeleteSurround extends SurroundBase {
     super.initialize()
   }
 }
-DeleteSurround.register()
 
 class DeleteSurroundAnyPair extends DeleteSurround {
   target = "AAnyPair"
 }
-DeleteSurroundAnyPair.register()
 
 class DeleteSurroundAnyPairAllowForwarding extends DeleteSurroundAnyPair {
   target = "AAnyPairAllowForwarding"
 }
-DeleteSurroundAnyPairAllowForwarding.register()
 
 // Change Surround
 // -------------------------
 class ChangeSurround extends DeleteSurround {
   surroundAction = "change-surround"
-  readInputAfterExecute = true
+  readInputAfterSelect = true
 
   // Override to show changing char on hover
-  async focusInputPromisified(...args) {
+  async focusInputPromised(...args) {
     const hoverPoint = this.mutationManager.getInitialPointForSelection(this.editor.getLastSelection())
     this.vimState.hover.set(this.editor.getSelectedText()[0], hoverPoint)
-    return super.focusInputPromisified(...args)
+    return super.focusInputPromised(...args)
   }
 }
-ChangeSurround.register()
 
 class ChangeSurroundAnyPair extends ChangeSurround {
   target = "AAnyPair"
 }
-ChangeSurroundAnyPair.register()
 
 class ChangeSurroundAnyPairAllowForwarding extends ChangeSurroundAnyPair {
   target = "AAnyPairAllowForwarding"
 }
-ChangeSurroundAnyPairAllowForwarding.register()
 
 // -------------------------
 // FIXME
@@ -707,14 +647,13 @@ class JoinTarget extends TransformString {
     return selection.cursor.setBufferPosition(point)
   }
 }
-JoinTarget.register()
 
 class Join extends JoinTarget {
   target = "MoveToRelativeLine"
 }
-Join.register()
 
 class JoinBase extends TransformString {
+  static command = false
   wise = "linewise"
   trim = false
   target = "MoveToRelativeLineMinimumTwo"
@@ -724,45 +663,39 @@ class JoinBase extends TransformString {
     return text.trimRight().replace(regex, this.input) + "\n"
   }
 }
-JoinBase.register(false)
 
 class JoinWithKeepingSpace extends JoinBase {
   input = ""
 }
-JoinWithKeepingSpace.register()
 
 class JoinByInput extends JoinBase {
-  readInputAfterExecute = true
+  readInputAfterSelect = true
   focusInputOptions = {charsMax: 10}
   trim = true
 }
-JoinByInput.register()
 
 class JoinByInputWithKeepingSpace extends JoinByInput {
   trim = false
 }
-JoinByInputWithKeepingSpace.register()
 
 // -------------------------
 // String suffix in name is to avoid confusion with 'split' window.
 class SplitString extends TransformString {
   target = "MoveToRelativeLine"
   keepSplitter = false
-  readInputAfterExecute = true
+  readInputAfterSelect = true
   focusInputOptions = {charsMax: 10}
 
   getNewText(text) {
-    const regex = new RegExp(_.escapeRegExp(this.input || "\\n"), "g")
+    const regex = new RegExp(this._.escapeRegExp(this.input || "\\n"), "g")
     const lineSeparator = (this.keepSplitter ? this.input : "") + "\n"
     return text.replace(regex, lineSeparator)
   }
 }
-SplitString.register()
 
 class SplitStringWithKeepingSplitter extends SplitString {
   keepSplitter = true
 }
-SplitStringWithKeepingSplitter.register()
 
 class SplitArguments extends TransformString {
   keepSeparator = true
@@ -778,19 +711,17 @@ class SplitArguments extends TransformString {
     return `\n${newText}\n`
   }
 }
-SplitArguments.register()
 
 class SplitArgumentsWithRemoveSeparator extends SplitArguments {
   keepSeparator = false
 }
-SplitArgumentsWithRemoveSeparator.register()
 
 class SplitArgumentsOfInnerAnyPair extends SplitArguments {
   target = "InnerAnyPair"
 }
-SplitArgumentsOfInnerAnyPair.register()
 
 class ChangeOrder extends TransformString {
+  static command = false
   getNewText(text) {
     return this.target.isLinewise()
       ? this.getNewList(this.utils.splitTextByNewLine(text)).join("\n") + "\n"
@@ -815,19 +746,16 @@ class ChangeOrder extends TransformString {
     return leadingSpaces + newText + trailingSpaces
   }
 }
-ChangeOrder.register(false)
 
 class Reverse extends ChangeOrder {
   getNewList(rows) {
     return rows.reverse()
   }
 }
-Reverse.register()
 
 class ReverseInnerAnyPair extends Reverse {
   target = "InnerAnyPair"
 }
-ReverseInnerAnyPair.register()
 
 class Rotate extends ChangeOrder {
   backwards = false
@@ -837,43 +765,36 @@ class Rotate extends ChangeOrder {
     return rows
   }
 }
-Rotate.register()
 
 class RotateBackwards extends ChangeOrder {
   backwards = true
 }
-RotateBackwards.register()
 
 class RotateArgumentsOfInnerPair extends Rotate {
   target = "InnerAnyPair"
 }
-RotateArgumentsOfInnerPair.register()
 
 class RotateArgumentsBackwardsOfInnerPair extends RotateArgumentsOfInnerPair {
   backwards = true
 }
-RotateArgumentsBackwardsOfInnerPair.register()
 
 class Sort extends ChangeOrder {
   getNewList(rows) {
     return rows.sort()
   }
 }
-Sort.register()
 
 class SortCaseInsensitively extends ChangeOrder {
   getNewList(rows) {
     return rows.sort((rowA, rowB) => rowA.localeCompare(rowB, {sensitivity: "base"}))
   }
 }
-SortCaseInsensitively.register()
 
 class SortByNumber extends ChangeOrder {
   getNewList(rows) {
-    return _.sortBy(rows, row => Number.parseInt(row) || Infinity)
+    return this._.sortBy(rows, row => Number.parseInt(row) || Infinity)
   }
 }
-SortByNumber.register()
 
 class NumberingLines extends TransformString {
   wise = "linewise"
@@ -884,13 +805,12 @@ class NumberingLines extends TransformString {
 
     const newRows = rows.map((rowText, i) => {
       i++ // fix 0 start index to 1 start.
-      const amountOfPadding = this.utils.limitNumber(lastRowWidth - String(i).length, {min: 0})
+      const amountOfPadding = this.limitNumber(lastRowWidth - String(i).length, {min: 0})
       return " ".repeat(amountOfPadding) + i + ": " + rowText
     })
     return newRows.join("\n") + "\n"
   }
 }
-NumberingLines.register()
 
 class DuplicateWithCommentOutOriginal extends TransformString {
   wise = "linewise"
@@ -902,25 +822,91 @@ class DuplicateWithCommentOutOriginal extends TransformString {
     this.editor.toggleLineCommentsForBufferRows(startRow, endRow)
   }
 }
-DuplicateWithCommentOutOriginal.register()
 
-// prettier-ignore
-const classesToRegisterToSelectList = [
-  ToggleCase, UpperCase, LowerCase,
-  Replace, SplitByCharacter,
-  CamelCase, SnakeCase, PascalCase, DashCase, TitleCase,
-  EncodeUriComponent, DecodeUriComponent,
-  TrimString, CompactSpaces, RemoveLeadingWhiteSpaces,
-  AlignOccurrence, AlignOccurrenceByPadLeft, AlignOccurrenceByPadRight,
-  ConvertToSoftTab, ConvertToHardTab,
-  JoinTarget, Join, JoinWithKeepingSpace, JoinByInput, JoinByInputWithKeepingSpace,
-  SplitString, SplitStringWithKeepingSplitter,
-  SplitArguments, SplitArgumentsWithRemoveSeparator, SplitArgumentsOfInnerAnyPair,
-  Reverse, Rotate, RotateBackwards, Sort, SortCaseInsensitively, SortByNumber,
+module.exports = {
+  TransformString,
+
+  NoCase,
+  DotCase,
+  SwapCase,
+  PathCase,
+  UpperCase,
+  LowerCase,
+  CamelCase,
+  SnakeCase,
+  TitleCase,
+  ParamCase,
+  HeaderCase,
+  PascalCase,
+  ConstantCase,
+  SentenceCase,
+  UpperCaseFirst,
+  LowerCaseFirst,
+  DashCase,
+  ToggleCase,
+  ToggleCaseAndMoveRight,
+
+  Replace,
+  ReplaceCharacter,
+  SplitByCharacter,
+  EncodeUriComponent,
+  DecodeUriComponent,
+  TrimString,
+  CompactSpaces,
+  AlignOccurrence,
+  AlignOccurrenceByPadLeft,
+  AlignOccurrenceByPadRight,
+  RemoveLeadingWhiteSpaces,
+  ConvertToSoftTab,
+  ConvertToHardTab,
+  TransformStringByExternalCommand,
+  TransformStringBySelectList,
+  TransformWordBySelectList,
+  TransformSmartWordBySelectList,
+  ReplaceWithRegister,
+  ReplaceOccurrenceWithRegister,
+  SwapWithRegister,
+  Indent,
+  Outdent,
+  AutoIndent,
+  ToggleLineComments,
+  Reflow,
+  ReflowWithStay,
+  SurroundBase,
+  Surround,
+  SurroundWord,
+  SurroundSmartWord,
+  MapSurround,
+  DeleteSurround,
+  DeleteSurroundAnyPair,
+  DeleteSurroundAnyPairAllowForwarding,
+  ChangeSurround,
+  ChangeSurroundAnyPair,
+  ChangeSurroundAnyPairAllowForwarding,
+  JoinTarget,
+  Join,
+  JoinBase,
+  JoinWithKeepingSpace,
+  JoinByInput,
+  JoinByInputWithKeepingSpace,
+  SplitString,
+  SplitStringWithKeepingSplitter,
+  SplitArguments,
+  SplitArgumentsWithRemoveSeparator,
+  SplitArgumentsOfInnerAnyPair,
+  ChangeOrder,
+  Reverse,
+  ReverseInnerAnyPair,
+  Rotate,
+  RotateBackwards,
+  RotateArgumentsOfInnerPair,
+  RotateArgumentsBackwardsOfInnerPair,
+  Sort,
+  SortCaseInsensitively,
+  SortByNumber,
   NumberingLines,
   DuplicateWithCommentOutOriginal,
-]
-
-for (const klass of classesToRegisterToSelectList) {
-  klass.registerToSelectList()
+}
+for (const klass of Object.values(module.exports)) {
+  if (klass.isCommand()) klass.registerToSelectList()
 }

@@ -24,7 +24,6 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'kien/rainbow_parentheses.vim'
 
 Plugin 'scrooloose/syntastic'
-Plugin 'walm/jshint.vim'
 
 Plugin 'tpope/vim-markdown'
 Plugin 'pangloss/vim-javascript'
@@ -32,6 +31,7 @@ Plugin 'mxw/vim-jsx'
 Plugin 'elzr/vim-json'
 Plugin 'tpope/vim-jdaddy' "json manip
 Plugin 'myhere/vim-nodejs-complete'
+Plugin 'jparise/vim-graphql'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -122,7 +122,7 @@ set ts=2  " Tab spacing
 set sw=2
 set smarttab
 set expandtab
-set colorcolumn=100
+set colorcolumn=80
 
 " Set 'comments' to format dashed lists in comments.
 setlocal comments=sO:*\ -,mO:*\ \ ,exO:*/,s1:/*,mb:*,ex:*/,://
@@ -222,3 +222,5 @@ autocmd BufWritePre *.rb,*.coffee,*.yml,*.haml,*.erb,*.php,*.java,*.py,*.js,*.st
 " Powerline
 nmap <leader>t :TagbarToggle<CR>
 set laststatus=2 " Always display the statusline in all windows
+
+let g:syntastic_javascript_checkers=['eslint']

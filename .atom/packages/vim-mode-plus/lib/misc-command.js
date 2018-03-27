@@ -4,9 +4,9 @@ const {Range} = require("atom")
 const Base = require("./base")
 
 class MiscCommand extends Base {
+  static command = false
   static operationKind = "misc-command"
 }
-MiscCommand.register(false)
 
 class Mark extends MiscCommand {
   async execute() {
@@ -16,7 +16,6 @@ class Mark extends MiscCommand {
     }
   }
 }
-Mark.register()
 
 class ReverseSelections extends MiscCommand {
   execute() {
@@ -26,7 +25,6 @@ class ReverseSelections extends MiscCommand {
     }
   }
 }
-ReverseSelections.register()
 
 class BlockwiseOtherEnd extends ReverseSelections {
   execute() {
@@ -36,7 +34,6 @@ class BlockwiseOtherEnd extends ReverseSelections {
     super.execute()
   }
 }
-BlockwiseOtherEnd.register()
 
 class Undo extends MiscCommand {
   execute() {
@@ -84,10 +81,13 @@ class Undo extends MiscCommand {
   setCursorPosition({newRanges, oldRanges, strategy}) {
     const lastCursor = this.editor.getLastCursor() // This is restored cursor
 
-    const changedRange =
-      strategy === "smart"
-        ? this.utils.findRangeContainsPoint(newRanges, lastCursor.getBufferPosition())
-        : this.utils.sortRanges(newRanges.concat(oldRanges))[0]
+    let changedRange
+
+    if (strategy === "smart") {
+      changedRange = this.utils.findRangeContainsPoint(newRanges, lastCursor.getBufferPosition())
+    } else if (strategy === "simple") {
+      changedRange = this.utils.sortRanges(newRanges.concat(oldRanges))[0]
+    }
 
     if (changedRange) {
       if (this.utils.isLinewiseRange(changedRange)) this.utils.setBufferRow(lastCursor, changedRange.start.row)
@@ -108,10 +108,8 @@ class Undo extends MiscCommand {
     }
   }
 }
-Undo.register()
 
 class Redo extends Undo {}
-Redo.register()
 
 // zc
 class FoldCurrentRow extends MiscCommand {
@@ -121,7 +119,6 @@ class FoldCurrentRow extends MiscCommand {
     }
   }
 }
-FoldCurrentRow.register()
 
 // zo
 class UnfoldCurrentRow extends MiscCommand {
@@ -131,7 +128,6 @@ class UnfoldCurrentRow extends MiscCommand {
     }
   }
 }
-UnfoldCurrentRow.register()
 
 // za
 class ToggleFold extends MiscCommand {
@@ -141,19 +137,20 @@ class ToggleFold extends MiscCommand {
     }
   }
 }
-ToggleFold.register()
 
 // Base of zC, zO, zA
 class FoldCurrentRowRecursivelyBase extends MiscCommand {
+  static command = false
   eachFoldStartRow(fn) {
     for (const {row} of this.getCursorBufferPositionsOrdered().reverse()) {
       if (!this.editor.isFoldableAtBufferRow(row)) continue
 
-      this.utils
-        .getFoldRowRangesContainedByFoldStartsAtRow(this.editor, row)
-        .map(rowRange => rowRange[0]) // mapt to startRow of fold
-        .reverse() // reverse to process encolosed(nested) fold first than encolosing fold.
-        .forEach(fn)
+      const foldRanges = this.utils.getCodeFoldRanges(this.editor)
+      const enclosingFoldRange = foldRanges.find(range => range.start.row === row)
+      const enclosedFoldRanges = foldRanges.filter(range => enclosingFoldRange.containsRange(range))
+
+      // Why reverse() is to process encolosed(nested) fold first than encolosing fold.
+      enclosedFoldRanges.reverse().forEach(range => fn(range.start.row))
     }
   }
 
@@ -169,7 +166,6 @@ class FoldCurrentRowRecursivelyBase extends MiscCommand {
     })
   }
 }
-FoldCurrentRowRecursivelyBase.register(false)
 
 // zC
 class FoldCurrentRowRecursively extends FoldCurrentRowRecursivelyBase {
@@ -177,7 +173,6 @@ class FoldCurrentRowRecursively extends FoldCurrentRowRecursivelyBase {
     this.foldRecursively()
   }
 }
-FoldCurrentRowRecursively.register()
 
 // zO
 class UnfoldCurrentRowRecursively extends FoldCurrentRowRecursivelyBase {
@@ -185,7 +180,6 @@ class UnfoldCurrentRowRecursively extends FoldCurrentRowRecursivelyBase {
     this.unfoldRecursively()
   }
 }
-UnfoldCurrentRowRecursively.register()
 
 // zA
 class ToggleFoldRecursively extends FoldCurrentRowRecursivelyBase {
@@ -197,7 +191,6 @@ class ToggleFoldRecursively extends FoldCurrentRowRecursivelyBase {
     }
   }
 }
-ToggleFoldRecursively.register()
 
 // zR
 class UnfoldAll extends MiscCommand {
@@ -205,7 +198,6 @@ class UnfoldAll extends MiscCommand {
     this.editor.unfoldAll()
   }
 }
-UnfoldAll.register()
 
 // zM
 class FoldAll extends MiscCommand {
@@ -214,32 +206,29 @@ class FoldAll extends MiscCommand {
     if (!allFold) return
 
     this.editor.unfoldAll()
-    for (const {indent, startRow, endRow} of allFold.rowRangesWithIndent) {
+    for (const {indent, range} of allFold.listOfRangeAndIndent) {
       if (indent <= this.getConfig("maxFoldableIndentLevel")) {
-        this.editor.foldBufferRowRange(startRow, endRow)
+        this.editor.foldBufferRange(range)
       }
     }
     this.editor.scrollToCursorPosition({center: true})
   }
 }
-FoldAll.register()
 
 // zr
 class UnfoldNextIndentLevel extends MiscCommand {
   execute() {
     const {folded} = this.utils.getFoldInfoByKind(this.editor)
     if (!folded) return
-    const {minIndent, rowRangesWithIndent} = folded
-    const count = this.utils.limitNumber(this.getCount() - 1, {min: 0})
-    const targetIndents = this.utils.getList(minIndent, minIndent + count)
-    for (const {indent, startRow} of rowRangesWithIndent) {
+    const {minIndent, listOfRangeAndIndent} = folded
+    const targetIndents = this.utils.getList(minIndent, minIndent + this.getCount() - 1)
+    for (const {indent, range} of listOfRangeAndIndent) {
       if (targetIndents.includes(indent)) {
-        this.editor.unfoldBufferRow(startRow)
+        this.editor.unfoldBufferRow(range.start.row)
       }
     }
   }
 }
-UnfoldNextIndentLevel.register()
 
 // zm
 class FoldNextIndentLevel extends MiscCommand {
@@ -255,33 +244,15 @@ class FoldNextIndentLevel extends MiscCommand {
 
     const maxFoldable = this.getConfig("maxFoldableIndentLevel")
     let fromLevel = Math.min(unfolded.maxIndent, maxFoldable)
-    const count = this.utils.limitNumber(this.getCount() - 1, {min: 0})
-    fromLevel = this.utils.limitNumber(fromLevel - count, {min: 0})
+    fromLevel = this.limitNumber(fromLevel - this.getCount() - 1, {min: 0})
     const targetIndents = this.utils.getList(fromLevel, maxFoldable)
-    for (const {indent, startRow, endRow} of allFold.rowRangesWithIndent) {
+    for (const {indent, range} of allFold.listOfRangeAndIndent) {
       if (targetIndents.includes(indent)) {
-        this.editor.foldBufferRowRange(startRow, endRow)
+        this.editor.foldBufferRange(range)
       }
     }
   }
 }
-FoldNextIndentLevel.register()
-
-class ReplaceModeBackspace extends MiscCommand {
-  static commandScope = "atom-text-editor.vim-mode-plus.insert-mode.replace"
-
-  execute() {
-    for (const selection of this.editor.getSelections()) {
-      // char might be empty.
-      const char = this.vimState.modeManager.getReplacedCharForSelection(selection)
-      if (char != null) {
-        selection.selectLeft()
-        if (!selection.insertText(char).isEmpty()) selection.cursor.moveLeft()
-      }
-    }
-  }
-}
-ReplaceModeBackspace.register()
 
 // ctrl-e scroll lines downwards
 class MiniScrollDown extends MiscCommand {
@@ -294,8 +265,8 @@ class MiniScrollDown extends MiscCommand {
     const offset = 2
     const validRow =
       this.direction === "down"
-        ? this.utils.limitNumber(row, {min: this.editor.getFirstVisibleScreenRow() + offset})
-        : this.utils.limitNumber(row, {max: this.editor.getLastVisibleScreenRow() - offset})
+        ? this.limitNumber(row, {min: this.editor.getFirstVisibleScreenRow() + offset})
+        : this.limitNumber(row, {max: this.editor.getLastVisibleScreenRow() - offset})
     if (row !== validRow) {
       this.utils.setBufferRow(cursor, this.editor.bufferRowForScreenRow(validRow), {autoscroll: false})
     }
@@ -303,19 +274,17 @@ class MiniScrollDown extends MiscCommand {
 
   execute() {
     this.vimState.requestScroll({
-      amountOfScreenRows: this.direction === "down" ? this.getCount() : -this.getCount(),
+      amountOfPixels: (this.direction === "down" ? 1 : -1) * this.getCount() * this.editor.getLineHeightInPixels(),
       duration: this.getSmoothScrollDuation("MiniScroll"),
       onFinish: () => this.keepCursorOnScreen(),
     })
   }
 }
-MiniScrollDown.register()
 
 // ctrl-y scroll lines upwards
 class MiniScrollUp extends MiniScrollDown {
   direction = "up"
 }
-MiniScrollUp.register()
 
 // RedrawCursorLineAt{XXX} in viewport.
 // +-------------------------------------------+
@@ -327,17 +296,32 @@ MiniScrollUp.register()
 // | bottom       | z b     | z -              |
 // +-------------------------------------------+
 class RedrawCursorLine extends MiscCommand {
-  moveToFirstCharacterOfLine = false
+  static command = false
+  static coefficientByName = {
+    RedrawCursorLineAtTop: 0,
+    RedrawCursorLineAtUpperMiddle: 0.25,
+    RedrawCursorLineAtMiddle: 0.5,
+    RedrawCursorLineAtBottom: 1,
+  }
+
+  initialize() {
+    const baseName = this.name.replace(/AndMoveToFirstCharacterOfLine$/, "")
+    this.coefficient = this.constructor.coefficientByName[baseName]
+    this.moveToFirstCharacterOfLine = this.name.endsWith("AndMoveToFirstCharacterOfLine")
+    super.initialize()
+  }
 
   execute() {
     const scrollTop = Math.round(this.getScrollTop())
-    const onFinish = () => {
-      if (this.editorElement.getScrollTop() !== scrollTop && !this.editor.getScrollPastEnd()) {
-        this.recommendToEnableScrollPastEnd()
-      }
-    }
-    const duration = this.getSmoothScrollDuation("RedrawCursorLine")
-    this.vimState.requestScroll({scrollTop, duration, onFinish})
+    this.vimState.requestScroll({
+      scrollTop: scrollTop,
+      duration: this.getSmoothScrollDuation("RedrawCursorLine"),
+      onFinish: () => {
+        if (this.editorElement.getScrollTop() !== scrollTop && !this.editor.getScrollPastEnd()) {
+          this.recommendToEnableScrollPastEnd()
+        }
+      },
+    })
     if (this.moveToFirstCharacterOfLine) this.editor.moveToFirstCharacterOfLine()
   }
 
@@ -345,7 +329,8 @@ class RedrawCursorLine extends MiscCommand {
     const {top} = this.editorElement.pixelPositionForScreenPosition(this.editor.getCursorScreenPosition())
     const editorHeight = this.editorElement.getHeight()
     const lineHeightInPixel = this.editor.getLineHeightInPixels()
-    return this.utils.limitNumber(top - editorHeight * this.coefficient, {
+
+    return this.limitNumber(top - editorHeight * this.coefficient, {
       min: top - editorHeight + lineHeightInPixel * 3,
       max: top - lineHeightInPixel * 2,
     })
@@ -377,59 +362,15 @@ class RedrawCursorLine extends MiscCommand {
     })
   }
 }
-RedrawCursorLine.register(false)
 
-// top: zt
-class RedrawCursorLineAtTop extends RedrawCursorLine {
-  coefficient = 0
-}
-RedrawCursorLineAtTop.register()
-
-// top: z enter
-class RedrawCursorLineAtTopAndMoveToFirstCharacterOfLine extends RedrawCursorLine {
-  coefficient = 0
-  moveToFirstCharacterOfLine = true
-}
-RedrawCursorLineAtTopAndMoveToFirstCharacterOfLine.register()
-
-// upper-middle: zu
-class RedrawCursorLineAtUpperMiddle extends RedrawCursorLine {
-  coefficient = 0.25
-}
-RedrawCursorLineAtUpperMiddle.register()
-
-// upper-middle: z space
-class RedrawCursorLineAtUpperMiddleAndMoveToFirstCharacterOfLine extends RedrawCursorLine {
-  coefficient = 0.25
-  moveToFirstCharacterOfLine = true
-}
-RedrawCursorLineAtUpperMiddleAndMoveToFirstCharacterOfLine.register()
-
-// middle: zz
-class RedrawCursorLineAtMiddle extends RedrawCursorLine {
-  coefficient = 0.5
-}
-RedrawCursorLineAtMiddle.register()
-
-// middle: z.
-class RedrawCursorLineAtMiddleAndMoveToFirstCharacterOfLine extends RedrawCursorLine {
-  coefficient = 0.5
-  moveToFirstCharacterOfLine = true
-}
-RedrawCursorLineAtMiddleAndMoveToFirstCharacterOfLine.register()
-
-// bottom: zb
-class RedrawCursorLineAtBottom extends RedrawCursorLine {
-  coefficient = 1
-}
-RedrawCursorLineAtBottom.register()
-
-// bottom: z-
-class RedrawCursorLineAtBottomAndMoveToFirstCharacterOfLine extends RedrawCursorLine {
-  coefficient = 1
-  moveToFirstCharacterOfLine = true
-}
-RedrawCursorLineAtBottomAndMoveToFirstCharacterOfLine.register()
+class RedrawCursorLineAtTop extends RedrawCursorLine {} // zt
+class RedrawCursorLineAtTopAndMoveToFirstCharacterOfLine extends RedrawCursorLine {} // z enter
+class RedrawCursorLineAtUpperMiddle extends RedrawCursorLine {} // zu
+class RedrawCursorLineAtUpperMiddleAndMoveToFirstCharacterOfLine extends RedrawCursorLine {} // z space
+class RedrawCursorLineAtMiddle extends RedrawCursorLine {} // z z
+class RedrawCursorLineAtMiddleAndMoveToFirstCharacterOfLine extends RedrawCursorLine {} // z .
+class RedrawCursorLineAtBottom extends RedrawCursorLine {} // z b
+class RedrawCursorLineAtBottomAndMoveToFirstCharacterOfLine extends RedrawCursorLine {} // z -
 
 // Horizontal Scroll without changing cursor position
 // -------------------------
@@ -448,19 +389,15 @@ class ScrollCursorToLeft extends MiscCommand {
     }
   }
 }
-ScrollCursorToLeft.register()
 
 // ze
 class ScrollCursorToRight extends ScrollCursorToLeft {
   which = "right"
 }
-ScrollCursorToRight.register()
 
 // insert-mode specific commands
 // -------------------------
-class InsertMode extends MiscCommand {
-  static commandScope = "atom-text-editor.vim-mode-plus.insert-mode"
-}
+class InsertMode extends MiscCommand {} // just namespace
 
 class ActivateNormalModeOnce extends InsertMode {
   execute() {
@@ -478,7 +415,6 @@ class ActivateNormalModeOnce extends InsertMode {
     })
   }
 }
-ActivateNormalModeOnce.register()
 
 class InsertRegister extends InsertMode {
   async execute() {
@@ -492,14 +428,12 @@ class InsertRegister extends InsertMode {
     }
   }
 }
-InsertRegister.register()
 
 class InsertLastInserted extends InsertMode {
   execute() {
     this.editor.insertText(this.vimState.register.getText("."))
   }
 }
-InsertLastInserted.register()
 
 class CopyFromLineAbove extends InsertMode {
   rowDelta = -1
@@ -518,12 +452,10 @@ class CopyFromLineAbove extends InsertMode {
     })
   }
 }
-CopyFromLineAbove.register()
 
 class CopyFromLineBelow extends CopyFromLineAbove {
   rowDelta = +1
 }
-CopyFromLineBelow.register()
 
 class NextTab extends MiscCommand {
   defaultCount = 0
@@ -536,11 +468,49 @@ class NextTab extends MiscCommand {
     else pane.activateNextItem()
   }
 }
-NextTab.register()
 
 class PreviousTab extends MiscCommand {
   execute() {
     atom.workspace.paneForItem(this.editor).activatePreviousItem()
   }
 }
-PreviousTab.register()
+
+module.exports = {
+  MiscCommand,
+  Mark,
+  ReverseSelections,
+  BlockwiseOtherEnd,
+  Undo,
+  Redo,
+  FoldCurrentRow,
+  UnfoldCurrentRow,
+  ToggleFold,
+  FoldCurrentRowRecursivelyBase,
+  FoldCurrentRowRecursively,
+  UnfoldCurrentRowRecursively,
+  ToggleFoldRecursively,
+  UnfoldAll,
+  FoldAll,
+  UnfoldNextIndentLevel,
+  FoldNextIndentLevel,
+  MiniScrollDown,
+  MiniScrollUp,
+  RedrawCursorLine,
+  RedrawCursorLineAtTop,
+  RedrawCursorLineAtTopAndMoveToFirstCharacterOfLine,
+  RedrawCursorLineAtUpperMiddle,
+  RedrawCursorLineAtUpperMiddleAndMoveToFirstCharacterOfLine,
+  RedrawCursorLineAtMiddle,
+  RedrawCursorLineAtMiddleAndMoveToFirstCharacterOfLine,
+  RedrawCursorLineAtBottom,
+  RedrawCursorLineAtBottomAndMoveToFirstCharacterOfLine,
+  ScrollCursorToLeft,
+  ScrollCursorToRight,
+  ActivateNormalModeOnce,
+  InsertRegister,
+  InsertLastInserted,
+  CopyFromLineAbove,
+  CopyFromLineBelow,
+  NextTab,
+  PreviousTab,
+}

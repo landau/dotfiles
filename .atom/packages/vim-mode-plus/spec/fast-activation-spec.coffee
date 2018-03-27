@@ -67,8 +67,7 @@ describe "dirty work for fast package activation", ->
       "lib/base.js"
       "lib/settings.js"
       "lib/vim-state.js"
-      "lib/mode-manager.js"
-      "lib/command-table.coffee"
+      "lib/command-table.json"
     ]
     if atom.inDevMode()
       shouldRequireFilesInOrdered.push('lib/developer.js')
@@ -104,9 +103,8 @@ describe "dirty work for fast package activation", ->
           extraShouldRequireFilesInOrdered = [
             "lib/status-bar-manager.js"
             "lib/operation-stack.js"
+            "lib/file-table.json"
             "lib/motion.js"
-            "node_modules/underscore-plus/lib/underscore-plus.js"
-            "node_modules/underscore/underscore.js"
             "lib/utils.js"
             "lib/cursor-style-manager.js"
           ]
@@ -121,37 +119,33 @@ describe "dirty work for fast package activation", ->
     #  So calcluate non-dynamic par then save to command-table.coffe and load in on startup.
     #  When command are executed, necessary command class file is lazy-required.
     describe "initial classRegistry", ->
-      it "contains one entry and it's Base class", ->
+      it "is empty", ->
         withCleanActivation (pack) ->
           Base = pack.mainModule.provideVimModePlus().Base
-          classRegistry = Base.getClassRegistry()
-          keys = Object.keys(classRegistry)
-          expect(keys).toHaveLength(1)
-          expect(keys[0]).toBe("Base")
-          expect(classRegistry[keys[0]]).toBe(Base)
+          expect(Object.keys(Base.classTable)).toHaveLength(0)
 
-    describe "fully populated classRegistry", ->
-      it "generateCommandTableByEagerLoad populate all registry eagerly", ->
+    describe "fully populated classTable", ->
+      it "Base.getClass(motionClass) populate class table for all members belonging to same file(motions)", ->
         withCleanActivation (pack) ->
           Base = pack.mainModule.provideVimModePlus().Base
-          oldRegistries = Base.getClassRegistry()
-          oldRegistriesLength = Object.keys(oldRegistries).length
-          expect(Object.keys(oldRegistries)).toHaveLength(1)
+          expect(Object.keys(Base.classTable)).toHaveLength(0)
+          Base.getClass("MoveRight")
+          fileTable = require("../lib/file-table.json")
+          expect(fileTable["./motion"].length).toBe(Object.keys(Base.classTable).length)
+          expect(Object.keys(Base.classTable).length).toBeGreaterThan(0)
 
-          Base.generateCommandTableByEagerLoad()
-          newRegistriesLength = Object.keys(Base.getClassRegistry()).length
-          expect(newRegistriesLength).toBeGreaterThan(oldRegistriesLength)
-
-    describe "make sure cmd-table is NOT out-of-date", ->
-      it "generateCommandTableByEagerLoad return table which is equals to initially loaded command table", ->
+    describe "make sure command-table and file-table is NOT out-of-date", ->
+      it "buildCommandTable return table which is equals to initially loaded command table", ->
         withCleanActivation (pack) ->
           Base = pack.mainModule.provideVimModePlus().Base
-          [oldCommandTable, newCommandTable] = []
+          oldCommandTable = require("../lib/command-table.json")
+          oldFileTable = require("../lib/file-table.json")
 
-          oldCommandTable = Base.commandTable
-          newCommandTable = Base.generateCommandTableByEagerLoad()
-          loadedCommandTable = require('../lib/command-table')
+          developer = require "../lib/developer"
+          {commandTable, fileTable} = developer.buildCommandTableAndFileTable()
 
-          expect(oldCommandTable).not.toBe(newCommandTable)
-          expect(loadedCommandTable).toEqual(oldCommandTable)
-          expect(loadedCommandTable).toEqual(newCommandTable)
+          expect(oldCommandTable).not.toBe(commandTable)
+          expect(oldCommandTable).toEqual(commandTable)
+
+          expect(oldFileTable).not.toBe(fileTable)
+          expect(oldFileTable).toEqual(fileTable)

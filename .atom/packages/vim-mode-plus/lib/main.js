@@ -9,17 +9,28 @@ module.exports = {
 
   activate() {
     this.emitter = new Emitter()
-    settings.notifyDeprecatedParams()
-    settings.notifyCoffeeScriptNoLongerSupportedToExtendVMP()
+    settings.silentlyRemoveUnusedParams()
     settings.migrateRenamedParams()
 
     if (atom.inSpecMode()) settings.set("strictAssertion", true)
 
     this.subscriptions = new CompositeDisposable(
       ...Base.init(this.getEditorState),
-      ...this.registerCommands(),
+      atom.commands.add("atom-text-editor:not([mini])", {
+        "vim-mode-plus:clear-highlight-search": () => this.clearHighlightSearch(),
+        "vim-mode-plus:toggle-highlight-search": () => this.toggleHighlightSearch(),
+      }),
+      atom.commands.add("atom-workspace", {
+        "vim-mode-plus:maximize-pane": () => this.paneUtils.maximizePane(),
+        "vim-mode-plus:maximize-pane-without-center": () => this.paneUtils.maximizePane(false),
+        "vim-mode-plus:equalize-panes": () => this.paneUtils.equalizePanes(),
+        "vim-mode-plus:exchange-pane": () => this.paneUtils.exchangePane(),
+        "vim-mode-plus:move-pane-to-very-top": () => this.paneUtils.movePaneToVery("top"),
+        "vim-mode-plus:move-pane-to-very-bottom": () => this.paneUtils.movePaneToVery("bottom"),
+        "vim-mode-plus:move-pane-to-very-left": () => this.paneUtils.movePaneToVery("left"),
+        "vim-mode-plus:move-pane-to-very-right": () => this.paneUtils.movePaneToVery("right"),
+      }),
       this.registerVimStateCommands(),
-      this.observeAndWarnVimMode(),
       atom.workspace.onDidChangeActivePane(() => this.demaximizePane()),
       atom.workspace.observeTextEditors(editor => {
         if (!editor.isMini()) {
@@ -63,28 +74,12 @@ module.exports = {
     )
 
     if (atom.inDevMode()) {
-      this.developer = new (require("./developer"))()
-      this.subscriptions.add(this.developer.init(this.getEditorState))
+      const developer = require("./developer")
+      this.subscriptions.add(developer.init())
       if (settings.get("debug")) {
-        this.developer.reportRequireCache({excludeNodModules: false})
+        developer.reportRequireCache({excludeNodModules: false})
       }
     }
-  },
-
-  observeAndWarnVimMode(fn) {
-    const warn = () => {
-      const message = [
-        "## Message by vim-mode-plus: vim-mode detected!",
-        "To use vim-mode-plus, you must **disable vim-mode** manually.",
-      ].join("\n")
-
-      atom.notifications.addWarning(message, {dismissable: true})
-    }
-
-    if (atom.packages.isPackageActive("vim-mode")) warn()
-    return atom.packages.onDidActivatePackage(pack => {
-      if (pack.name === "vim-mode") warn()
-    })
   },
 
   // * `fn` {Function} to be called when vimState instance was created.
@@ -106,30 +101,9 @@ module.exports = {
 
   deactivate() {
     this.demaximizePane()
-    if (this.demoModeSupport) this.demoModeSupport.destroy()
-
     this.subscriptions.dispose()
     VimState.forEach(vimState => vimState.destroy())
     VimState.clear()
-  },
-
-  registerCommands() {
-    return [
-      atom.commands.add("atom-text-editor:not([mini])", {
-        "vim-mode-plus:clear-highlight-search": () => this.clearHighlightSearch(),
-        "vim-mode-plus:toggle-highlight-search": () => this.toggleHighlightSearch(),
-      }),
-      atom.commands.add("atom-workspace", {
-        "vim-mode-plus:maximize-pane": () => this.paneUtils.maximizePane(),
-        "vim-mode-plus:maximize-pane-without-center": () => this.paneUtils.maximizePane(false),
-        "vim-mode-plus:equalize-panes": () => this.paneUtils.equalizePanes(),
-        "vim-mode-plus:exchange-pane": () => this.paneUtils.exchangePane(),
-        "vim-mode-plus:move-pane-to-very-top": () => this.paneUtils.movePaneToVery("top"),
-        "vim-mode-plus:move-pane-to-very-bottom": () => this.paneUtils.movePaneToVery("bottom"),
-        "vim-mode-plus:move-pane-to-very-left": () => this.paneUtils.movePaneToVery("left"),
-        "vim-mode-plus:move-pane-to-very-right": () => this.paneUtils.movePaneToVery("right"),
-      }),
-    ]
   },
 
   // atom-text-editor commands
@@ -162,7 +136,7 @@ module.exports = {
       "operator-modifier-linewise"() { this.setOperatorModifier({wise: "linewise"}) },
       "operator-modifier-occurrence"() { this.setOperatorModifier({occurrence: true, occurrenceType: "base"}) },
       "operator-modifier-subword-occurrence"() { this.setOperatorModifier({occurrence: true, occurrenceType: "subword"}) },
-      repeat() { this.operationStack.runRecorded() },
+      "repeat"() { this.operationStack.runRecorded() },
       "repeat-find"() { this.operationStack.runCurrentFind() },
       "repeat-find-reverse"() { this.operationStack.runCurrentFind({reverse: true}) },
       "repeat-search"() { this.operationStack.runCurrentSearch() },
@@ -193,10 +167,13 @@ module.exports = {
       const boundCommands = {}
       for (const name of Object.keys(commands)) {
         const fn = commands[name]
-        boundCommands[`vim-mode-plus:${name}`] = function(event) {
-          event.stopPropagation()
-          const vimState = getEditorState(this.getModel())
-          if (vimState) fn.call(vimState, event)
+        boundCommands[`vim-mode-plus:${name}`] = {
+          hiddenInCommandPalette: true,
+          didDispatch(event) {
+            event.stopPropagation()
+            const vimState = getEditorState(this.getModel())
+            if (vimState) fn.call(vimState)
+          },
         }
       }
       return boundCommands
@@ -205,14 +182,13 @@ module.exports = {
     return atom.commands.add("atom-text-editor:not([mini])", bindToVimState(commands))
   },
 
-  consumeStatusBar(statusBar) {
-    this.statusBarManager.initialize(statusBar)
-    this.statusBarManager.attach()
-    this.subscriptions.add(new Disposable(() => this.statusBarManager.detach()))
+  consumeStatusBar(service) {
+    this.subscriptions.add(this.statusBarManager.init(service))
   },
 
-  consumeDemoMode(demoModeService) {
-    this.demoModeSupport = new (require("./demo-mode-support"))(demoModeService)
+  consumeDemoMode(service) {
+    const demoModeSupport = require("./demo-mode-support")
+    this.subscriptions.add(...demoModeSupport.init(service))
   },
 
   // Computed props

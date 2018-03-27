@@ -1,11 +1,10 @@
 "use babel"
 
-const _ = require("underscore-plus")
-
 const SearchModel = require("./search-model")
-const Motion = require("./base").getClass("Motion")
+const {Motion} = require("./motion")
 
 class SearchBase extends Motion {
+  static command = false
   jump = true
   backwards = false
   useRegexp = true
@@ -32,8 +31,8 @@ class SearchBase extends Motion {
     super.initialize()
   }
 
-  getCount(...args) {
-    return super.getCount(...args) * (this.isBackwards() ? -1 : 1)
+  getCount() {
+    return super.getCount() * (this.isBackwards() ? -1 : 1)
   }
 
   finish() {
@@ -105,7 +104,6 @@ class SearchBase extends Motion {
     searchModel.clearMarkers()
   }
 }
-SearchBase.register(false)
 
 // /, ?
 // -------------------------
@@ -207,15 +205,13 @@ class Search extends SearchBase {
         return new RegExp(term, modifiers)
       } catch (error) {}
     }
-    return new RegExp(_.escapeRegExp(term), modifiers)
+    return new RegExp(this._.escapeRegExp(term), modifiers)
   }
 }
-Search.register()
 
 class SearchBackwards extends Search {
   backwards = true
 }
-SearchBackwards.register()
 
 // *, #
 // -------------------------
@@ -237,7 +233,7 @@ class SearchCurrentWord extends SearchBase {
   }
 
   getPattern(term) {
-    const escaped = _.escapeRegExp(term)
+    const escaped = this._.escapeRegExp(term)
     const source = /\W/.test(term) ? `${escaped}\\b` : `\\b${escaped}\\b`
     return new RegExp(source, this.isCaseSensitive(term) ? "g" : "gi")
   }
@@ -247,21 +243,20 @@ class SearchCurrentWord extends SearchBase {
     const point = cursor.getBufferPosition()
 
     const nonWordCharacters = this.utils.getNonWordCharactersForCursor(cursor)
-    const wordRegex = new RegExp(`[^\\s${_.escapeRegExp(nonWordCharacters)}]+`, "g")
-
-    let foundRange
-    this.scanForward(wordRegex, {from: [point.row, 0], allowNextLine: false}, ({range, stop}) => {
-      if (range.end.isGreaterThan(point)) {
-        foundRange = range
-        stop()
-      }
-    })
-    return foundRange
+    const regex = new RegExp(`[^\\s${this._.escapeRegExp(nonWordCharacters)}]+`, "g")
+    const options = {from: [point.row, 0], allowNextLine: false}
+    return this.findInEditor("forward", regex, options, ({range}) => range.end.isGreaterThan(point) && range)
   }
 }
-SearchCurrentWord.register()
 
 class SearchCurrentWordBackwards extends SearchCurrentWord {
   backwards = true
 }
-SearchCurrentWordBackwards.register()
+
+module.exports = {
+  SearchBase,
+  Search,
+  SearchBackwards,
+  SearchCurrentWord,
+  SearchCurrentWordBackwards,
+}

@@ -1,52 +1,16 @@
 "use babel"
 
-const _ = require("underscore-plus")
 const {Range} = require("atom")
-const Operator = require("./base").getClass("Operator")
+const {Operator} = require("./operator")
 
 // Operator which start 'insert-mode'
 // -------------------------
 // [NOTE]
 // Rule: Don't make any text mutation before calling `@selectTarget()`.
 class ActivateInsertModeBase extends Operator {
+  static command = false
   flashTarget = false
-  finalSubmode = null
   supportInsertionCount = true
-
-  observeWillDeactivateMode() {
-    const disposable = this.vimState.modeManager.preemptWillDeactivateMode(({mode}) => {
-      if (mode !== "insert") return
-      disposable.dispose()
-
-      this.vimState.mark.set("^", this.editor.getCursorBufferPosition()) // Last insert-mode position
-      let textByUserInput = ""
-      const change = this.getChangeSinceCheckpoint("insert")
-      if (change) {
-        this.lastChange = change
-        this.setMarkForChange(new Range(change.start, change.start.traverse(change.newExtent)))
-        textByUserInput = change.newText
-      }
-      this.vimState.register.set(".", {text: textByUserInput}) // Last inserted text
-
-      _.times(this.getInsertionCount(), () => {
-        const textToInsert = this.textByOperator + textByUserInput
-        for (const selection of this.editor.getSelections()) {
-          selection.insertText(textToInsert, {autoIndent: true})
-        }
-      })
-
-      // This cursor state is restored on undo.
-      // So cursor state has to be updated before next groupChangesSinceCheckpoint()
-      if (this.getConfig("clearMultipleCursorsOnEscapeInsertMode")) {
-        this.vimState.clearSelections()
-      }
-
-      // grouping changes for undo checkpoint need to come last
-      if (this.getConfig("groupChangesWhenLeavingInsertMode")) {
-        this.groupChangesSinceBufferCheckpoint("undo")
-      }
-    })
-  }
 
   // When each mutaion's extent is not intersecting, muitiple changes are recorded
   // e.g
@@ -89,67 +53,128 @@ class ActivateInsertModeBase extends Operator {
     this.replayLastChange(selection)
   }
 
-  getInsertionCount() {
-    if (this.insertionCount == null) {
-      this.insertionCount = this.supportInsertionCount ? this.getCount(-1) : 0
-    }
-    // Avoid freezing by acccidental big count(e.g. `5555555555555i`), See #560, #596
-    return this.utils.limitNumber(this.insertionCount, {max: 100})
-  }
-
   execute() {
-    if (this.repeated) {
-      this.flashTarget = this.trackChange = true
+    if (this.repeated) this.flashTarget = this.trackChange = true
 
-      this.startMutation(() => {
-        if (this.target) this.selectTarget()
-        if (this.mutateText) this.mutateText()
+    this.preSelect()
 
+    if (this.selectTarget() || this.target.wise !== "linewise") {
+      if (this.mutateText) this.mutateText()
+
+      if (this.repeated) {
         for (const selection of this.editor.getSelections()) {
           const textToInsert = (this.lastChange && this.lastChange.newText) || ""
           this.repeatInsert(selection, textToInsert)
           this.utils.moveCursorLeft(selection.cursor)
         }
         this.mutationManager.setCheckpoint("did-finish")
-      })
+        this.groupChangesSinceBufferCheckpoint("undo")
+        this.emitDidFinishMutation()
+        if (this.getConfig("clearMultipleCursorsOnEscapeInsertMode")) this.vimState.clearSelections()
+      } else {
+        // Avoid freezing by acccidental big count(e.g. `5555555555555i`), See #560, #596
+        let insertionCount = this.supportInsertionCount ? this.limitNumber(this.getCount() - 1, {max: 100}) : 0
 
-      if (this.getConfig("clearMultipleCursorsOnEscapeInsertMode")) this.vimState.clearSelections()
+        let textByOperator = ""
+        if (insertionCount > 0) {
+          const change = this.getChangeSinceCheckpoint("undo")
+          textByOperator = (change && change.newText) || ""
+        }
+
+        this.createBufferCheckpoint("insert")
+        const topCursor = this.editor.getCursorsOrderedByBufferPosition()[0]
+        this.topCursorPositionAtInsertionStart = topCursor.getBufferPosition()
+
+        // Skip normalization of blockwiseSelection.
+        // Since want to keep multi-cursor and it's position in when shift to insert-mode.
+        for (const blockwiseSelection of this.getBlockwiseSelections()) {
+          blockwiseSelection.skipNormalization()
+        }
+
+        const disposable = this.vimState.preemptWillDeactivateMode(({mode}) => {
+          if (mode !== "insert") return
+          disposable.dispose()
+
+          this.vimState.mark.set("^", this.editor.getCursorBufferPosition()) // Last insert-mode position
+          let textByUserInput = ""
+          const change = this.getChangeSinceCheckpoint("insert")
+          if (change) {
+            this.lastChange = change
+            this.setMarkForChange(new Range(change.start, change.start.traverse(change.newExtent)))
+            textByUserInput = change.newText
+          }
+          this.vimState.register.set(".", {text: textByUserInput}) // Last inserted text
+
+          while (insertionCount) {
+            insertionCount--
+            for (const selection of this.editor.getSelections()) {
+              selection.insertText(textByOperator + textByUserInput, {autoIndent: true})
+            }
+          }
+
+          // This cursor state is restored on undo.
+          // So cursor state has to be updated before next groupChangesSinceCheckpoint()
+          if (this.getConfig("clearMultipleCursorsOnEscapeInsertMode")) this.vimState.clearSelections()
+
+          // grouping changes for undo checkpoint need to come last
+          this.groupChangesSinceBufferCheckpoint("undo")
+
+          const preventIncorrectWrap = this.editor.hasAtomicSoftTabs()
+          for (const cursor of this.editor.getCursors()) {
+            this.utils.moveCursorLeft(cursor, {preventIncorrectWrap})
+          }
+        })
+        const submode = this.name === "ActivateReplaceMode" ? "replace" : undefined
+        this.activateMode("insert", submode)
+      }
     } else {
-      this.normalizeSelectionsIfNecessary()
-      this.createBufferCheckpoint("undo")
-      this.selectTarget()
-      this.observeWillDeactivateMode()
-      if (this.mutateText) this.mutateText()
-
-      if (this.getInsertionCount() > 0) {
-        const change = this.getChangeSinceCheckpoint("undo")
-        this.textByOperator = (change && change.newText) || ""
-      }
-
-      this.createBufferCheckpoint("insert")
-      const topCursor = this.editor.getCursorsOrderedByBufferPosition()[0]
-      this.topCursorPositionAtInsertionStart = topCursor.getBufferPosition()
-
-      // Skip normalization of blockwiseSelection.
-      // Since want to keep multi-cursor and it's position in when shift to insert-mode.
-      for (const blockwiseSelection of this.getBlockwiseSelections()) {
-        blockwiseSelection.skipNormalization()
-      }
-      this.activateMode("insert", this.finalSubmode)
+      this.activateMode("normal")
     }
   }
 }
-ActivateInsertModeBase.register(false)
 
 class ActivateInsertMode extends ActivateInsertModeBase {
   target = "Empty"
   acceptPresetOccurrence = false
   acceptPersistentSelection = false
 }
-ActivateInsertMode.register()
 
 class ActivateReplaceMode extends ActivateInsertMode {
-  finalSubmode = "replace"
+  initialize() {
+    const replacedCharsBySelection = new WeakMap()
+
+    const onWillInsertDisposable = this.editor.onWillInsertText(({text = "", cancel}) => {
+      cancel()
+      for (const selection of this.editor.getSelections()) {
+        for (const char of text.split("")) {
+          if (char !== "\n" && !selection.cursor.isAtEndOfLine()) selection.selectRight()
+          if (!replacedCharsBySelection.has(selection)) replacedCharsBySelection.set(selection, [])
+          replacedCharsBySelection.get(selection).push(selection.getText())
+          selection.insertText(char)
+        }
+      }
+    })
+
+    const overrideCoreBackSpaceDisposable = atom.commands.add(this.editorElement, "core:backspace", event => {
+      event.stopImmediatePropagation()
+      for (const selection of this.editor.getSelections()) {
+        const chars = replacedCharsBySelection.get(selection)
+        if (chars && chars.length) {
+          selection.selectLeft()
+          if (!selection.insertText(chars.pop()).isEmpty()) selection.cursor.moveLeft()
+        }
+      }
+    })
+
+    const disposable = this.vimState.preemptWillDeactivateMode(({mode}) => {
+      if (mode !== "insert") return
+      disposable.dispose()
+      onWillInsertDisposable.dispose()
+      overrideCoreBackSpaceDisposable.dispose()
+    })
+
+    super.initialize()
+  }
 
   repeatInsert(selection, text) {
     for (const char of text) {
@@ -160,7 +185,6 @@ class ActivateReplaceMode extends ActivateInsertMode {
     selection.insertText(text, {autoIndent: false})
   }
 }
-ActivateReplaceMode.register()
 
 class InsertAfter extends ActivateInsertMode {
   execute() {
@@ -170,7 +194,6 @@ class InsertAfter extends ActivateInsertMode {
     super.execute()
   }
 }
-InsertAfter.register()
 
 // key: 'g I' in all mode
 class InsertAtBeginningOfLine extends ActivateInsertMode {
@@ -185,7 +208,6 @@ class InsertAtBeginningOfLine extends ActivateInsertMode {
     super.execute()
   }
 }
-InsertAtBeginningOfLine.register()
 
 // key: normal 'A'
 class InsertAfterEndOfLine extends ActivateInsertMode {
@@ -194,17 +216,16 @@ class InsertAfterEndOfLine extends ActivateInsertMode {
     super.execute()
   }
 }
-InsertAfterEndOfLine.register()
 
 // key: normal 'I'
 class InsertAtFirstCharacterOfLine extends ActivateInsertMode {
   execute() {
-    this.editor.moveToBeginningOfLine()
-    this.editor.moveToFirstCharacterOfLine()
+    for (const cursor of this.editor.getCursors()) {
+      this.utils.moveCursorToFirstCharacterAtRow(cursor, cursor.getBufferRow())
+    }
     super.execute()
   }
 }
-InsertAtFirstCharacterOfLine.register()
 
 class InsertAtLastInsert extends ActivateInsertMode {
   execute() {
@@ -216,50 +237,49 @@ class InsertAtLastInsert extends ActivateInsertMode {
     super.execute()
   }
 }
-InsertAtLastInsert.register()
 
 class InsertAboveWithNewline extends ActivateInsertMode {
   initialize() {
-    if (this.getConfig("groupChangesWhenLeavingInsertMode")) {
-      this.originalCursorPositionMarker = this.editor.markBufferPosition(this.editor.getCursorBufferPosition())
-    }
+    this.originalCursorPositionMarker = this.editor.markBufferPosition(this.editor.getCursorBufferPosition())
     super.initialize()
   }
 
   // This is for `o` and `O` operator.
   // On undo/redo put cursor at original point where user type `o` or `O`.
   groupChangesSinceBufferCheckpoint(purpose) {
+    if (this.repeated) {
+      super.groupChangesSinceBufferCheckpoint(purpose)
+      return
+    }
+
     const lastCursor = this.editor.getLastCursor()
     const cursorPosition = lastCursor.getBufferPosition()
     lastCursor.setBufferPosition(this.originalCursorPositionMarker.getHeadBufferPosition())
     this.originalCursorPositionMarker.destroy()
+    this.originalCursorPositionMarker = null
 
-    super.groupChangesSinceBufferCheckpoint(purpose)
-
+    if (this.getConfig("groupChangesWhenLeavingInsertMode")) {
+      super.groupChangesSinceBufferCheckpoint(purpose)
+    }
     lastCursor.setBufferPosition(cursorPosition)
   }
 
   autoIndentEmptyRows() {
     for (const cursor of this.editor.getCursors()) {
       const row = cursor.getBufferRow()
-      if (this.utils.isEmptyRow(this.editor, row)) {
-        this.editor.autoIndentBufferRow(row)
-      }
+      if (this.isEmptyRow(row)) this.editor.autoIndentBufferRow(row)
     }
   }
 
   mutateText() {
     this.editor.insertNewlineAbove()
-    if (this.editor.autoIndent) {
-      this.autoIndentEmptyRows()
-    }
+    if (this.editor.autoIndent) this.autoIndentEmptyRows()
   }
 
   repeatInsert(selection, text) {
     selection.insertText(text.trimLeft(), {autoIndent: true})
   }
 }
-InsertAboveWithNewline.register()
 
 class InsertBelowWithNewline extends InsertAboveWithNewline {
   mutateText() {
@@ -271,11 +291,11 @@ class InsertBelowWithNewline extends InsertAboveWithNewline {
     if (this.editor.autoIndent) this.autoIndentEmptyRows()
   }
 }
-InsertBelowWithNewline.register()
 
 // Advanced Insertion
 // -------------------------
 class InsertByTarget extends ActivateInsertModeBase {
+  static command = false
   which = null // one of ['start', 'end', 'head', 'tail']
 
   initialize() {
@@ -314,78 +334,64 @@ class InsertByTarget extends ActivateInsertModeBase {
     super.execute()
   }
 }
-InsertByTarget.register(false)
 
 // key: 'I', Used in 'visual-mode.characterwise', visual-mode.blockwise
 class InsertAtStartOfTarget extends InsertByTarget {
   which = "start"
 }
-InsertAtStartOfTarget.register()
 
 // key: 'A', Used in 'visual-mode.characterwise', 'visual-mode.blockwise'
 class InsertAtEndOfTarget extends InsertByTarget {
   which = "end"
 }
-InsertAtEndOfTarget.register()
 
 class InsertAtHeadOfTarget extends InsertByTarget {
   which = "head"
 }
-InsertAtHeadOfTarget.register()
 
 class InsertAtStartOfOccurrence extends InsertAtStartOfTarget {
   occurrence = true
 }
-InsertAtStartOfOccurrence.register()
 
 class InsertAtEndOfOccurrence extends InsertAtEndOfTarget {
   occurrence = true
 }
-InsertAtEndOfOccurrence.register()
 
 class InsertAtHeadOfOccurrence extends InsertAtHeadOfTarget {
   occurrence = true
 }
-InsertAtHeadOfOccurrence.register()
 
 class InsertAtStartOfSubwordOccurrence extends InsertAtStartOfOccurrence {
   occurrenceType = "subword"
 }
-InsertAtStartOfSubwordOccurrence.register()
 
 class InsertAtEndOfSubwordOccurrence extends InsertAtEndOfOccurrence {
   occurrenceType = "subword"
 }
-InsertAtEndOfSubwordOccurrence.register()
 
 class InsertAtHeadOfSubwordOccurrence extends InsertAtHeadOfOccurrence {
   occurrenceType = "subword"
 }
-InsertAtHeadOfSubwordOccurrence.register()
 
 class InsertAtStartOfSmartWord extends InsertByTarget {
   which = "start"
   target = "MoveToPreviousSmartWord"
 }
-InsertAtStartOfSmartWord.register()
 
 class InsertAtEndOfSmartWord extends InsertByTarget {
   which = "end"
   target = "MoveToEndOfSmartWord"
 }
-InsertAtEndOfSmartWord.register()
 
 class InsertAtPreviousFoldStart extends InsertByTarget {
   which = "start"
   target = "MoveToPreviousFoldStart"
 }
-InsertAtPreviousFoldStart.register()
 
 class InsertAtNextFoldStart extends InsertByTarget {
   which = "end"
   target = "MoveToNextFoldStart"
 }
-InsertAtNextFoldStart.register()
 
 // -------------------------
 class Change extends ActivateInsertModeBase {
@@ -405,6 +411,7 @@ class Change extends ActivateInsertModeBase {
       }
       if (isLinewiseTarget) {
         selection.insertText("\n", {autoIndent: true})
+        // selection.insertText("", {autoIndent: true})
         selection.cursor.moveLeft()
       } else {
         selection.insertText("", {autoIndent: true})
@@ -412,27 +419,22 @@ class Change extends ActivateInsertModeBase {
     }
   }
 }
-Change.register()
 
 class ChangeOccurrence extends Change {
   occurrence = true
 }
-ChangeOccurrence.register()
 
 class Substitute extends Change {
   target = "MoveRight"
 }
-Substitute.register()
 
 class SubstituteLine extends Change {
   wise = "linewise" // [FIXME] to re-override target.wise in visual-mode
   target = "MoveToRelativeLine"
 }
-SubstituteLine.register()
 
 // alias
 class ChangeLine extends SubstituteLine {}
-ChangeLine.register()
 
 class ChangeToLastCharacterOfLine extends Change {
   target = "MoveToLastCharacterOfLine"
@@ -448,4 +450,36 @@ class ChangeToLastCharacterOfLine extends Change {
     super.execute()
   }
 }
-ChangeToLastCharacterOfLine.register()
+
+module.exports = {
+  ActivateInsertModeBase,
+  ActivateInsertMode,
+  ActivateReplaceMode,
+  InsertAfter,
+  InsertAtBeginningOfLine,
+  InsertAfterEndOfLine,
+  InsertAtFirstCharacterOfLine,
+  InsertAtLastInsert,
+  InsertAboveWithNewline,
+  InsertBelowWithNewline,
+  InsertByTarget,
+  InsertAtStartOfTarget,
+  InsertAtEndOfTarget,
+  InsertAtHeadOfTarget,
+  InsertAtStartOfOccurrence,
+  InsertAtEndOfOccurrence,
+  InsertAtHeadOfOccurrence,
+  InsertAtStartOfSubwordOccurrence,
+  InsertAtEndOfSubwordOccurrence,
+  InsertAtHeadOfSubwordOccurrence,
+  InsertAtStartOfSmartWord,
+  InsertAtEndOfSmartWord,
+  InsertAtPreviousFoldStart,
+  InsertAtNextFoldStart,
+  Change,
+  ChangeOccurrence,
+  Substitute,
+  SubstituteLine,
+  ChangeLine,
+  ChangeToLastCharacterOfLine,
+}

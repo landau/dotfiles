@@ -154,13 +154,6 @@ var moveLapSlackOp = moveLapAdiumOp.dup({
   y:'0'
 });
 
-var moveChromeWindow = S.op('corner', {
-  screen: monRight,
-  direction: 'top-right',
-  width: 'screenSizeX/1.35',
-  height: 'screenSizeY'
-});
-
 // ------ Resize ops
 var resizeHalfLeft = S.op('move', {
   height: 'screenSizeY',
@@ -210,17 +203,6 @@ var rightLayoutFull = {
   'repeat' : true
 };
 
-// This op is for a single chrome window to move to lap monitor
-// looking for twitter
-var moveGoogWithTwitter = function(window) {
-  var title = window.title();
-  if (title !== undefined && title.match(/TweetDeck/g)) {
-    window.doOperation(moveLapOp);
-  } else {
-    window.doOperation(moveRightOp);
-  }
-};
-
 var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
@@ -232,11 +214,6 @@ var twoMonLayout = S.layout('twoMon', {
   },
   LimeChat: {
     operations: [moveLapHipChatOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Evernote: {
-    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -260,6 +237,11 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  'Code': {
+    operations: [moveMidCodeOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   'Eclipse': {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -271,6 +253,11 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   'Google Chrome': {
+    operations: [moveMidBrowser],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Firefox': {
     operations: [moveMidBrowser],
     'ignore-fail': true,
     'repeat-last': true
@@ -349,11 +336,6 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  Evernote: {
-    operations: [moveLapOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   iTerm2: {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -374,6 +356,11 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  'Code': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   'Eclipse': {
     operations: [moveMidOp],
     'ignore-fail': true,
@@ -385,6 +372,12 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   'Google Chrome': {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'title-order': [], // TODO move other google windows to monRight
+    'repeat-last': true
+  },
+  'Firefox': {
     operations: [moveLapOp],
     'ignore-fail': true,
     'title-order': [], // TODO move other google windows to monRight

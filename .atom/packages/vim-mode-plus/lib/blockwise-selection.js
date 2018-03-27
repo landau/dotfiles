@@ -1,6 +1,4 @@
-const _ = require("underscore-plus")
-
-const {sortRanges, assertWithException, trimRange, getList} = require("./utils")
+const {sortRanges, assertWithException, trimBufferRange, getList, getLast} = require("./utils")
 const settings = require("./settings")
 const blockwiseSelectionsByEditor = new Map()
 
@@ -28,7 +26,7 @@ module.exports = class BlockwiseSelection {
   }
 
   static getLastSelection(editor) {
-    return _.last(blockwiseSelectionsByEditor.get(editor))
+    return getLast(blockwiseSelectionsByEditor.get(editor))
   }
 
   static saveSelection(blockwiseSelection) {
@@ -112,7 +110,7 @@ module.exports = class BlockwiseSelection {
   expandMemberSelectionsOverLineWithTrimRange() {
     for (const selection of this.getSelections()) {
       const {start} = selection.getBufferRange()
-      const range = trimRange(this.editor, this.editor.bufferRangeForBufferRow(start.row))
+      const range = trimBufferRange(this.editor, this.editor.bufferRangeForBufferRow(start.row))
       selection.setBufferRange(range)
     }
   }
@@ -154,7 +152,7 @@ module.exports = class BlockwiseSelection {
   }
 
   getEndSelection() {
-    return _.last(this.selections)
+    return getLast(this.selections)
   }
 
   getHeadSelection() {
@@ -198,7 +196,8 @@ module.exports = class BlockwiseSelection {
     for (const selection of this.selections.slice()) {
       if (selection !== except) {
         swrap(selection).clearProperties()
-        _.remove(this.selections, selection)
+        const index = this.selections.indexOf(selection)
+        if (index >= 0) this.selections.splice(index, 1)
         selection.destroy()
       }
     }

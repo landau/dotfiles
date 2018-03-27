@@ -1,4 +1,116 @@
+# 1.22.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.21.0...v1.22.0)
+- Improve: Now `Function` TextObject(`i f`, `a f`) can detect **more** function. #984
+  - Previously vmp can detect only function which parameter-list and body forms single fold.
+  - Now vmp can detect function if parameter-list and body form different fold.
+- Fix: No longer editor freeze when big count was set for `MoveToRelativeLine` targeted operation. #985
+  - E.g. `1 0 0 0 0 0 0 0 0 0 d d`, `1 0 0 0 0 0 0 0 0 0 y y`
+
+# 1.21.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.20.0...v1.21.0)
+- Support: No longer warning when user enabled `vim-mode`.
+  - In old days, I frequently got report who enabled both `vim-mode` and `vim-mode-plus`.
+  - But now `vim-mode` is obviously unmaintained, and I think less chance to confuse user.
+- New, Breaking: Use [change-case](https://github.com/blakeembrey/change-case) npm in TransformString operator.
+  - As a result, added new operators, also non-listed exiting operator improve translate-ability between different case.
+  - `SwapCase`: Same as existing ToggleCase but add to reflect original change-case's function name.
+  - `ParamCase`: Same as existing DashCase but add to reflect original change-case's function name.
+  - `PathCase`: New transform `a_b_c` to `a/b/c`, `camelCase` to `camel/case`.
+  - `HeaderCase`: New, transform `HeaderCase` to `Header-Case`, `header_case` to `Header-Case`.
+  - `ConstantCase`: New, transform `ConstantCase` to `CONSTANT_CASE`, `constant-case` to `CONSTANT_CASE`.
+  - `SentenceCase`: New, transform `SentenceCase` to `Sentence case`, `sentence_case` to `Sentence case`.
+  - `UpperCaseFirst`: New, transform `upperCaseFirst` to `UpperCaseFirst`, `abc def` to `Abc Def`.
+  - `LowerCaseFirst`: New, transform `LowerCaseFirst` to `lowerCaseFirst`, `ABC DEF` to `aBC dEF`.
+- Breaking: Now `transform-string-by-select-list` just simply shows "Title Case"-ed operator class name.
+  - No longer display different name like it didsplayed `Underscore _` for `SnakeCase` operator. Now it just show `Snake Case`.
+  - Which might confuse you if you've been familier with old names. Sorry, but I think it was unnecessary.
+- Performance: Delay loading underscore-plus in operator.
+- Internal: Move commandTable generation logic to developer.js
+
+# 1.20.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.19.0...v1.20.0)
+- Fix: No longer throw exception on keystroke `o escape .` when `groupChangesWhenLeavingInsertMode` have enabled #966
+- Performance: Reduce IOs at package activation further for faster startup #965
+  - Separate `file-table.json` from `command-table.json`.
+  - Optimize command-table data format to reduce file size.
+  - Now in my MacBook Pro Late 2016. it score around 40ms(38ms-45ms) activation time(measured by package cop).
+  - This is **NOT BAD** when considering vmp adds 300+ commands on activation.
+  - 2017-11-06:    40ms (vmp-v1.20.0 + Atom-v1.23.0-beta1) Now!
+  - 2017-04-17: 60-80ms (vmp-v0.90.0 + Atom-v1.16.0)
+  - 2017-01-04:   150ms (vmp-v0.78.0 + Atom-v1.13.0-beta10)
+- Improve: Longer search-flash duration from 0.5s to 1.0s to more easy to spot found word.
+- Support, Doc: No longer warn that CoffeeScript based extension is no longer supported on pkg activation.
+  - Instead it is now explained in README.md with english correction PR made by @filipewl
+  - Why I remove now is I noticed that  warning was made on newly installed case(bad), it's been a month from this warning was added.
+- Support: Update issue template so that issue opener will see TODOs without jumping to link.
+
+# 1.19.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.18.2...v1.19.0)
+- Improve: Scroll motions `ctrl-f`, `ctrl-b`... now works more correctly in editor having block decoration by @jdanbrown.
+  - Previously amount of scroll was based on screen rows, which doesn't block-decoration take into account.
+  - Now scroll pixel based, so accurate even if editor have block decoration inline image.
+- Improve: Smoother scroll in sequential scroll motion execution.
+  - Previously when multiple scroll request was made in very short time-gap, it immediately finalize previous request.
+  - This means user see non-smooth scrollTop change although user enabled smooth scroll feature.
+  - Now previous request is just cancelled and calculate new scrollTop based on previously requested value.
+  - So in UX-wise, user no longer see sudden scrollTop change, always see smoooooth scroll congrats!!
+
+# 1.18.2:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.18.1...v1.18.2)
+- Change mind:
+  - Update all vmp-plugins which affect changes in v1.18.0.
+  - Remove `registerCommandFromSpec` migration code.
+  - Why? migration for passed `spec` was not perfect, just confusing.
+  - So I decided to simply let user update to latest, thats works.
+
+# 1.18.1:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.18.0...v1.18.1)
+- Fix: user's custom command in `init.js` throw exception when calling `registerCommand()`.
+  - Regression introduced in v1.18.0 sorry!
+
+# 1.18.0: BIG overhaul in different aspect
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.17.0...v1.18.0)
+- Performance: Small activation performance gain by `Base.js` refactoring and JSON form of command-table.
+- Fix: Fix broken word motion family from Atom v1.23.0-beta0. #946, #953.
+  - `w`, `b`, `e`, `g e` and it's variant have been broken after v1.23.0-beta0 was out.
+  - This is because vmp depends Atom's cursor's method to find word.
+  - But this dependency also make vmp's word motion vulnerable to changes in atom-core.
+  - So this time, did overhaul these word-motion to not use cursors's method
+- Internal:
+  - Changes in how vmp commands are loaded.
+    - Previously, each operation class need to calll `register()` in it's own file.
+      - e.g. call `MoveDown.register()` in `./motion.js`.
+      - This mechanism was once useful, especially as executable-class-body when vmp was written in coffee-script.
+    - Now all operations class are jus `requre`-ed by `/base.js` and manually registerd.
+      - So less magic, more explicit, easy to understand.
+  - Use JSON format for command-table for faster activation. #958
+    - This involve changes in field name of command spec.
+    - So also updated vmp plugins which use `registerCommandFromSpec` function provided as vmp service.
+  - Introduce `findInEditor` utility and cleanup lot of boilerplate code by using this new utility.
+
+# 1.17.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.16.0...v1.17.0)
+- Improve: Hide some vmp commands from command-palette #943
+  - Hide only super-basic small num of commands only whic is defined in `main.js`
+  - I evaluated hide **all** vmp commands in #943 but reverted
+  - I was expected hiding all vmp commands improve command-palette's responsiveness but it was not.
+  - So I took benefit to invoke all vmp command from palette as of now.
+- Improve: `c j`, `c k` at first or last buffer row no longer enter insert-mode.
+- Fix: In v1.23.0-beta0, some TextObject(e.g `fold`, `comment`) did not work.
+- Support: set minimum engines to `1.22.0`
+- Internal, Breaking: Remove `ModeManager` class and re-blend it to `VimState`.
+  - In original vim-mode, mode handling was done in `VimState`.
+  - I extracted mode handling as `ModeManager`.
+  - But now ModeManager’s task now get very small, I’m OK to re-blend it again.
+  - Add deprecation warning when calling old `ModeManager`'s event API.
+- Internal: `insert-mode`'s task done in `ModeManager` is now handled in `ActivateInsertMode` operation class.
+  - Remove `replace-mode-backspace` command
+    - This was mapped from `backspace` in `insert.replace` mode.
+    - But now achieve same functionality by overriding `core:backspace`.
+    - So, this intermediate command is no longer necessary.
+
 # 1.16.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.15.0...v1.16.0)
 - New: Motion to scroll to function and redraw at uppper middle.
   - Following two commands are defined(no keymap by default)
     - `move-to-previous-function-and-redraw-cursor-line-at-upper-middle`
@@ -9,6 +121,7 @@
 - Improve: Use TextBuffer's new `onDidChangeText` event to flash for undo/redo. #941.
 
 # 1.15.0:
+- Diff: [here](https://github.com/t9md/atom-vim-mode-plus/compare/v1.14.1...v1.15.0)
 - Breaking: Rename confusing `ScrollXXX`(It easily be confused with scroll motions(`ctrl-f` etc..)
   - `ScrollDown`(`ctrl-e`) to `MiniScrollDown`
   - `ScrollUp`(`ctrl-y`) to `MiniScrollUp`

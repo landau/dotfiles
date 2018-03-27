@@ -1,7 +1,6 @@
 "use babel"
 
 const {Range, Point} = require("atom")
-const _ = require("underscore-plus")
 
 // [TODO] Need overhaul
 //  - [ ] Make expandable by selection.getBufferRange().union(this.getRange(selection))
@@ -11,28 +10,37 @@ const PairFinder = require("./pair-finder")
 
 class TextObject extends Base {
   static operationKind = "text-object"
+  static command = false
+
   operator = null
   wise = "characterwise"
   supportCount = false // FIXME #472, #66
   selectOnce = false
   selectSucceeded = false
 
-  static register(isCommand, deriveInnerAndA, deriveInnerAndAForAllowForwarding) {
-    super.register(isCommand)
-
-    if (deriveInnerAndA) {
-      this.generateClass(`A${this.name}`, false)
-      this.generateClass(`Inner${this.name}`, true)
+  static deriveClass(innerAndA, innerAndAForAllowForwarding) {
+    this.command = false
+    const store = {}
+    const generateClass = (...args) => {
+      const klass = this.generateClass(...args)
+      store[klass.name] = klass
     }
 
-    if (deriveInnerAndAForAllowForwarding) {
-      this.generateClass(`A${this.name}AllowForwarding`, false, true)
-      this.generateClass(`Inner${this.name}AllowForwarding`, true, true)
+    if (innerAndA) {
+      generateClass(false)
+      generateClass(true)
     }
+    if (innerAndAForAllowForwarding) {
+      generateClass(false, true)
+      generateClass(true, true)
+    }
+    return store
   }
 
-  static generateClass(klassName, inner, allowForwarding) {
-    const klass = class extends this {
+  static generateClass(inner, allowForwarding) {
+    const klassName = (inner ? "Inner" : "A") + this.name + (allowForwarding ? "AllowForwarding" : "")
+
+    return class extends this {
       static get name() {
         return klassName
       }
@@ -42,7 +50,6 @@ class TextObject extends Base {
         if (allowForwarding != null) this.allowForwarding = allowForwarding
       }
     }
-    klass.register()
   }
 
   isInner() {
@@ -102,7 +109,6 @@ class TextObject extends Base {
       if (this.selectSucceeded) {
         if (this.wise === "characterwise") {
           this.swrap.saveProperties(this.editor, {force: true})
-
         } else if (this.wise === "linewise") {
           // When target is persistent-selection, new selection is added after selectTextObject.
           // So we have to assure all selection have selction property.
@@ -141,7 +147,6 @@ class TextObject extends Base {
   // to override
   getRange(selection) {}
 }
-TextObject.register(false)
 
 // Section: Word
 // =========================
@@ -152,18 +157,15 @@ class Word extends TextObject {
     return this.isA() ? this.utils.expandRangeToWhiteSpaces(this.editor, range) : range
   }
 }
-Word.register(false, true)
 
 class WholeWord extends Word {
   wordRegex = /\S+/
 }
-WholeWord.register(false, true)
 
 // Just include _, -
 class SmartWord extends Word {
   wordRegex = /[\w-]+/
 }
-SmartWord.register(false, true)
 
 // Just include _, -
 class Subword extends Word {
@@ -172,11 +174,11 @@ class Subword extends Word {
     return super.getRange(selection)
   }
 }
-Subword.register(false, true)
 
 // Section: Pair
 // =========================
 class Pair extends TextObject {
+  static command = false
   supportCount = true
   allowNextLine = null
   adjustInnerRange = true
@@ -244,11 +246,11 @@ class Pair extends TextObject {
     if (pairInfo) return pairInfo.targetRange
   }
 }
-Pair.register(false)
 
 // Used by DeleteSurround
-class APair extends Pair {}
-APair.register(false)
+class APair extends Pair {
+  static command = false
+}
 
 class AnyPair extends Pair {
   allowForwarding = false
@@ -260,10 +262,9 @@ class AnyPair extends Pair {
   }
 
   getRange(selection) {
-    return _.last(this.utils.sortRanges(this.getRanges(selection)))
+    return this.utils.sortRanges(this.getRanges(selection)).pop()
   }
 }
-AnyPair.register(false, true)
 
 class AnyPairAllowForwarding extends AnyPair {
   allowForwarding = true
@@ -271,8 +272,8 @@ class AnyPairAllowForwarding extends AnyPair {
   getRange(selection) {
     const ranges = this.getRanges(selection)
     const from = selection.cursor.getBufferPosition()
-    let [forwardingRanges, enclosingRanges] = _.partition(ranges, range => range.start.isGreaterThanOrEqual(from))
-    const enclosingRange = _.last(this.utils.sortRanges(enclosingRanges))
+    let [forwardingRanges, enclosingRanges] = this._.partition(ranges, range => range.start.isGreaterThanOrEqual(from))
+    const enclosingRange = this.utils.sortRanges(enclosingRanges).pop()
     forwardingRanges = this.utils.sortRanges(forwardingRanges)
 
     // When enclosingRange is exists,
@@ -285,59 +286,49 @@ class AnyPairAllowForwarding extends AnyPair {
     return forwardingRanges[0] || enclosingRange
   }
 }
-AnyPairAllowForwarding.register(false, true)
 
 class AnyQuote extends AnyPair {
   allowForwarding = true
   member = ["DoubleQuote", "SingleQuote", "BackTick"]
 
   getRange(selection) {
-    const ranges = this.getRanges(selection)
     // Pick range which end.colum is leftmost(mean, closed first)
-    if (ranges.length) return _.first(_.sortBy(ranges, r => r.end.column))
+    return this.getRanges(selection).sort((a, b) => a.end.column - b.end.column)[0]
   }
 }
-AnyQuote.register(false, true)
 
 class Quote extends Pair {
+  static command = false
   allowForwarding = true
 }
-Quote.register(false)
 
 class DoubleQuote extends Quote {
   pair = ['"', '"']
 }
-DoubleQuote.register(false, true)
 
 class SingleQuote extends Quote {
   pair = ["'", "'"]
 }
-SingleQuote.register(false, true)
 
 class BackTick extends Quote {
   pair = ["`", "`"]
 }
-BackTick.register(false, true)
 
 class CurlyBracket extends Pair {
   pair = ["{", "}"]
 }
-CurlyBracket.register(false, true, true)
 
 class SquareBracket extends Pair {
   pair = ["[", "]"]
 }
-SquareBracket.register(false, true, true)
 
 class Parenthesis extends Pair {
   pair = ["(", ")"]
 }
-Parenthesis.register(false, true, true)
 
 class AngleBracket extends Pair {
   pair = ["<", ">"]
 }
-AngleBracket.register(false, true, true)
 
 class Tag extends Pair {
   allowNextLine = true
@@ -345,15 +336,9 @@ class Tag extends Pair {
   adjustInnerRange = false
 
   getTagStartPoint(from) {
-    let tagRange
-    const {pattern} = PairFinder.TagFinder
-    this.scanForward(pattern, {from: [from.row, 0]}, ({range, stop}) => {
-      if (range.containsPoint(from, true)) {
-        tagRange = range
-        stop()
-      }
-    })
-    if (tagRange) return tagRange.start
+    const regex = PairFinder.TagFinder.pattern
+    const options = {from: [from.row, 0]}
+    return this.findInEditor("forward", regex, options, ({range}) => range.containsPoint(from, true) && range.start)
   }
 
   getFinder() {
@@ -368,7 +353,6 @@ class Tag extends Pair {
     return super.getPairInfo(this.getTagStartPoint(from) || from)
   }
 }
-Tag.register(false, true)
 
 // Section: Paragraph
 // =========================
@@ -430,7 +414,6 @@ class Paragraph extends TextObject {
     return selection.getBufferRange().union(this.getBufferRangeForRowRange(rowRange))
   }
 }
-Paragraph.register(false, true)
 
 class Indentation extends Paragraph {
   getRange(selection) {
@@ -444,11 +427,11 @@ class Indentation extends Paragraph {
     return this.getBufferRangeForRowRange(rowRange)
   }
 }
-Indentation.register(false, true)
 
 // Section: Comment
 // =========================
 class Comment extends TextObject {
+  Comment
   wise = "linewise"
 
   getRange(selection) {
@@ -459,7 +442,6 @@ class Comment extends TextObject {
     }
   }
 }
-Comment.register(false, true)
 
 class CommentOrParagraph extends TextObject {
   wise = "linewise"
@@ -472,50 +454,120 @@ class CommentOrParagraph extends TextObject {
     }
   }
 }
-CommentOrParagraph.register(false, true)
 
 // Section: Fold
 // =========================
 class Fold extends TextObject {
   wise = "linewise"
 
-  adjustRowRange(rowRange) {
-    if (this.isA()) return rowRange
-
-    let [startRow, endRow] = rowRange
-    if (this.editor.indentationForBufferRow(startRow) === this.editor.indentationForBufferRow(endRow)) {
-      endRow -= 1
-    }
-    startRow += 1
-    return [startRow, endRow]
-  }
-
-  getFoldRowRangesContainsForRow(row) {
-    return this.utils.getCodeFoldRowRangesContainesForRow(this.editor, row).reverse()
-  }
-
   getRange(selection) {
     const {row} = this.getCursorPositionForSelection(selection)
     const selectedRange = selection.getBufferRange()
-    for (const rowRange of this.getFoldRowRangesContainsForRow(row)) {
-      const range = this.getBufferRangeForRowRange(this.adjustRowRange(rowRange))
-
-      // Don't change to `if range.containsRange(selectedRange, true)`
-      // There is behavior diff when cursor is at beginning of line( column 0 ).
+    const foldRanges = this.utils.getCodeFoldRangesContainesRow(this.editor, row).reverse()
+    for (const foldRange of foldRanges) {
+      const {start, end} = this.adjustRange(foldRange)
+      const range = this.getBufferRangeForRowRange([start.row, end.row])
       if (!selectedRange.containsRange(range)) return range
     }
   }
+
+  adjustRange(range) {
+    if (this.isA()) return range
+    if (this.editor.indentationForBufferRow(range.start.row) === this.editor.indentationForBufferRow(range.end.row)) {
+      range.end.row -= 1
+    }
+    range.start.row += 1
+    return range
+  }
 }
-Fold.register(false, true)
 
-// NOTE: Function range determination is depending on fold.
-class Function extends Fold {
-  // Some language don't include closing `}` into fold.
-  scopeNamesOmittingEndRow = ["source.go", "source.elixir"]
+class Function extends TextObject {
+  wise = "linewise"
+  scopeNamesOmittingClosingBrace = ["source.go", "source.elixir"] // language doesn't include closing `}` into fold.
 
-  isGrammarNotFoldEndRow() {
+  getFunctionBodyStartRegex({scopeName}) {
+    if (scopeName === "source.python") {
+      return /:$/
+    } else if (scopeName === "source.coffee") {
+      return /-|=>$/
+    } else {
+      return /{$/
+    }
+  }
+
+  isMultiLineParameterFunctionRange(parameterRange, bodyRange, bodyStartRegex) {
+    const isBodyStartRow = row => bodyStartRegex.test(this.editor.lineTextForBufferRow(row))
+    if (isBodyStartRow(parameterRange.start.row)) return false
+    if (isBodyStartRow(parameterRange.end.row)) return parameterRange.end.row === bodyRange.start.row
+    if (isBodyStartRow(parameterRange.end.row + 1)) return parameterRange.end.row + 1 === bodyRange.start.row
+    return false
+  }
+
+  getRange(selection) {
+    const editor = this.editor
+    const cursorRow = this.getCursorPositionForSelection(selection).row
+    const bodyStartRegex = this.getFunctionBodyStartRegex(editor.getGrammar())
+    const isIncludeFunctionScopeForRow = row => this.utils.isIncludeFunctionScopeForRow(editor, row)
+
+    const functionRanges = []
+    const saveFunctionRange = ({aRange, innerRange}) => {
+      functionRanges.push({
+        aRange: this.buildARange(aRange),
+        innerRange: this.buildInnerRange(innerRange),
+      })
+    }
+
+    const foldRanges = this.utils.getCodeFoldRanges(editor)
+    while (foldRanges.length) {
+      const range = foldRanges.shift()
+      if (isIncludeFunctionScopeForRow(range.start.row)) {
+        const nextRange = foldRanges[0]
+        const nextFoldIsConnected = nextRange && nextRange.start.row <= range.end.row + 1
+        const maybeAFunctionRange = nextFoldIsConnected ? range.union(nextRange) : range
+        if (!maybeAFunctionRange.containsPoint([cursorRow, Infinity])) continue // skip to avoid heavy computation
+        if (nextFoldIsConnected && this.isMultiLineParameterFunctionRange(range, nextRange, bodyStartRegex)) {
+          const bodyRange = foldRanges.shift()
+          saveFunctionRange({aRange: range.union(bodyRange), innerRange: bodyRange})
+        } else {
+          saveFunctionRange({aRange: range, innerRange: range})
+        }
+      } else {
+        const previousRow = range.start.row - 1
+        if (previousRow < 0) continue
+        if (editor.isFoldableAtBufferRow(previousRow)) continue
+        const maybeAFunctionRange = range.union(editor.bufferRangeForBufferRow(previousRow))
+        if (!maybeAFunctionRange.containsPoint([cursorRow, Infinity])) continue // skip to avoid heavy computation
+
+        const isBodyStartOnlyRow = row =>
+          new RegExp("^\\s*" + bodyStartRegex.source).test(editor.lineTextForBufferRow(row))
+        if (isBodyStartOnlyRow(range.start.row) && isIncludeFunctionScopeForRow(previousRow)) {
+          saveFunctionRange({aRange: maybeAFunctionRange, innerRange: range})
+        }
+      }
+    }
+
+    for (const functionRange of functionRanges.reverse()) {
+      const {start, end} = this.isA() ? functionRange.aRange : functionRange.innerRange
+      const range = this.getBufferRangeForRowRange([start.row, end.row])
+      if (!selection.getBufferRange().containsRange(range)) return range
+    }
+  }
+
+  buildInnerRange(range) {
+    const indentForRow = row => this.editor.indentationForBufferRow(row)
+    const endRowTranslation = indentForRow(range.start.row) === indentForRow(range.end.row) ? -1 : 0
+    return range.translate([1, 0], [endRowTranslation, 0])
+  }
+
+  buildARange(range) {
+    // NOTE: This adjustment shoud not be necessary if language-syntax is properly defined.
+    const endRowTranslation = this.isGrammarDoesNotFoldClosingRow() ? +1 : 0
+    return range.translate([0, 0], [endRowTranslation, 0])
+  }
+
+  isGrammarDoesNotFoldClosingRow() {
     const {scopeName, packageName} = this.editor.getGrammar()
-    if (this.scopeNamesOmittingEndRow.includes(scopeName)) {
+    if (this.scopeNamesOmittingClosingBrace.includes(scopeName)) {
       return true
     } else {
       // HACK: Rust have two package `language-rust` and `atom-language-rust`
@@ -523,21 +575,7 @@ class Function extends Fold {
       return scopeName === "source.rust" && packageName === "language-rust"
     }
   }
-
-  getFoldRowRangesContainsForRow(row) {
-    return super.getFoldRowRangesContainsForRow(row).filter(rowRange => {
-      return this.utils.isIncludeFunctionScopeForRow(this.editor, rowRange[0])
-    })
-  }
-
-  adjustRowRange(rowRange) {
-    let [startRow, endRow] = super.adjustRowRange(rowRange)
-    // NOTE: This adjustment shoud not be necessary if language-syntax is properly defined.
-    if (this.isA() && this.isGrammarNotFoldEndRow()) endRow += 1
-    return [startRow, endRow]
-  }
 }
-Function.register(false, true)
 
 // Section: Other
 // =========================
@@ -563,16 +601,17 @@ class Arguments extends TextObject {
   }
 
   getRange(selection) {
+    const {splitArguments, traverseTextFromPoint, getLast} = this.utils
     let range = this.getArgumentsRangeForSelection(selection)
     const pairRangeFound = range != null
 
     range = range || this.getInstance("InnerCurrentLine").getRange(selection) // fallback
     if (!range) return
 
-    range = this.utils.trimRange(this.editor, range)
+    range = this.trimBufferRange(range)
 
     const text = this.editor.getTextInBufferRange(range)
-    const allTokens = this.utils.splitArguments(text, pairRangeFound)
+    const allTokens = splitArguments(text, pairRangeFound)
 
     const argInfos = []
     let argStart = range.start
@@ -580,7 +619,7 @@ class Arguments extends TextObject {
     // Skip starting separator
     if (allTokens.length && allTokens[0].type === "separator") {
       const token = allTokens.shift()
-      argStart = this.utils.traverseTextFromPoint(argStart, token.text)
+      argStart = traverseTextFromPoint(argStart, token.text)
     }
 
     while (allTokens.length) {
@@ -591,7 +630,7 @@ class Arguments extends TextObject {
         const argInfo = this.newArgInfo(argStart, token.text, separator)
 
         if (allTokens.length === 0 && argInfos.length) {
-          argInfo.aRange = argInfo.argRange.union(_.last(argInfos).separatorRange)
+          argInfo.aRange = argInfo.argRange.union(getLast(argInfos).separatorRange)
         }
 
         argStart = argInfo.aRange.end
@@ -609,16 +648,14 @@ class Arguments extends TextObject {
     }
   }
 }
-Arguments.register(false, true)
 
 class CurrentLine extends TextObject {
   getRange(selection) {
     const {row} = this.getCursorPositionForSelection(selection)
     const range = this.editor.bufferRangeForBufferRow(row)
-    return this.isA() ? range : this.utils.trimRange(this.editor, range)
+    return this.isA() ? range : this.trimBufferRange(range)
   }
 }
-CurrentLine.register(false, true)
 
 class Entire extends TextObject {
   wise = "linewise"
@@ -628,12 +665,11 @@ class Entire extends TextObject {
     return this.editor.buffer.getRange()
   }
 }
-Entire.register(false, true)
 
 class Empty extends TextObject {
+  static command = false
   selectOnce = true
 }
-Empty.register(false)
 
 class LatestChange extends TextObject {
   wise = null
@@ -646,23 +682,32 @@ class LatestChange extends TextObject {
     }
   }
 }
-LatestChange.register(false, true)
 
 class SearchMatchForward extends TextObject {
   backward = false
 
-  findMatch(fromPoint, pattern) {
-    if (this.mode === "visual") {
-      fromPoint = this.utils.translatePointAndClip(this.editor, fromPoint, "forward")
-    }
-    let foundRange
-    this.scanForward(pattern, {from: [fromPoint.row, 0]}, ({range, stop}) => {
-      if (range.end.isGreaterThan(fromPoint)) {
-        foundRange = range
-        stop()
+  findMatch(from, regex) {
+    if (this.backward) {
+      if (this.mode === "visual") {
+        from = this.utils.translatePointAndClip(this.editor, from, "backward")
       }
-    })
-    return {range: foundRange, whichIsHead: "end"}
+
+      const options = {from: [from.row, Infinity]}
+      return {
+        range: this.findInEditor("backward", regex, options, ({range}) => range.start.isLessThan(from) && range),
+        whichIsHead: "start",
+      }
+    } else {
+      if (this.mode === "visual") {
+        from = this.utils.translatePointAndClip(this.editor, from, "forward")
+      }
+
+      const options = {from: [from.row, 0]}
+      return {
+        range: this.findInEditor("forward", regex, options, ({range}) => range.end.isGreaterThan(from) && range),
+        whichIsHead: "end",
+      }
+    }
   }
 
   getRange(selection) {
@@ -700,26 +745,10 @@ class SearchMatchForward extends TextObject {
     }
   }
 }
-SearchMatchForward.register()
 
 class SearchMatchBackward extends SearchMatchForward {
   backward = true
-
-  findMatch(fromPoint, pattern) {
-    if (this.mode === "visual") {
-      fromPoint = this.utils.translatePointAndClip(this.editor, fromPoint, "backward")
-    }
-    let foundRange
-    this.scanBackward(pattern, {from: [fromPoint.row, Infinity]}, ({range, stop}) => {
-      if (range.start.isLessThan(fromPoint)) {
-        foundRange = range
-        stop()
-      }
-    })
-    return {range: foundRange, whichIsHead: "start"}
-  }
 }
-SearchMatchBackward.register()
 
 // [Limitation: won't fix]: Selected range is not submode aware. always characterwise.
 // So even if original selection was vL or vB, selected range by this text-object
@@ -737,7 +766,6 @@ class PreviousSelection extends TextObject {
     }
   }
 }
-PreviousSelection.register()
 
 class PersistentSelection extends TextObject {
   wise = null
@@ -750,10 +778,10 @@ class PersistentSelection extends TextObject {
     }
   }
 }
-PersistentSelection.register(false, true)
 
 // Used only by ReplaceWithRegister and PutBefore and its' children.
 class LastPastedRange extends TextObject {
+  static command = false
   wise = null
   selectOnce = true
 
@@ -765,7 +793,6 @@ class LastPastedRange extends TextObject {
     return true
   }
 }
-LastPastedRange.register(false)
 
 class VisibleArea extends TextObject {
   selectOnce = true
@@ -775,4 +802,71 @@ class VisibleArea extends TextObject {
     return this.editor.bufferRangeForScreenRange([[startRow, 0], [endRow, Infinity]])
   }
 }
-VisibleArea.register(false, true)
+
+module.exports = Object.assign(
+  {
+    TextObject,
+    Word,
+    WholeWord,
+    SmartWord,
+    Subword,
+    Pair,
+    APair,
+    AnyPair,
+    AnyPairAllowForwarding,
+    AnyQuote,
+    Quote,
+    DoubleQuote,
+    SingleQuote,
+    BackTick,
+    CurlyBracket,
+    SquareBracket,
+    Parenthesis,
+    AngleBracket,
+    Tag,
+    Paragraph,
+    Indentation,
+    Comment,
+    CommentOrParagraph,
+    Fold,
+    Function,
+    Arguments,
+    CurrentLine,
+    Entire,
+    Empty,
+    LatestChange,
+    SearchMatchForward,
+    SearchMatchBackward,
+    PreviousSelection,
+    PersistentSelection,
+    LastPastedRange,
+    VisibleArea,
+  },
+  Word.deriveClass(true),
+  WholeWord.deriveClass(true),
+  SmartWord.deriveClass(true),
+  Subword.deriveClass(true),
+  AnyPair.deriveClass(true),
+  AnyPairAllowForwarding.deriveClass(true),
+  AnyQuote.deriveClass(true),
+  DoubleQuote.deriveClass(true),
+  SingleQuote.deriveClass(true),
+  BackTick.deriveClass(true),
+  CurlyBracket.deriveClass(true, true),
+  SquareBracket.deriveClass(true, true),
+  Parenthesis.deriveClass(true, true),
+  AngleBracket.deriveClass(true, true),
+  Tag.deriveClass(true),
+  Paragraph.deriveClass(true),
+  Indentation.deriveClass(true),
+  Comment.deriveClass(true),
+  CommentOrParagraph.deriveClass(true),
+  Fold.deriveClass(true),
+  Function.deriveClass(true),
+  Arguments.deriveClass(true),
+  CurrentLine.deriveClass(true),
+  Entire.deriveClass(true),
+  LatestChange.deriveClass(true),
+  PersistentSelection.deriveClass(true),
+  VisibleArea.deriveClass(true)
+)

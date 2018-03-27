@@ -7,6 +7,8 @@ vim-mode improved.
 - [Installation](#installation)
 - [Some Features](#some-features)
 - [Important](#important)
+    - [You must disable vim-mode to use vim-mode-plus](#you-must-disable-vim-mode-to-use-vim-mode-plus)
+    - [From v1.9.0 CoffeeScript based vim-mode-plus extension is no longer supported](#from-v190-coffeescript-based-vim-mode-plus-extension-is-no-longer-supported)
 - [Thanks](#thanks)
 - [Issue report](#issue-report)
 - [Whats this?](#whats-this)
@@ -43,12 +45,19 @@ These features are very powerful, especially for the power user. Read the follow
 
 # Important
 
-- **vim-mode-plus is replacement for vim-mode, you must disable vim-mode first to use vim-mode-plus**.
+### You must disable vim-mode to use vim-mode-plus
+
 - You don't need the following packages since they're built-in to vim-mode-plus:
   - [vim-surround](https://atom.io/packages/vim-surround): No default keymap. See FAQ section in this doc.
   - [vim-mode-visual-block](https://atom.io/packages/vim-mode-visual-block)
 - Scope for CSS selector and keymap is different from vim-mode, **not compatible**.
 - Internal code base is very different. Thus, issues and PRs should be directly sent to vim-mode-plus. **DON'T report vim-mode-plus's issues or PRs to the official vim-mode.**
+
+### From v1.9.0 CoffeeScript based vim-mode-plus extension is no longer supported
+
+- Now all operations are defined as ES6 class which is NOT extend-able by CoffeeScript.
+  - If you have vmp custom operations in your `init.coffee`, those are no longer working.
+  - See [CHANGELOG](https://github.com/t9md/atom-vim-mode-plus/blob/master/CHANGELOG.md) and [Wiki](https://github.com/t9md/atom-vim-mode-plus/wiki/ExtendVimModePlusInInitFile) for detail.
 
 # Thanks
 
@@ -124,9 +133,9 @@ If you want to directly edit `config.cson`, here it is.
   ]
 ```
 
-### Flash effect not appear on cursor-line, occurrence-marker is not displayed on cursor-line too.
+### Flash effect does not appear on cursor-line, occurrence-marker is not displayed on cursor-line either.
 
-This is because of syntax-theme you are using.
+This is because of the syntax-theme you are using.
 See [this tips on Wiki](https://github.com/t9md/atom-vim-mode-plus/wiki/TIPS#flash-effect-not-appear-on-cursor-line-occurrence-marker-is-not-displayed-on-cursor-line-too).
 
 ### Surround not work
