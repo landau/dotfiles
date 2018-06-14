@@ -11,6 +11,8 @@
 --type-set=hbs=.hbs
 
 
+--ignore-dir=.nyc_output
+--ignore-dir=coverage
 --ignore-dir=target
 --ignore-dir=log
 --ignore-dir=tmp
