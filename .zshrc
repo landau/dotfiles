@@ -461,7 +461,8 @@ alias dynamo="cd /Users/tlandau/Downloads/dynamodb_local_latest && java -Djava.l
 [ -f /Users/tlandau/.travis/travis.sh ] && source /Users/tlandau/.travis/travis.sh
 
 function unwatch_repo {
-  curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/$2/subscription
+  #curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/$2/subscription
+  curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/subscription
 }
 
 function giphy {
