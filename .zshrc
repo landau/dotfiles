@@ -20,63 +20,12 @@ export HISTSIZE='32768';
 export HISTFILESIZE="${HISTSIZE}";
 export SAVEHIST="${HISTSIZE}";
 
-. /usr/local/lib/python2.7/site-packages/powerline/bindings/zsh/powerline.zsh
-
 # Set name of the theme to load. Look in ~/.oh-my-zsh/themes/
-#ZSH_THEME="minimal"
-#ZSH_THEME="agnoster"
-ZSH_THEME="powerlevel9k/powerlevel9k"
-#POWERLEVEL9K_MODE="awesome-patched"
-POWERLEVEL9K_MODE='awesome-fontconfig'
-
-POWERLEVEL9K_STATUS_VERBOSE=false
-POWERLEVEL9K_STATUS_ERROR_BACKGROUND="black"
-POWERLEVEL9K_STATUS_ERROR_FOREGROUND="red"
-POWERLEVEL9K_STATUS_OK_BACKGROUND="black"
-POWERLEVEL9K_STATUS_OK_FOREGROUND="green"
-
-# Disable dir/git icons
-POWERLEVEL9K_HOME_ICON=''
-POWERLEVEL9K_HOME_SUB_ICON=''
-POWERLEVEL9K_FOLDER_ICON=''
-
-POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status time)
-
-POWERLEVEL9K_SHORTEN_DIR_LENGTH=2
-POWERLEVEL9K_PROMPT_ON_NEWLINE=true
-
-POWERLEVEL9K_DIR_HOME_BACKGROUND="black"
-POWERLEVEL9K_DIR_HOME_FOREGROUND="249"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_BACKGROUND="black"
-POWERLEVEL9K_DIR_HOME_SUBFOLDER_FOREGROUND="249"
-#POWERLEVEL9K_DIR_DEFAULT_BACKGROUND="black"
-#POWERLEVEL9K_DIR_DEFAULT_FOREGROUND="249"
-
-#POWERLEVEL9K_NVM_BACKGROUND="black"
-#POWERLEVEL9K_NVM_FOREGROUND="249"
-#POWERLEVEL9K_NVM_VISUAL_IDENTIFIER_COLOR="green"
-
-POWERLEVEL9K_VCS_GIT_ICON=''
-POWERLEVEL9l_VCS_GIT_GITHUB_ICON=''
-POWERLEVEL9l_VCS_GITHUB_ICON=''
-POWERLEVEL9K_HIDE_BRANCH_ICON=true
-POWERLEVEL9K_VCS_MODIFIED_BACKGROUND='red'
-POWERLEVEL9K_VCS_UNTRACKED_BACKGROUND='yellow'
-POWERLEVEL9K_VCS_UNTRACKED_ICON='?'
-#POWERLEVEL9K_VCS_STAGED_ICON='\u00b1'
-#POWERLEVEL9K_VCS_UNTRACKED_ICON='\u25CF'
-#POWERLEVEL9K_VCS_UNSTAGED_ICON='\u00b1'
-#POWERLEVEL9K_VCS_INCOMING_CHANGES_ICON='\u2193'
-#POWERLEVEL9K_VCS_OUTGOING_CHANGES_ICON='\u2191'
-POWERLEVEL9K_VCS_HIDE_TAGS=true
-
-POWERLEVEL9K_TIME_FORMAT="%D{%H:%M}"
+ZSH_THEME="minimal"
 
 source ~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh 
 source ~/.work
 source $ZSH/oh-my-zsh.sh
-source ~/.fonts/*.sh
 
 #source ~/.nvm/nvm.sh
 
@@ -206,13 +155,22 @@ function tojson {
   jq -Mr $1
 }
 
-function versions {
+function npm_versions {
   npm view $1 versions
 }
 
 function setversion {
-  json=$(node -p "var j = require('./package.json'); j.version = '$1'; JSON.stringify(j, null, '  ');")
-  echo $json > package.json
+  file=./package.json
+  if [ -f "$file" ]; then
+    json=$(jq ".version=\"$1\"" $file)
+    echo $json > $file
+  fi
+
+  #file=./package-lock.json
+  #if [ -f "$file" ]; then
+  #  json=$(jq '.version="$1"' $file)
+  #  echo $json > $file
+  #fi
 }
 
 function setversionmaj {
@@ -460,9 +418,35 @@ alias dynamo="cd /Users/tlandau/Downloads/dynamodb_local_latest && java -Djava.l
 # added by travis gem
 [ -f /Users/tlandau/.travis/travis.sh ] && source /Users/tlandau/.travis/travis.sh
 
+### GITHUB
 function unwatch_repo {
-  #curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/$2/subscription
+  echo "Unwatching repo $1..."
   curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/subscription
+}
+
+function deleteBranch {
+  echo "Deleting branch $2 for $1"
+  orgAndRepo=$1
+  ref=$2
+  curl -fsXDELETE -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$orgAndRepo/git/refs/heads/$ref
+}
+
+function merge_pr {
+  echo "Merging pr @ $1"
+  urlPath=$(echo $1 | cut -d "/" -f4- | sed "s/pull/pulls/")
+
+  res=$(curl -sfXPUT -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath/merge)
+
+  if [ 0 -ne $? ]; then
+    echo "Failed to merge pull request" 
+    echo $res
+    return 1
+  fi
+
+  echo $urlPath | cut -d "/" -f -2
+  orgAndRepo=$(echo $urlPath | cut -d "/" -f -2)
+  ref=$(curl -sf -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath | jq -Mr ".head.ref")
+  deleteBranch $orgAndRepo $ref
 }
 
 function giphy {
