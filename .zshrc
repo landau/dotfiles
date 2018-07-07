@@ -443,7 +443,6 @@ function merge_pr {
     return 1
   fi
 
-  echo $urlPath | cut -d "/" -f -2
   orgAndRepo=$(echo $urlPath | cut -d "/" -f -2)
   ref=$(curl -sf -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath | jq -Mr ".head.ref")
   deleteBranch $orgAndRepo $ref
