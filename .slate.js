@@ -99,6 +99,11 @@ var moveMidCodeOp = moveMidOp.dup({
   x: '(screenSizeX*0.10)'
 });
 
+var moveMidLeftCodeOp = moveMidOp.dup({
+  width: '(screenSizeX/1.25)',
+  x: '(0)'
+});
+
 var moveTwitterNextToBrowser = S.op('corner', {
   screen: monMid,
   direction: 'top-right',
@@ -206,12 +211,6 @@ var rightLayoutFull = {
 var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
-  Adium: {
-    operations: [moveLapAdiumOp],
-    'ignore-fail': true,
-    'title-order': ['Contacts'], // important for order of operations
-    'repeat-last': true
-  },
   LimeChat: {
     operations: [moveLapHipChatOp],
     'ignore-fail': true,
@@ -232,23 +231,13 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Atom': {
-    operations: [moveMidCodeOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   'Code': {
-    operations: [moveMidCodeOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Eclipse': {
-    operations: [moveMidOp],
+    operations: [moveMidLeftCodeOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   'IntelliJ IDEA': {
-    operations: [moveMidOp],
+    operations: [moveMidLeftCodeOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -267,34 +256,13 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Twitter': {
-    operations: [moveTwitterNextToBrowser],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Wunderlist': {
-    operations: [moveWunderNextToBrowser],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   Messages: {
     operations: [moveLapMessagesOp],
     'ignore-fail': true,
     'repeat-last': true
   },
-  HipChat: {
-    operations: [moveLapSlackOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   Slack: {
     operations: [moveLapSlackOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Amazon Music': {
-    operations: [moveMidOp],
-    'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -325,12 +293,6 @@ var twoMonLayout = S.layout('twoMon', {
 var oneMonLayout = S.layout('oneMon', {
   '_before_': {},
   '_after_': {},
-  Adium: {
-    operations: [moveLapAdiumOp],
-    'ignore-fail': true,
-    'title-order': ['Contacts'], // important for order of operations
-    'repeat-last': true
-  },
   LimeChat: {
     operations: [moveLapHipChatOp],
     'ignore-fail': true,
@@ -351,17 +313,7 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  'Atom': {
-    operations: [moveMidOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   'Code': {
-    operations: [moveMidOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'Eclipse': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -387,11 +339,6 @@ var oneMonLayout = S.layout('oneMon', {
     operations: [moveLapOp],
     'ignore-fail': true,
     'title-order': [], // TODO move other google windows to monRight
-    'repeat-last': true
-  },
-  'Amazon Music': {
-    operations: [moveMidOp],
-    'ignore-fail': true,
     'repeat-last': true
   },
   'Spotify': {
@@ -420,16 +367,11 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
-  HipChat: {
-    operations: [moveLapSlackOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   Slack: {
     operations: [moveLapSlackOp],
     'ignore-fail': true,
     'repeat-last': true
-  },
+  }
 });
 
 var twoMonOp = S.op('layout', { name: twoMonLayout });
