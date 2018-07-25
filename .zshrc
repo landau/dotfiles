@@ -159,50 +159,72 @@ function npm_versions {
   npm view $1 versions
 }
 
-function setversion {
-  file=./package.json
-  if [ -f "$file" ]; then
-    json=$(jq ".version=\"$1\"" $file)
-    echo $json > $file
+function dep_to_changelog {
+  d=$(date +%F | tr '-' '.')
+  ver=$(getversion $1)
+  line=${2:=2}
+  text=$(git --no-pager log -$line --oneline | tail -1 | cut -d ' ' -f 2-)
+  echo -e "$d, $ver\n* $text\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
+}
+
+function changelog_to_version {
+  version=$1
+  git ci -m 'Update CHANGELOG' -- CHANGELOG.md
+  npm version $version 
+  git pm --follow-tags
+}
+
+function getversion {
+  semver=$1
+
+  if [ "major" = "$semver" ]; then
+    echo $(getversionmaj)
+    return
   fi
 
-  #file=./package-lock.json
-  #if [ -f "$file" ]; then
-  #  json=$(jq '.version="$1"' $file)
-  #  echo $json > $file
-  #fi
+  if [ "minor" = "$semver" ]; then
+    echo $(getversionminor)
+    return
+  fi
+
+  if [ "patch" = "$semver" ]; then
+    echo $(getversionpatch)
+    return
+  fi
+
+  echo "No such semver: $semver"
+  exit 1
 }
 
-function setversionmaj {
+function inc {
+  n1=$1
+  n2="1"
+  echo $(($n1+$n2))
+}
+
+function getversionmaj {
   ver=$(jq -r '.version' package.json)
-
   maj=$(echo $ver | cut -d '.' -f 1)
-  maj=$(echo $maj + 1 | bc)
-  next="$maj.0.0"
-
-  setversion $next
+  maj=$(inc $maj)
+  echo "$maj.0.0"
 }
 
-function setversionminor {
+function getversionminor {
   ver=$(jq -r '.version' package.json)
 
   minor=$(echo $ver | cut -d '.' -f 2)
-  minor=$(echo $minor + 1 | bc)
+  minor=$(inc $minor)
   ver=$(echo $ver | cut -d '.' -f 1)
-  next="$ver.$minor.0"
-
-  setversion $next
+  echo "$ver.$minor.0"
 }
 
-function setversionpatch {
+function getversionpatch {
   ver=$(jq -r '.version' package.json)
 
   patch=$(echo $ver | cut -d '.' -f 3)
-  patch=$(echo $patch + 1 | bc)
+  patch=$(inc $patch)
   ver=$(echo $ver | cut -d '.' -f 1-2)
-  next="$ver.$patch"
-
-  setversion $next
+  echo "$ver.$patch"
 }
 
 function setdep {
@@ -424,6 +446,7 @@ function unwatch_repo {
   curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/subscription
 }
 
+
 function deleteBranch {
   echo "Deleting branch $2 for $1"
   orgAndRepo=$1
@@ -432,9 +455,20 @@ function deleteBranch {
 }
 
 function merge_pr {
-  echo "Merging pr @ $1"
   urlPath=$(echo $1 | cut -d "/" -f4- | sed "s/pull/pulls/")
 
+  if [ -z "$2" ]; then
+    echo "Approving PR @ $1"
+    res=$(curl -sfXPOST -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath/reviews -d '{"event":"APPROVE"}')
+
+    if [ 0 -ne $? ]; then
+      echo "Failed to approve pull request" 
+      echo $res
+      return 1
+    fi
+  fi
+
+  echo "Merging PR @ $1"
   res=$(curl -sfXPUT -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath/merge)
 
   if [ 0 -ne $? ]; then

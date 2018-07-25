@@ -273,7 +273,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   iTunes: {
-    operations: [moveMidOp],
+    operations: [moveLapOp],
     'title-order': ['Equalizer'], // important for order of operations
     'ignore-fail': true,
     'repeat-last': true
@@ -348,7 +348,7 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   iTunes: {
-    operations: [moveMidOp],
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },
