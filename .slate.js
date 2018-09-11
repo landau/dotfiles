@@ -101,7 +101,7 @@ var moveMidCodeOp = moveMidOp.dup({
 
 var moveMidLeftCodeOp = moveMidOp.dup({
   width: '(screenSizeX/1.25)',
-  x: '(0)'
+  x: '(screenSizeX*.075)'
 });
 
 var moveTwitterNextToBrowser = S.op('corner', {
