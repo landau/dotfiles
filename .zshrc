@@ -101,7 +101,7 @@ alias pgres='postgres -D /usr/local/var/postgres'
 alias pp='underscore print --color'
 alias tree="tree -I 'node_modules'"
 alias yt='youtube-dl -o "%(title)s.%(ext)s"'
-alias ytmp3='youtube-dl --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
+alias ytmp3='youtube-dl -f mp4  --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
 alias zshconfig="vim ~/.zshrc"
 alias openchrome='open -a "Google Chrome"'
 alias open-gh-socket='ssh -M git@github.com'
@@ -619,4 +619,19 @@ function imgcat {
   fi
   
   exit 0
+}
+
+# psql
+function pg_run {
+ 	psql -h localhost -p 5432 -U postgres -c "$1"
+}
+
+function pg_terminate {
+	statement="SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = \"$1\" AND pid <> pg_backend_pid();"
+ 	pg_run $statement
+}
+
+function pg_create_user {
+	statement="CREATE ROLE $USERNAME WITH SUPERUSER LOGIN;"
+	pg_run $statement
 }
