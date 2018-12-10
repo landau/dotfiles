@@ -4,6 +4,8 @@ export PATH=/usr/local/bin:$PATH
 #export PATH=$PATH:/Users/tlandau/oss/clojurescript/bin
 export PATH=$PATH:/usr/local/bin
 export PATH=/Users/tlandau/dev/mongo3.4.2/bin:$PATH
+export PATH=/Users/tlandau/dev/kafka/bin:$PATH
+export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
 export EDITOR=vim
 #export LEIN_FAST_TRAMPOLINE=y
 export CLICOLOR=1
@@ -84,6 +86,7 @@ function weather {
   curl http://wttr.in/$1
 }
 
+alias git="hub"
 alias brw="brew"
 alias cljs='cd ~/clojurescript && ./script/noderepljs'
 alias cljsbuild="lein trampoline cljsbuild $@"
@@ -164,7 +167,7 @@ function dep_to_changelog {
   ver=$(getversion $1)
   line=${2:=2}
   text=$(git --no-pager log -$line --oneline | tail -1 | cut -d ' ' -f 2-)
-  echo -e "$d, $ver\n* $text\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
+  echo -e "  $d, $ver\n\n- $text\n\n$(cat CHANGELOG.md)" > CHANGELOG.md
 }
 
 function changelog_to_version {
@@ -633,5 +636,10 @@ function pg_terminate {
 
 function pg_create_user {
 	statement="CREATE ROLE $USERNAME WITH SUPERUSER LOGIN;"
+	pg_run $statement
+}
+
+function pg_dc_local {
+  statement="SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE pg_stat_activity.datname = '$1' AND pid <> pg_backend_pid();" 
 	pg_run $statement
 }
