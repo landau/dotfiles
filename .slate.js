@@ -100,8 +100,8 @@ var moveMidCodeOp = moveMidOp.dup({
 });
 
 var moveMidLeftCodeOp = moveMidOp.dup({
-  width: '(screenSizeX/1.25)',
-  x: '(screenSizeX*.075)'
+  width: '(screenSizeX/1.2)',
+  x: '(screenSizeX*.07)'
 });
 
 var moveTwitterNextToBrowser = S.op('corner', {
@@ -268,7 +268,11 @@ var twoMonLayout = S.layout('twoMon', {
   },
   'Spotify': {
     operations: [moveLapOp],
-    'title-order': ['Equalizer'], // important for order of operations
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Sonos': {
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -343,7 +347,11 @@ var oneMonLayout = S.layout('oneMon', {
   },
   'Spotify': {
     operations: [moveLapOp],
-    'title-order': ['Equalizer'], // important for order of operations
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Sonos': {
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },

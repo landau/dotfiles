@@ -9,6 +9,8 @@
 --type-set=sh=.sh
 --type-set=html=.html
 --type-set=hbs=.hbs
+--type-set=ts=.ts
+--type-set=graphql=.graphql
 
 
 --ignore-dir=.nyc_output
