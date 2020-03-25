@@ -100,8 +100,8 @@ var moveMidCodeOp = moveMidOp.dup({
 });
 
 var moveMidLeftCodeOp = moveMidOp.dup({
-  width: '(screenSizeX/1.2)',
-  x: '(screenSizeX*.07)'
+  width: '(screenSizeX/1.15)',
+  x: '(screenSizeX*.065)'
 });
 
 var moveTwitterNextToBrowser = S.op('corner', {
