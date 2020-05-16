@@ -22,8 +22,16 @@ unset file;
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
 
+# History
+# Increase Bash history size. Allow 64³ entries; the default is 500.
+export HISTSIZE='262144';
+export HISTFILESIZE="${HISTSIZE}";
+# Omit duplicates and commands that begin with a space from history.
+export HISTCONTROL='ignoreboth:erasedups';
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend;
+# Save and reload the history after each command finishes
+#export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
