@@ -11,6 +11,7 @@
 --type-set=hbs=.hbs
 --type-set=ts=.ts
 --type-set=graphql=.graphql
+--type-set=scss=.scss
 
 
 --ignore-dir=.nyc_output
