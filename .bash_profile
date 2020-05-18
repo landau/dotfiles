@@ -8,6 +8,9 @@ export PATH=/Users/tlandau/dev/kafka/bin:$PATH
 export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
 export CLICOLOR=1
 export TERM=xterm-256color
+# TODO: move this to node.sh or something
+# Add default node to path
+export PATH=~/.nvm/versions/node/v14.2.0/bin:$PATH
 
 ulimit -n 2560
 
@@ -18,6 +21,16 @@ for file in ~/.{bash_prompt,exports,aliases,functions,work,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done
 unset file;
+
+# Load files from work dir
+# This dir is uncommited as it may contain unsafe values ¯\_(ツ)_/¯
+WORK_DIR=~/.work
+if [[ -d "${WORK_DIR}" ]]; then
+  for file in `ls ${WORK_DIR}`; do
+    file="${WORK_DIR}/${file}"
+    [ -r "$file" ] && [ -f "$file" ] && source "$file";
+  done
+fi
 
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob;
@@ -31,7 +44,7 @@ export HISTCONTROL='ignoreboth:erasedups';
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend;
 # Save and reload the history after each command finishes
-#export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+# export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
@@ -64,9 +77,8 @@ fi;
 complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal" killall;
 
 
-# TODO: find a good home for these
+# TODO: find a good home for the following items
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm

@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+# Start Screensaver
+function screen_saver {
+  osascript -e 'tell application id "com.apple.ScreenSaver.Engine" to launch'
+}
+
+# Sleep!
+function slp {
+  osascript -e 'tell application "Finder" to sleep'
+}
+
 # Create a new directory and enter it
 function mkd() {
 	mkdir -p "$@" && cd "$_";
@@ -124,5 +134,187 @@ function o() {
 # `less` with options to preserve color and line numbers, unless the output is
 # small enough for one screen.
 function tre() {
-	tree -aC -I '.git|node_modules|bower_components' --dirsfirst "$@" | less -FRNX;
+	tree -aC -I '.git|node_modules' --dirsfirst "$@" | less -FRNX;
+}
+
+
+# --- Camera 
+function opencam {
+  cd /Volumes/Untitled/DCIM/100OLYMP
+  open *.JPG
+}
+
+function copycam {
+  DIR=~/Photography/$(date "+%b\ %e,\ %Y") 
+  echo mkdir -p $DIR
+  mkdir -p $DIR
+
+  cd /Volumes/Untitled/DCIM/100OLYMP
+
+  for p in $(find . -name "*.JPG" | cut -c 3- | cut -c -8); do 
+   #echo cp $p.ORF $DIR; 
+   cp $p.ORF $DIR; 
+  done
+
+  cd $DIR
+  open .
+}
+
+function purgecam {
+  rm -v /Volumes/Untitled/DCIM/100OLYMP/*
+}
+
+function togif {
+	palette="/tmp/palette.png"
+  scale=$3
+  scale=${scale:=320}
+
+	filters="fps=15,scale=$scale:-1:flags=lanczos"
+
+	ffmpeg -v warning -i $1 -vf "$filters,palettegen" -y $palette
+	ffmpeg -v warning -i $1 -i $palette -lavfi "$filters [x]; [x][1:v] paletteuse" -y $2
+}
+
+# -- Java
+export JAVA_HOME=$(/usr/libexec/java_home)
+TOMCAT_DIR=/Library/Tomcat/bin
+alias tomstart=$TOMCAT_DIR/startup.sh
+alias tomstop=$TOMCAT_DIR/shutdown.sh
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
+
+
+OATH_KEY_HOME="$HOME/Documents"
+
+function oauth {
+  if [ -f $OATH_KEY_HOME/$1 ]
+    then
+      CODE=$(oathtool --totp -b -d 6 `cat $OATH_KEY_HOME/$1`)
+      if [ `uname` = 'Darwin' ]
+        then
+          echo -n $CODE | pbcopy # Comment out if you don't want the
+                                 # OTP to be automatically copied to
+                                 # the clipboard on Mac OS X
+      fi
+      echo "$CODE"
+  else
+    echo "No key specified, or key not found."
+    echo "Available keys:"
+    ls $OATH_KEY_HOME
+  fi
+}
+
+
+function setkeyrepeat {
+  # normal is 15 (225 ms)
+  defaults write -g InitialKeyRepeat -int 10 
+  #normal is 2 (30 ms)
+  defaults write -g KeyRepeat -int 1 
+}
+
+function ssh-multi() {
+	#HOSTS=${HOSTS:=$*}
+	setopt shwordsplit
+	HOSTS=${HOSTS:=$*}
+
+	if [ -z "$HOSTS" ]; then
+		echo -n "You need to supply ips"
+		return # read HOSTS
+	fi
+
+	hosts=(${=HOSTS})
+	target="ssh-multi $hosts[1]"
+	session_name=$(uuidgen)
+
+	tmux new -d -s "$session_name"
+	tmux new-window -n "$target" ssh $hosts[1]
+
+	echo $hosts[2,-1]
+
+	for i in $hosts[2,-1]; do
+		tmux split-window -t :"$target" -h  "ssh -oStrictHostKeyChecking=no -o ConnectTimeout=2 -o ConnectionAttempts=2 $i"
+		tmux select-layout -t :"$target" tiled > /dev/null
+	done
+
+	#tmux select-pane -t 0
+	tmux set-window-option -t :"$target"  synchronize-panes on > /dev/null
+	tmux attach-session -t "$session_name"
+}
+
+mssh() {
+	tmux rename-window ${1};
+	active_window=`tmux list-windows | grep active | cut -d: -f1`;
+	pane=`tmux list-panes -t ${active_window} | grep active | cut -d: -f1`;
+	tmux select-layout tiled;
+	tmux setw synchronize-panes on;
+	echo "Current window.pane is ${active_window}.${pane}";
+
+	machines="";
+	first_machine="";
+
+	setopt shwordsplit
+	HOSTS=$*
+	hosts=(${=HOSTS})
+
+	for connHost in $hosts; do
+		echo "* Adding host '${connHost}'";
+		if (test -z "$first_machine")
+		then
+			first_machine="$connHost";
+		else
+			machines="$machines $connHost";
+		fi
+	done
+
+	echo $first_machine
+	echo $machines
+	for m in $machines
+	do
+		#tmux new-window -n "$m" "tmux join-pane -d -t ${active_window}.${pane} ; tmux select-layout -t ${active_window} tiled; ssh -oStrictHostKeyChecking=no $m";	
+		tmux new-window -n "$m" "tmux join-pane -d -t ${active_window}.${pane} ; tmux select-layout -t ${active_window} tiled; ssh -oStrictHostKeyChecking=no $m";	
+	done;
+
+	ssh -oStrictHostKeyChecking=no $first_machine;
+}
+
+# Print the RPS for of stdout
+# Useful when tailing logs
+function speed {
+  pv --line-mode --average-rate >/dev/null
+}
+
+# Ensure yaml
+function validateyaml {
+  name=$1
+  if [ "$#" -eq 0 ]; then
+    name="*"
+  fi
+
+  find . -name $name".yaml" -print -exec ruby -e "require 'yaml'; YAML.parse(File.open('{}'))" \;
+}
+
+# Print httpcodes using Node
+function httpcodes {
+  cmd="require('http').STATUS_CODES"
+  if [ "$#" -eq "0" ]; then
+    node -p $cmd
+  else
+    node -p $cmd | grep $1
+  fi
+}
+
+# Short hand for cloning repos
+function gclone {
+  git clone gitgithub.com:$1/$2.git
+}
+
+# Shortcut for POSTing JSON
+function jsonpost {
+  curl -sX POST -H "Content-Type: application/json" -d $1 $2
+}
+
+# Shortcut for PUTing JSON
+function jsonput {
+  curl -sX PUT -H "Content-Type: application/json" -d $1 $2
 }

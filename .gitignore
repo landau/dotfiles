@@ -15,3 +15,7 @@ Thumbs.db
 
 # Node
 node_modules
+
+.work/*
+!.work/.gitkeep
+!.work/

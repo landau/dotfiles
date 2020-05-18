@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Not sure if these work
+function create_pr {
+	title=$1
+	body=$2
+	head=$3
+	base=$4
+  curl -sfXPOST -HAuthorization:"bearer ${GHUB_TOKEN}" \
+    https://api.github.com/repos/cnerepo/backstage-frontend/pulls  \
+    -d "{ \"title\":\"${title}\", \"body\": \"${body}\", \"head\": \"${head}\", \"base\": \"${base}\" }"
+	
+  if [ 0 -ne $? ]; then
+    echo "Failed to create PR"
+  fi
+}
+
+function add_comment {
+	$COMMENTS_URL=$1
+	$body=$2
+	$commit_id=$3
+	curl -sfXPOST -HAuthorization:"bearer ${GHUB_TOKEN}" $COMMENTS_URL \
+		-d "{ \"body\": \"${body}\", \"commit_id\": \"${commit_id}\" }"
+}
+
+function unwatch_repo {
+  echo "Unwatching repo $1..."
+  curl -XDELETE -s  -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$1/subscription
+}
+
+
+function deleteBranch {
+  echo "Deleting branch $2 for $1"
+  orgAndRepo=$1
+  ref=$2
+  curl -fsXDELETE -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$orgAndRepo/git/refs/heads/$ref
+}
+
+function merge_pr {
+  urlPath=$(echo $1 | cut -d "/" -f4- | sed "s/pull/pulls/")
+
+  if [ -z "$2" ]; then
+    echo "Approving PR @ $1"
+    res=$(curl -sfXPOST -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath/reviews -d '{"event":"APPROVE"}')
+
+    if [ 0 -ne $? ]; then
+      echo "Failed to approve pull request" 
+      echo $res
+      return 1
+    fi
+  fi
+
+  echo "Merging PR @ $1"
+  res=$(curl -sfXPUT -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath/merge)
+
+  if [ 0 -ne $? ]; then
+    echo "Failed to merge pull request" 
+    echo $res
+    return 1
+  fi
+
+  orgAndRepo=$(echo $urlPath | cut -d "/" -f -2)
+  ref=$(curl -sf -HAuthorization:"bearer $GHUB_TOKEN" https://api.github.com/repos/$urlPath | jq -Mr ".head.ref")
+  deleteBranch $orgAndRepo $ref
+}

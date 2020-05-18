@@ -88,3 +88,26 @@ alias reload="exec ${SHELL} -l"
 
 # Print each PATH entry on a separate line
 alias path='echo -e ${PATH//:/\\n}'
+
+# Git shortcuts
+alias git="hub"
+alias grb='git rebase -i head~'
+
+# Node and NPM shortcuts
+alias npmr="npm run"
+alias npmre='rm package-lock.json && rm -rf node_modules && npm i'
+
+# youtube-dl bits
+alias yt='youtube-dl -o "%(title)s.%(ext)s"'
+alias ytmp3='youtube-dl -f mp4 --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
+alias ytm4a='youtube-dl -f mp4 --audio-format=m4a -x -o "%(title)s.%(ext)s"'
+
+# Make it easier to edit .bash_profile
+alias bashconfig="vim ~/.bash_profile"
+
+# Shorcut for opening specific applications
+alias openchrome='open -a "Google Chrome"'
+
+alias open-gh-socket='ssh -M git@github.com'
+alias pp='underscore print --color'
+# alias tree="tree -I 'node_modules'" # See `tre` func in .functions
