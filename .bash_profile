@@ -3,14 +3,15 @@
 export PATH="$HOME/bin:$PATH";
 export PATH=/usr/local/bin:$PATH
 export PATH=$PATH:/usr/local/bin
-export PATH=/Users/tlandau/dev/mongo3.4.2/bin:$PATH
-export PATH=/Users/tlandau/dev/kafka/bin:$PATH
-export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
+export PATH=/Users/tlandau/dev/mongodb-4.2.5/bin:$PATH
+#export PATH=/Users/tlandau/dev/kafka/bin:$PATH
+#export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
 export CLICOLOR=1
 export TERM=xterm-256color
-# TODO: move this to node.sh or something
 # Add default node to path
 export PATH=~/.nvm/versions/node/v14.2.0/bin:$PATH
+# Add RVM to path
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
 ulimit -n 2560
 
@@ -82,3 +83,7 @@ complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes Syste
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash # fzf completion and key bindings
