@@ -10,8 +10,8 @@ export CLICOLOR=1
 export TERM=xterm-256color
 # Add default node to path
 export PATH=~/.nvm/versions/node/v14.2.0/bin:$PATH
-# Add RVM to path
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"
 
 ulimit -n 2560
 
