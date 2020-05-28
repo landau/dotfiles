@@ -27,7 +27,7 @@ unset file;
 # This dir is uncommited as it may contain unsafe values ¯\_(ツ)_/¯
 WORK_DIR=~/.work
 if [[ -d "${WORK_DIR}" ]]; then
-  for file in `ls ${WORK_DIR}`; do
+  for file in $(ls ${WORK_DIR}); do
     file="${WORK_DIR}/${file}"
     [ -r "$file" ] && [ -f "$file" ] && source "$file";
   done
@@ -75,15 +75,22 @@ fi;
 #complete -W "NSGlobalDomain" defaults;
 
 # Add `killall` tab completion for common apps
-complete -o "nospace" -W "Contacts Calendar Dock Finder Mail Safari iTunes SystemUIServer Terminal" killall;
-
+complete -o "nospace" -W "Dock Finder iTunes SystemUIServer Terminal" killall;
 
 # TODO: find a good home for the following items
 [[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
 
+# This loads nvm
 export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use  # This loads nvm
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" --no-use 
 
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
+# Load RVM into a shell session *as a function*
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" 
 
-[ -f ~/.fzf.bash ] && source ~/.fzf.bash # fzf completion and key bindings
+# fzf completion and key bindings
+[ -f ~/.fzf.bash ] && source ~/.fzf.bash 
+
+# Git completion
+if [ -f ~/.git-completion ]; then
+  source ~/.git-completion
+fi
