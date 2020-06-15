@@ -410,11 +410,11 @@ S.bnda({
   '3:ctrl;cmd': moveToRight,
 
   // Resize bindings
-  '6:ctrl;alt': resizeMidHalf,
-  '0:ctrl;alt': resizeHalfRight,
-  '7:ctrl;alt': resizeHalfLeft,
-  '8:ctrl;alt': resizeHalfBot,
-  '9:ctrl;alt': resizeHalfTop,
+  'left:ctrl;alt': resizeHalfLeft,
+  'right:ctrl;alt': resizeHalfRight,
+  'down:ctrl;alt': resizeHalfBot,
+  'up:ctrl;alt': resizeHalfTop,
+  '0:ctrl;alt': resizeMidHalf,
   '-:ctrl;alt': resizeFull,
 
   // Resize Bindings

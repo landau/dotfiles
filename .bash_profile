@@ -2,14 +2,13 @@
 
 export PATH="$HOME/bin:$PATH";
 export PATH=/usr/local/bin:$PATH
-export PATH=$PATH:/usr/local/bin
-export PATH=/Users/tlandau/dev/mongodb-4.2.5/bin:$PATH
+export PATH="$HOME/dev/mongodb-4.2.5/bin:$PATH"
 #export PATH=/Users/tlandau/dev/kafka/bin:$PATH
 #export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
 export CLICOLOR=1
 export TERM=xterm-256color
 # Add default node to path
-export PATH=~/.nvm/versions/node/v14.2.0/bin:$PATH
+export PATH=$HOME/.nvm/versions/node/v14.2.0/bin:$PATH
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
@@ -18,7 +17,7 @@ ulimit -n 2560
 # Load the shell dotfiles, and then some:
 # * ~/.path can be used to extend `$PATH`.
 # * ~/.extra can be used for other settings you don’t want to commit.
-for file in ~/.{bash_prompt,exports,aliases,functions,work,extra}; do
+for file in ~/.{bash_prompt,exports,aliases,functions,github,work,extra}; do
 	[ -r "$file" ] && [ -f "$file" ] && source "$file";
 done
 unset file;

@@ -95,7 +95,7 @@ alias grb='git rebase -i head~'
 
 # Node and NPM shortcuts
 alias npmr="npm run"
-alias npmre='rm package-lock.json && rm -rf node_modules && npm i'
+alias npmre='rm -rf node_modules && npm i'
 
 # youtube-dl bits
 alias yt='youtube-dl -o "%(title)s.%(ext)s"'
