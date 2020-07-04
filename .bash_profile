@@ -4,7 +4,7 @@ export PATH="$HOME/bin:$PATH";
 export PATH=/usr/local/bin:$PATH
 export PATH="$HOME/dev/mongodb-4.2.5/bin:$PATH"
 
-export PATH=$PATH:$(go env GOPATH)/bin
+#export PATH=$PATH:$(go env GOPATH)/bin
 
 # Some bits I don't use so much anymore
 #export PATH=/Users/tlandau/dev/kafka/bin:$PATH
