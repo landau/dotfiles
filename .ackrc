@@ -24,4 +24,4 @@
 --ignore-dir=node_modules
 --ignore-file=ext:*min*
 --sort-files
-
+--color

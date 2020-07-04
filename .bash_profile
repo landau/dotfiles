@@ -3,12 +3,19 @@
 export PATH="$HOME/bin:$PATH";
 export PATH=/usr/local/bin:$PATH
 export PATH="$HOME/dev/mongodb-4.2.5/bin:$PATH"
+
+export PATH=$PATH:$(go env GOPATH)/bin
+
+# Some bits I don't use so much anymore
 #export PATH=/Users/tlandau/dev/kafka/bin:$PATH
 #export PATH=/Users/tlandau/dev/zookeeper/bin:$PATH
+
 export CLICOLOR=1
 export TERM=xterm-256color
+
 # Add default node to path
 export PATH=$HOME/.nvm/versions/node/v14.2.0/bin:$PATH
+
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 
@@ -39,12 +46,15 @@ shopt -s nocaseglob;
 # Increase Bash history size. Allow 64³ entries; the default is 500.
 export HISTSIZE='262144';
 export HISTFILESIZE="${HISTSIZE}";
+
 # Omit duplicates and commands that begin with a space from history.
 export HISTCONTROL='ignoreboth:erasedups';
+
 # Append to the Bash history file, rather than overwriting it
 shopt -s histappend;
+
 # Save and reload the history after each command finishes
-# export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;
