@@ -28,6 +28,8 @@ export LESS_TERMCAP_md="${yellow}";
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
 
-#export GOPATH=$(go env GOPATH)
+export GOPATH=$(go env GOPATH)
+export GOROOT=/usr/local/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
 export LESS="-R"

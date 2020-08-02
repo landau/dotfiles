@@ -318,3 +318,7 @@ function jsonpost {
 function jsonput {
   curl -sX PUT -H "Content-Type: application/json" -d $1 $2
 }
+
+function get_hostname {
+  ssh -G $1 | awk '/^hostname / { print $2 }'
+}
