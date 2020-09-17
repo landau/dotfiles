@@ -322,3 +322,7 @@ function jsonput {
 function get_hostname {
   ssh -G $1 | awk '/^hostname / { print $2 }'
 }
+
+function tolower {
+  awk '{print tolower($0)}'
+}
