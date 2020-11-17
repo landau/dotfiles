@@ -104,19 +104,6 @@ var moveMidLeftCodeOp = moveMidOp.dup({
   x: '(screenSizeX*.065)'
 });
 
-var moveTwitterNextToBrowser = S.op('corner', {
-  screen: monMid,
-  direction: 'top-right',
-  width: 'screenSizeX/3.85',
-  height: 'screenSizeY'
-});
-
-var moveWunderNextToBrowser = S.op('corner', {
-  screen: monMid,
-  direction: 'top-right',
-  width: 'screenSizeX/3.85',
-  height: 'screenSizeY/2'
-});
 
 var moveRightAdiumOp = S.op('corner', {
   screen: monRight,
@@ -129,8 +116,8 @@ var moveRightAdiumOp = S.op('corner', {
 var moveRightMessagesOp = moveLapOp.dup({
   width: 'screenSizeX/2',
   height: 'screenSizeY/2',
-  x: 'screenOriginX+839',
-  y: 'screenOriginY+512'
+  x: 'screenOriginX+892',
+  y: 'screenOriginY+548'
 });
 
 
@@ -144,9 +131,9 @@ var moveLapMessagesOp = moveRightMessagesOp.dup({
   screen: monLap
 });
 
-var moveLapHipChatOp = moveLapAdiumOp.dup({
-  screen: monLap,
-  direction: 'top-right',
+var moveSlackOp = S.op('corner', {
+  screen: monMid,
+  direction: 'top-left',
   width: 'screenSizeX/2',
   height: 'screenSizeY'
 });
@@ -211,11 +198,6 @@ var rightLayoutFull = {
 var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
-  LimeChat: {
-    operations: [moveLapHipChatOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   iTerm2: {
     operations: [moveLapOp],
     'ignore-fail': true,
@@ -262,7 +244,7 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   Slack: {
-    operations: [moveLapSlackOp],
+    operations: [moveSlackOp],
     'ignore-fail': true,
     'repeat-last': true
   },
@@ -297,11 +279,6 @@ var twoMonLayout = S.layout('twoMon', {
 var oneMonLayout = S.layout('oneMon', {
   '_before_': {},
   '_after_': {},
-  LimeChat: {
-    operations: [moveLapHipChatOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   iTerm2: {
     operations: [moveMidOp],
     'ignore-fail': true,

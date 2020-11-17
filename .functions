@@ -176,10 +176,10 @@ function togif {
 }
 
 # -- Java
-export JAVA_HOME=$(/usr/libexec/java_home)
-TOMCAT_DIR=/Library/Tomcat/bin
-alias tomstart=$TOMCAT_DIR/startup.sh
-alias tomstop=$TOMCAT_DIR/shutdown.sh
+#export JAVA_HOME=$(/usr/libexec/java_home)
+#TOMCAT_DIR=/Library/Tomcat/bin
+#alias tomstart=$TOMCAT_DIR/startup.sh
+#alias tomstop=$TOMCAT_DIR/shutdown.sh
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 export PATH="/usr/local/opt/elasticsearch@2.4/bin:$PATH"
@@ -325,4 +325,29 @@ function get_hostname {
 
 function tolower {
   awk '{print tolower($0)}'
+}
+
+######
+# Ruby helpers
+#####
+
+function get_bundle_version {
+  # TODO: remove whitespace
+  grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1
+}
+
+function bundle_install {
+  bundle "_$(get_bundle_version)_" install
+}
+
+function install_bundle {
+  rbenv rehash
+  gem install bundler -v $(get_bundle_version)
+  rbenv rehash
+}
+
+# Downloads wikimedea picture of the day into the ~/Pictures/wiki dir 
+# named YYYY-MM-DD.jpg
+function dl_wiki_pod {
+  curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' | xargs curl -s -o ~/Pictures/wiki/$(date +%F).jpg
 }

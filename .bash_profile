@@ -103,3 +103,6 @@ export NVM_DIR="$HOME/.nvm"
 if [ -f ~/.git-completion ]; then
   source ~/.git-completion
 fi
+
+# rbenv
+eval "$(rbenv init -)"
