@@ -61,4 +61,35 @@ pushd $DEV_TOOLS_DIR
 
 # TODO: install jq, aws-cli
 
+############################################
+# --- Install jq
+#curl -sL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 > ~/bin/jq \
+#  && chmod 0755 ~/bin/jq
+############################################
+
+############################################
+# --- Install ngix
+# https://gist.github.com/landau/24ef753e78070d138cda0a27ddd690d7
+
+# Get nginx
+curl -OL http://nginx.org/download/nginx-1.12.2.tar.gz
+tar -xvzf nginx-1.12.2.tar.gz && rm nginx-1.12.2.tar.gz
+
+# Get PCRE for http_rewrite
+curl -OL https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.gz
+tar xvzf pcre-8.41.tar.gz && rm pcre-8.41.tar.gz
+
+# Compile WITHOUT SSL
+pushd nginx-1.12.2/
+./configure --with-pcre=../pcre-8.41/
+sudo make && sudo make install
+popd
+
+#Remember to add to path export PATH="/usr/local/nginx/sbin:$PATH"
+
+popd
+############################################
+
+
+
 popd

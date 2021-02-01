@@ -309,6 +309,13 @@ function gclone {
   git clone gitgithub.com:$1/$2.git
 }
 
+# Open Github pull requests for my user in the current dir
+function open_prs {
+  repo=$(basename $(git rev-parse --show-toplevel))
+  url="https://github.com/cnerepo/$repo/pulls/landau"
+  open -a "Google Chrome" $url
+}
+
 # Shortcut for POSTing JSON
 function jsonpost {
   curl -sX POST -H "Content-Type: application/json" -d $1 $2
@@ -346,8 +353,16 @@ function install_bundle {
   rbenv rehash
 }
 
+function print_wiki_pod_url {
+  curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' 
+}
+
 # Downloads wikimedea picture of the day into the ~/Pictures/wiki dir 
 # named YYYY-MM-DD.jpg
 function dl_wiki_pod {
-  curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' | xargs curl -s -o ~/Pictures/wiki/$(date +%F).jpg
+  print_wiki_pod_url | xargs curl -s -o ~/Pictures/wiki/$(date +%F).jpg
+}
+
+function view_wiki_pod {
+  print_wiki_pod_url | imgcat
 }
