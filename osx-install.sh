@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 DEV_TOOLS_DIR=~/.dev-tools
 mkdir -p $DEV_TOOLS_DIR
 pushd $DEV_TOOLS_DIR
@@ -59,7 +61,6 @@ pushd $DEV_TOOLS_DIR
 #rm -rf tree
 ###########################################
 
-# TODO: install jq, aws-cli
 
 ############################################
 # --- Install jq
@@ -72,24 +73,41 @@ pushd $DEV_TOOLS_DIR
 # https://gist.github.com/landau/24ef753e78070d138cda0a27ddd690d7
 
 # Get nginx
-curl -OL http://nginx.org/download/nginx-1.12.2.tar.gz
-tar -xvzf nginx-1.12.2.tar.gz && rm nginx-1.12.2.tar.gz
-
-# Get PCRE for http_rewrite
-curl -OL https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.gz
-tar xvzf pcre-8.41.tar.gz && rm pcre-8.41.tar.gz
-
-# Compile WITHOUT SSL
-pushd nginx-1.12.2/
-./configure --with-pcre=../pcre-8.41/
-sudo make && sudo make install
-popd
-
-#Remember to add to path export PATH="/usr/local/nginx/sbin:$PATH"
-
-popd
+#curl -OL http://nginx.org/download/nginx-1.12.2.tar.gz
+#tar -xvzf nginx-1.12.2.tar.gz && rm nginx-1.12.2.tar.gz
+#
+## Get PCRE for http_rewrite
+#curl -OL https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.gz
+#tar xvzf pcre-8.41.tar.gz && rm pcre-8.41.tar.gz
+#
+## Compile WITHOUT SSL
+#pushd nginx-1.12.2/
+#./configure --with-pcre=../pcre-8.41/
+#sudo make && sudo make install
+#popd
+#
+##Remember to add to path export PATH="/usr/local/nginx/sbin:$PATH"
+#
+#popd
 ############################################
 
+############################################
+# --- Install siege
+# https://jasonmccreary.me/articles/installing-siege-mac-os-x-lion/
+
+
+#curl -C - -O http://download.joedog.org/siege/siege-latest.tar.gz
+#tar -xvf siege-latest.tar.gz
+#cd siege-*
+## FIXME: one of these needs to run in sudo
+#./configure
+#make
+#make install
+#
+## Annoyingly, it installs to /usr/local/bin/
+#sudo mv /usr/local/bin/siege* ~/bin/
+
+############################################
 
 
 popd

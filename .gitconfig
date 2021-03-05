@@ -24,6 +24,8 @@
     # Switch to a branch, creating it if necessary
     co = checkout
 
+    track = "!f() { git co --track origin/$1; }; f"
+
     # Show verbose output about tags, branches or remotes
     tags = tag -l -n1
     branches = branch -a

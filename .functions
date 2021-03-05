@@ -366,3 +366,4 @@ function dl_wiki_pod {
 function view_wiki_pod {
   print_wiki_pod_url | imgcat
 }
+
