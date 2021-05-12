@@ -43,8 +43,8 @@ fi
 shopt -s nocaseglob;
 
 # History
-# Increase Bash history size. Allow 64^4 entries; the default is 500.
-export HISTSIZE='16777216'
+# Increase Bash history size. Allow 128^4 entries; the default is 500.
+export HISTSIZE='268435456'
 export HISTFILESIZE="${HISTSIZE}";
 
 # Omit duplicates and commands that begin with a space from history.

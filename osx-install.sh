@@ -103,11 +103,16 @@ pushd $DEV_TOOLS_DIR
 #./configure
 #make
 #make install
-#
-## Annoyingly, it installs to /usr/local/bin/
-#sudo mv /usr/local/bin/siege* ~/bin/
 
 ############################################
 
+############################################
+# --- Install terraform
+
+#curl -OL https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_darwin_amd64.zip
+#unzip terraform_0.15.3_darwin_amd64.zip -d ~/bin
+#rm -v terraform_0.15.3_darwin_amd64.zip
+
+############################################
 
 popd
