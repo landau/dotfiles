@@ -109,9 +109,9 @@ pushd $DEV_TOOLS_DIR
 ############################################
 # --- Install terraform
 
-#curl -OL https://releases.hashicorp.com/terraform/0.15.3/terraform_0.15.3_darwin_amd64.zip
-#unzip terraform_0.15.3_darwin_amd64.zip -d ~/bin
-#rm -v terraform_0.15.3_darwin_amd64.zip
+curl -OL https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_darwin_amd64.zip
+unzip terraform_0.11.15_darwin_amd64.zip -d ~/bin
+rm -v terraform_0.11.15_darwin_amd64.zip
 
 ############################################
 
