@@ -278,6 +278,10 @@ mssh() {
 	ssh -oStrictHostKeyChecking=no $first_machine;
 }
 
+function to_csv {
+  jq -r '(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'
+}
+
 # Print the RPS for of stdout
 # Useful when tailing logs
 function speed {
