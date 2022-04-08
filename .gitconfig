@@ -47,6 +47,7 @@
     # pull from fork
     fpull = pull fork master
     # rebase
+    promain = pull --rebase origin main
     prom = pull --rebase origin master
     fprom = pull --rebase fork master
     prod = pull --rebase origin develop
@@ -116,7 +117,11 @@
 	#default = matching
 	default = simple
 [credential]
+  # This is because signed commits at Etsy
 	helper = osxkeychain
 [user]
-	name = Landau
+	name = Trevor Landau
 	email = landau@users.noreply.github.com
+	signingkey = F3A4DE9E85DD5E6C
+[commit]
+	gpgsign = true

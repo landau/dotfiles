@@ -273,6 +273,11 @@ var twoMonLayout = S.layout('twoMon', {
     operations: [moveRightOp],
     'ignore-fail': true,
     'repeat-last': true
+  },
+  'Google Meet': {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'repeat-last': true
   }
 });
 
@@ -354,6 +359,11 @@ var oneMonLayout = S.layout('oneMon', {
   },
   Slack: {
     operations: [moveLapSlackOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Google Meet': {
+    operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   }

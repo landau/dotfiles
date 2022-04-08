@@ -351,12 +351,6 @@ function bundle_install {
   bundle "_$(get_bundle_version)_" install
 }
 
-function install_bundle {
-  rbenv rehash
-  gem install bundler -v $(get_bundle_version)
-  rbenv rehash
-}
-
 function print_wiki_pod_url {
   curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' 
 }
@@ -368,6 +362,31 @@ function dl_wiki_pod {
 }
 
 function view_wiki_pod {
-  print_wiki_pod_url | imgcat
+  print_wiki_pod_url | xargs curl -s | imgcat
 }
 
+function print_silent_meditation {
+echo "Good day, friends!  Today is a 15 min :point_right: _Silent Meditation_ :point_left:, which begins at *2:40 PM ET* to allow folks to arrive from prior meetings. Please reach out to me or join before the starting time if you need some instruction on meditation. :pray:
+
+Join Here: https://meet.google.com/gzj-nbrz-xqx
+
+_Guidelines for Sessions:_
+- A bell will sound for beginning and ending the session
+- Video is optional.
+- Please mute :microphone: on entering and during the session. Feel free to unmute before starting time or after the session.
+- If joining late,  join and begin your practice
+
+*Updates* —
+
+
+*Contemplation* —
+
+>
+
+*Info* —
+- Meditation Calendar: http://et.sy/6x2n8mg 
+- https://www.lionsroar.com/how-to-meditate/
+- Free subscription to Headspace: https://work.headspace.com/etsy/member-enroll
+- Free meditation app and timer: https://insighttimer.com/
+ "
+ }

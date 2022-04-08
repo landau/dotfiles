@@ -1,0 +1,18 @@
+# https://github.com/BurntSushi/ripgrep/blob/master/GUIDE.md#configuration-file
+
+--glob=!**/node_modules/*
+--glob=!.git/*
+--glob=!coverage/*
+--glob=!dist/*
+--glob=!tmp/*
+
+# Show a preview for long lines.
+--max-columns-preview
+
+# Don't print lines longer than this limit in bytes. Longer lines are omitted,
+# and only the number of matches in that line is printed.
+--max-columns=150
+
+# Searches case insensitively if the pattern is all lowercase.
+# Search case sensitively otherwise.
+--smart-case

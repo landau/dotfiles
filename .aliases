@@ -98,9 +98,9 @@ alias npmr="npm run"
 alias npmre='rm -rf node_modules && npm i'
 
 # youtube-dl bits
-alias yt='youtube-dl -o "%(title)s.%(ext)s"'
-alias ytmp3='youtube-dl -f mp4 --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
-alias ytm4a='youtube-dl -f mp4 --audio-format=m4a -x -o "%(title)s.%(ext)s"'
+alias yt='yt-dlp -o "%(title)s.%(ext)s"'
+alias ytmp3='yt-dlp -f mp4 --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
+alias ytm4a='yt-dlp -f mp4 --audio-format=m4a -x -o "%(title)s.%(ext)s"'
 
 # Make it easier to edit .bash_profile
 alias bashconfig="vim ~/.bash_profile"

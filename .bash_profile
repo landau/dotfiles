@@ -30,13 +30,19 @@ done
 unset file;
 
 # Load files from work dir
-# This dir is uncommited as it may contain unsafe values ¯\_(ツ)_/¯
 WORK_DIR=~/.work
 if [[ -d "${WORK_DIR}" ]]; then
-  for file in $(ls ${WORK_DIR}); do
-    file="${WORK_DIR}/${file}"
-    [ -r "$file" ] && [ -f "$file" ] && source "$file";
-  done
+  #for file in $(ls ${WORK_DIR}); do
+  #  echo "Loading ${WORK_DIR}/${file}"
+  #  file="${WORK_DIR}/${file}"
+  #  [ -r "$file" ] && [ -f "$file" ] && source "$file";
+  #done
+  file="${WORK_DIR}/exports"
+  [ -r "$file" ] && [ -f "$file" ] && source "$file";
+  file="${WORK_DIR}/aliases.sh"
+  [ -r "$file" ] && [ -f "$file" ] && source "$file";
+  file="${WORK_DIR}/functions.sh"
+  [ -r "$file" ] && [ -f "$file" ] && source "$file";
 fi
 
 # Case-insensitive globbing (used in pathname expansion)
@@ -104,11 +110,14 @@ if [ -f ~/.git-completion ]; then
   source ~/.git-completion
 fi
 
-# rbenv
-eval "$(rbenv init -)"
-
 test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
 
 if [ -f ~/.config/exercism/exercism_completion.bash ]; then
   source ~/.config/exercism/exercism_completion.bash
 fi
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/path.bash.inc' ]; then . '/Users/tlandau/Downloads/dev/google-cloud-sdk/path.bash.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc'; fi
