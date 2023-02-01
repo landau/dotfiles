@@ -99,8 +99,10 @@ alias npmre='rm -rf node_modules && npm i'
 
 # youtube-dl bits
 alias yt='yt-dlp -o "%(title)s.%(ext)s"'
+alias yt_playlist='yt-dlp -o "%(playlist_index)s. %(title)s.%(ext)s"'
 alias ytmp3='yt-dlp -f mp4 --audio-format=mp3 -x -o "%(title)s.%(ext)s"'
 alias ytm4a='yt-dlp -f mp4 --audio-format=m4a -x -o "%(title)s.%(ext)s"'
+alias ytwav='yt-dlp -f mp4 --audio-format=wav -x -o "%(title)s.%(ext)s"'
 
 # Make it easier to edit .bash_profile
 alias bashconfig="vim ~/.bash_profile"
@@ -111,3 +113,7 @@ alias openchrome='open -a "Google Chrome"'
 alias open-gh-socket='ssh -M git@github.com'
 alias pp='underscore print --color'
 # alias tree="tree -I 'node_modules'" # See `tre` func in .functions
+
+alias python=python3
+
+alias maschine_proj="cd ~/Documents/Native\ Instruments/Maschine\ 2/Projects"

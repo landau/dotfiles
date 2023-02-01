@@ -45,20 +45,20 @@ pushd $DEV_TOOLS_DIR
 
 ###########################################
 # --- Install tree
-#mkdir tree
-#curl -sL --retry 3 --insecure "http://mama.indstate.edu/users/ice/tree/src/tree-1.8.0.tgz" | tar xz --no-same-owner --strip-components=1 -C tree
-#pushd tree
-#
-## To configure the source to be compiled for macOS run the following commands:
-#sed -i '' -e 's/^CFLAGS/#CFLAGS/' Makefile
-#sed -i '' -e '/SIP/,/HP/{//!s/#//;}' Makefile
-#
-#make
-#sudo make install
-#sudo chmod -x /usr/share/man/man1/tree.1
-#
-#popd
-#rm -rf tree
+mkdir tree
+curl -sL --retry 3 --insecure "http://mama.indstate.edu/users/ice/tree/src/tree-1.8.0.tgz" | tar xz --no-same-owner --strip-components=1 -C tree
+pushd tree
+
+# To configure the source to be compiled for macOS run the following commands:
+sed -i '' -e 's/^CFLAGS/#CFLAGS/' Makefile
+sed -i '' -e '/SIP/,/HP/{//!s/#//;}' Makefile
+
+make
+sudo make install
+sudo chmod -x /usr/share/man/man1/tree.1
+
+popd
+rm -rf tree
 ###########################################
 
 
@@ -108,10 +108,10 @@ pushd $DEV_TOOLS_DIR
 
 ############################################
 # --- Install terraform
-
-curl -OL https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_darwin_amd64.zip
-unzip terraform_0.11.15_darwin_amd64.zip -d ~/bin
-rm -v terraform_0.11.15_darwin_amd64.zip
+#
+#curl -OL https://releases.hashicorp.com/terraform/0.11.15/terraform_0.11.15_darwin_amd64.zip
+#unzip terraform_0.11.15_darwin_amd64.zip -d ~/bin
+#rm -v terraform_0.11.15_darwin_amd64.zip
 
 ############################################
 

@@ -282,6 +282,10 @@ function to_csv {
   jq -r '(.[0] | keys_unsorted) as $keys | $keys, map([.[ $keys[] ]])[] | @csv'
 }
 
+function csv_to_json {
+  python -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))'
+}
+
 # Print the RPS for of stdout
 # Useful when tailing logs
 function speed {
@@ -300,6 +304,11 @@ function validateyaml {
 
 # Print httpcodes using Node
 function httpcodes {
+  if ! node -v &> /dev/null
+  then 
+    nvm use 16 &> /dev/null
+  fi
+
   cmd="require('http').STATUS_CODES"
   if [ "$#" -eq "0" ]; then
     node -p $cmd
@@ -366,7 +375,7 @@ function view_wiki_pod {
 }
 
 function print_silent_meditation {
-echo "Good day, friends!  Today is a 15 min :point_right: _Silent Meditation_ :point_left:, which begins at *2:40 PM ET* to allow folks to arrive from prior meetings. Please reach out to me or join before the starting time if you need some instruction on meditation. :pray:
+echo "Good day, friends!  Today is a 20 min :point_right: _Silent Meditation_ :point_left:, which begins at *2:35 PM ET* to allow folks to arrive from prior meetings. Please reach out to me or join before the starting time if you need some instruction on meditation. :pray:
 
 Join Here: https://meet.google.com/gzj-nbrz-xqx
 
@@ -390,3 +399,54 @@ _Guidelines for Sessions:_
 - Free meditation app and timer: https://insighttimer.com/
  "
  }
+
+function big_meow_emoji {
+
+  if ! node -v &> /dev/null
+  then 
+    nvm use 16 &> /dev/null
+  fi
+
+  node -p "length = 3; Array.from({ length }, (_, i) => Array.from({ length }, (_ , j) => ':meow-technicolor-' + (length * i + j + 1) + ':').join('')).join('\n');" 
+}
+
+function gh_file {
+  path=$1; # presume filename
+
+  is_file=$(echo $1 | sed -nr 's/.*(\.php)$/\1/p');
+  if [ -z "$is_file" ]; then # Nope, it's a class name
+    path="phplib/"$(echo $1 | sed 's/_/\//g').php 
+  fi
+
+  open "https://github.etsycorp.com/Engineering/Etsyweb/blob/main/$path"
+}
+
+# Example 
+# > v3graph Api_Public_Translations_Reviews
+function v3graph {
+  # Default to non-bespoke naming convention
+  perspective=$(echo $1 | cut -d '_' -f2);
+  endpoint=$(echo $1 | cut -d '_' -f3-);
+
+
+  # Bespoke endpoints shift everything to right by 1 `_`
+  is_bespoke=$(echo $1 | sed -nr 's/Api_(Bespoke[A-Za-z]+).*/\1/p');
+  if [ ! -z "$is_bespoke" ]; then
+    perspective=$(echo $1 | cut -d '_' -f2-3);
+    endpoint=$(echo $1 | cut -d '_' -f4-);
+  fi
+
+
+  days="${2:-1}"
+  open "https://grafana.etsycorp.com/d/xZeEPRcmk/apiv3-endpoints?orgId=1&var-endpoint=${endpoint}&var-source=Graphite%20-%20Direct&var-sla=3000&var-perspective=${perspective}&from=now-${days}d&to=now&refresh=10s"
+}
+
+function v3lightstep_non200 {
+  echo "operation IN (\"$1\") AND "http.status_code" NOT IN ("200")";
+}
+
+function slack_scrabble {
+  #echo $(echo $1 | sed 's/\([a-zA-Z]\)/\:alphabet-white-\1\:/g')
+  echo $1 | sed 's/\([a-zA-Z]\)/\:party-scrabble-\1\:/g' | sed 's/ /\:party-scrabble-blank\:/g'
+}
+

@@ -198,27 +198,22 @@ var rightLayoutFull = {
 var twoMonLayout = S.layout('twoMon', {
   '_before_': {},
   '_after_': {},
+  'Maschine 2': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'GarageBand': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   iTerm2: {
     operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
   },
-  MacVim: {
-    operations: [moveMidCodeOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  Emacs: {
-    operations: [moveMidCodeOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
   'Code': {
-    operations: [moveMidLeftCodeOp],
-    'ignore-fail': true,
-    'repeat-last': true
-  },
-  'IntelliJ IDEA': {
     operations: [moveMidLeftCodeOp],
     'ignore-fail': true,
     'repeat-last': true

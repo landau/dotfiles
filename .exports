@@ -38,3 +38,8 @@ export PATH="/usr/local/nginx/sbin:$PATH"
 
 # For signed git commits
 export GPG_TTY=$(tty)
+
+# ESP
+export PATH="$PATH:$HOME/dev/service-platform/bin"
+
+export LDAP="tlandau"
