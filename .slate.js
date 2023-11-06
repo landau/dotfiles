@@ -100,8 +100,14 @@ var moveMidCodeOp = moveMidOp.dup({
 });
 
 var moveMidLeftCodeOp = moveMidOp.dup({
-  width: '(screenSizeX/1.15)',
-  x: '(screenSizeX*.065)'
+  // I used to use these for almost full screen, but too many tabs
+  // makes me want mo bigga.
+  // width: '(screenSizeX/1.15)',
+  // x: '(screenSizeX*.065)'
+    height: 'screenSizeY',
+    width: 'screenSizeX',
+    x: '0',
+    y: '0'
 });
 
 
@@ -134,7 +140,7 @@ var moveLapMessagesOp = moveRightMessagesOp.dup({
 var moveSlackOp = S.op('corner', {
   screen: monMid,
   direction: 'top-left',
-  width: 'screenSizeX/2',
+  width: '(screenSizeX/2) + 100',
   height: 'screenSizeY'
 });
 

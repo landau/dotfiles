@@ -2,9 +2,11 @@
 
 export PATH="$HOME/bin:$PATH";
 export PATH=/usr/local/bin:$PATH
-export PATH="$HOME/dev/mongodb-4.2.5/bin:$PATH"
+#export PATH="$HOME/dev/mongodb-4.2.5/bin:$PATH"
 
-#export PATH=$PATH:$(go env GOPATH)/bin
+# For brew
+export PATH="/usr/local/sbin:$PATH"
+
 
 # Some bits I don't use so much anymore
 #export PATH=/Users/tlandau/dev/kafka/bin:$PATH
@@ -60,7 +62,10 @@ export HISTCONTROL='ignoreboth:erasedups';
 shopt -s histappend;
 
 # Save and reload the history after each command finishes
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+#export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+# For some reason the history setup above began to compltely overwite history :(
+# This happened after increasing histfilesize to 128^6
+export PROMPT_COMMAND="history -a; $PROMPT_COMMAND"
 
 # Autocorrect typos in path names when using `cd`
 shopt -s cdspell;

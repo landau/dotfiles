@@ -361,7 +361,12 @@ function bundle_install {
 }
 
 function print_wiki_pod_url {
-  curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' 
+  #curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' 
+  YEAR=$(date "+%Y");
+  MONTH=$(date "+%m");
+  DAY=$(date "+%d");
+  curl -s "https://api.wikimedia.org/feed/v1/wikipedia/en/featured/$YEAR/$MONTH/$DAY" | \
+    jq '.image .image .source';
 }
 
 # Downloads wikimedea picture of the day into the ~/Pictures/wiki dir 
@@ -438,7 +443,7 @@ function v3graph {
 
 
   days="${2:-1}"
-  open "https://grafana.etsycorp.com/d/xZeEPRcmk/apiv3-endpoints?orgId=1&var-endpoint=${endpoint}&var-source=Graphite%20-%20Direct&var-sla=3000&var-perspective=${perspective}&from=now-${days}d&to=now&refresh=10s"
+  open "https://grafana.etsycorp.com/d/xZeEPRcmk/apiv3-endpoints?orgId=1&var-endpoint=${endpoint}&var-source=graphite&var-sla=3000&var-perspective=${perspective}&from=now-${days}d&to=now&refresh=10s"
 }
 
 function v3lightstep_non200 {
@@ -448,5 +453,31 @@ function v3lightstep_non200 {
 function slack_scrabble {
   #echo $(echo $1 | sed 's/\([a-zA-Z]\)/\:alphabet-white-\1\:/g')
   echo $1 | sed 's/\([a-zA-Z]\)/\:party-scrabble-\1\:/g' | sed 's/ /\:party-scrabble-blank\:/g'
+}
+
+function slack_garfield {
+  echo $1 | \
+    sed 's/\([a-zA-Z]\)/\:garfield-\1\:/g' | \
+    sed 's/ /\:spacer\:/g' | \
+    sed 's/!/\:exclamation\:/g';
+}
+
+function logs {
+  local QUERY=$1;
+  local DAYS="${2:-1}"; # default to 1 day
+ open "https://9eefbf3bf46f41dfb1f9de33796c2288.us-central1.gcp.cloud.es.io:9243/s/etsy/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-${DAYS}d,to:now))&_a=(columns:!(message),filters:!(),index:'2617f110-75d1-11eb-9dd7-dbbc2ca98a4b',interval:auto,query:(language:kuery,query:'$QUERY'),sort:!(!('@timestamp',desc)))"
+}
+
+function logs_by_request_uuid {
+  local ID=$1;
+  local DAYS="${2:-1}"; # default to 1 day
+  local query="etsy_request_uuid:$ID";
+  logs $query $DAYS
+}
+
+function cov {
+  # TODO: check if $1 ends in .php if it does, do not append /index.html
+  # Just append .html
+  open "https://quality-ng.etsycloud.com/job/php-coverage-compilation/lastSuccessfulBuild/clover-report/$1/index.html";
 }
 
