@@ -283,7 +283,8 @@ function to_csv {
 }
 
 function csv_to_json {
-  python -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))'
+  #python -c 'import csv, json, sys; print(json.dumps([dict(r) for r in csv.DictReader(sys.stdin)]))'
+  python -c "import csv,json,sys; reader = csv.DictReader(open(sys.argv[1]), ('FirstName','LastName','IDNumber','Message')); print(json.dumps([row for row in reader]))" $1 | jq
 }
 
 # Print the RPS for of stdout
