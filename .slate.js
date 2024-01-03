@@ -122,8 +122,12 @@ var moveRightAdiumOp = S.op('corner', {
 var moveRightMessagesOp = moveLapOp.dup({
   width: 'screenSizeX/1.75',
   height: 'screenSizeY/2',
-  x: 'screenOriginX+625',
-  y: 'screenOriginY+440'
+  // 16"
+  x: 'screenOriginX+740',
+  y: 'screenOriginY+540'
+  // 13"
+  // x: 'screenOriginX+625',
+  // y: 'screenOriginY+440'
 });
 
 

@@ -124,6 +124,7 @@
 [user]
 	name = Trevor Landau
 	email = landau@users.noreply.github.com
-	signingkey = F3A4DE9E85DD5E6C
+  # For GPG only
+	#signingkey = F3A4DE9E85DD5E6C
 [commit]
-	gpgsign = true
+	gpgsign = false

@@ -126,3 +126,5 @@ if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/path.bash.inc' ]; then . 
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc'; fi
+
+eval "$(/opt/homebrew/bin/brew shellenv)"
