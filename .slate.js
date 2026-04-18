@@ -91,7 +91,7 @@ var moveMidMidOp = moveMidOp.dup({
 });
 
 var moveMidBrowser = moveMidOp.dup({
-  width: '(screenSizeX/1.35)'
+  width: '(screenSizeX/1.15)'
 });
 
 var moveMidCodeOp = moveMidOp.dup({
@@ -223,7 +223,22 @@ var twoMonLayout = S.layout('twoMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  Logseq: {
+    operations: [moveMidLeftCodeOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Blender': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   'Code': {
+    operations: [moveMidLeftCodeOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Cursor': {
     operations: [moveMidLeftCodeOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -254,6 +269,11 @@ var twoMonLayout = S.layout('twoMon', {
     'repeat-last': true
   },
   'Spotify': {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'TIDAL': {
     operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -294,17 +314,27 @@ var oneMonLayout = S.layout('oneMon', {
     'ignore-fail': true,
     'repeat-last': true
   },
+  Logseq: {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
   MacVim: {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
   },
-  Emacs: {
+  'Blender': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
   },
   'Code': {
+    operations: [moveMidOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'Cursor': {
     operations: [moveMidOp],
     'ignore-fail': true,
     'repeat-last': true
@@ -333,6 +363,11 @@ var oneMonLayout = S.layout('oneMon', {
     'repeat-last': true
   },
   'Spotify': {
+    operations: [moveLapOp],
+    'ignore-fail': true,
+    'repeat-last': true
+  },
+  'TIDAL': {
     operations: [moveLapOp],
     'ignore-fail': true,
     'repeat-last': true

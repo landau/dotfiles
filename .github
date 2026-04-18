@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-eval "$(gh completion -s bash)"
+#eval "$(gh completion -s bash)"
 
 # Not sure if these work
 function create_pr {
