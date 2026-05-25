@@ -40,6 +40,11 @@ export PATH="/usr/local/nginx/sbin:$PATH"
 export GPG_TTY=$(tty)
 
 # ESP
-export PATH="$PATH:$HOME/dev/service-platform/bin"
+export ESP_REPO_ROOT="$HOME/work/service-platform"
+export PATH="$PATH:$ESP_REPO_ROOT/bin"
 
-export LDAP="tlandau"
+#export CLAUDE_CODE_USE_VERTEX=1
+#export CLOUD_ML_REGION=us-east5
+#export ANTHROPIC_VERTEX_PROJECT_ID=etsy-claude-code-sandbox
+
+

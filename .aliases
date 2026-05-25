@@ -117,3 +117,11 @@ alias pp='underscore print --color'
 alias python=python3
 
 alias maschine_proj="cd ~/Documents/Native\ Instruments/Maschine\ 2/Projects"
+
+# 1 pass
+alias op_auth="op user get --me"
+alias op_atlas="op read -n op://private/atlas/password | pbcopy"
+
+# GCloud Python
+CLOUDSDK_PYTHON=$(which python3)
+

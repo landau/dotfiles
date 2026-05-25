@@ -361,24 +361,21 @@ function bundle_install {
   bundle "_$(get_bundle_version)_" install
 }
 
-function print_wiki_pod_url {
-  #curl -s "https://commons.wikimedia.org/w/api.php?action=featuredfeed&feed=potd&feedformat=rss&language=en" | grep "upload.wikimedia.org" | tail -1 | sed -n 's/.*\srcset\=.*\(http.*jpg\) .*/\1/p' | sed 's/600/1280/' 
-  YEAR=$(date "+%Y");
-  MONTH=$(date "+%m");
-  DAY=$(date "+%d");
-  curl -s "https://api.wikimedia.org/feed/v1/wikipedia/en/featured/$YEAR/$MONTH/$DAY" | \
-    jq '.image .image .source';
+print_wiki_pod_url () {
+    YEAR=${1:-$(date "+%Y")}
+    MONTH=${2:-$(date "+%m")}
+    DAY=${3:-$(date "+%d")}
+    curl -s "https://api.wikimedia.org/feed/v1/wikipedia/en/featured/$YEAR/$MONTH/$DAY" | jq '.image.image.source'
 }
 
 # Downloads wikimedea picture of the day into the ~/Pictures/wiki dir 
 # named YYYY-MM-DD.jpg
-function dl_wiki_pod {
-  print_wiki_pod_url | xargs curl -s -o ~/Pictures/wiki/$(date +%F).jpg
+dl_wiki_pod () {
+    # Forward all given arguments ($@) to print_wiki_pod_url
+    FILENAME="${1:-$(date +%Y)}-${2:-$(date +%m)}-${3:-$(date +%d)}.jpg"
+    print_wiki_pod_url "$@" | xargs curl -s -o "$HOME/Pictures/wiki/$FILENAME"
 }
 
-function view_wiki_pod {
-  print_wiki_pod_url | xargs curl -s | imgcat
-}
 
 function print_silent_meditation {
 echo "Good day, friends!  Today is a 20 min :point_right: _Silent Meditation_ :point_left:, which begins at *2:35 PM ET* to allow folks to arrive from prior meetings. Please reach out to me or join before the starting time if you need some instruction on meditation. :pray:
@@ -396,25 +393,55 @@ _Guidelines for Sessions:_
 
 *Contemplation* —
 
->
-
-*Info* —
-- Meditation Calendar: http://et.sy/6x2n8mg 
-- https://www.lionsroar.com/how-to-meditate/
-- Free subscription to Headspace: https://work.headspace.com/etsy/member-enroll
-- Free meditation app and timer: https://insighttimer.com/
- "
- }
-
-function big_meow_emoji {
-
-  if ! node -v &> /dev/null
-  then 
-    nvm use 16 &> /dev/null
-  fi
-
-  node -p "length = 3; Array.from({ length }, (_, i) => Array.from({ length }, (_ , j) => ':meow-technicolor-' + (length * i + j + 1) + ':').join('')).join('\n');" 
+";
 }
+
+function print_silent_meditation2 {
+echo ":bufo-welcome: *Hi, friends!*
+
+Today’s meditation session is a :hourglass: *20-minute* _Silent Meditation_ that begins at :clock230: _2:35 PM ET_. This starting time ensures ample transition from prior meetings. If you're new and need guidance, please reach out or join before we begin. :bufo-pray:
+
+*Join Here:* https://meet.google.com/gzj-nbrz-xqx
+
+---
+
+*Guidelines for Our Session*
+:bell: The session begins and ends with a bell.
+:movie_camera: Video is optional—join however you feel most comfortable.
+:mute: Please mute your microphone (you can unmute before we start or afterward).
+:runner: If you join late, simply arrive calmly and begin your practice.
+
+---
+
+:thought_balloon: *Contemplation*
+
+";
+}
+
+function print_silent_meditation3 {
+echo "
+* * *
+:bufo-pray: Hello, friends!
+
+Today is a *_20-min Silent Meditation_* beginning at *2:35 PM ET*. If needed, feel free to reach out for instructions before the session starts.
+
+*Join Here* → https://meet.google.com/gzj-nbrz-xqx
+
+---
+
+🛠️ *_Session Guidelines:_*
+1️⃣:bell: A bell will mark the start and end of our meditation.
+2️⃣:movie_camera: Video is optional. Connect how you feel comfortable.
+3️⃣:microphone: Keep microphones on mute during the session (you may unmute before or after).
+4️⃣:) Show kindness to yourself—if you're late, log on quietly and begin your practice.
+
+---
+
+🌟 *Contemplation* 🌟
+
+";
+}
+
 
 function gh_file {
   path=$1; # presume filename
@@ -424,7 +451,7 @@ function gh_file {
     path="phplib/"$(echo $1 | sed 's/_/\//g').php 
   fi
 
-  open "https://github.etsycorp.com/Engineering/Etsyweb/blob/main/$path"
+  open "https://github.com/etsy/Etsyweb/blob/main/$path"
 }
 
 # Example 
@@ -447,33 +474,11 @@ function v3graph {
   open "https://grafana.etsycorp.com/d/xZeEPRcmk/apiv3-endpoints?orgId=1&var-endpoint=${endpoint}&var-source=graphite&var-sla=3000&var-perspective=${perspective}&from=now-${days}d&to=now&refresh=10s"
 }
 
-function v3lightstep_non200 {
-  echo "operation IN (\"$1\") AND "http.status_code" NOT IN ("200")";
-}
-
-function slack_scrabble {
-  #echo $(echo $1 | sed 's/\([a-zA-Z]\)/\:alphabet-white-\1\:/g')
-  echo $1 | sed 's/\([a-zA-Z]\)/\:party-scrabble-\1\:/g' | sed 's/ /\:party-scrabble-blank\:/g'
-}
-
-function slack_garfield {
-  echo $1 | \
-    sed 's/\([a-zA-Z]\)/\:garfield-\1\:/g' | \
-    sed 's/ /\:spacer\:/g' | \
-    sed 's/!/\:exclamation\:/g';
-}
-
-function logs {
-  local QUERY=$1;
-  local DAYS="${2:-1}"; # default to 1 day
- open "https://9eefbf3bf46f41dfb1f9de33796c2288.us-central1.gcp.cloud.es.io:9243/s/etsy/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-${DAYS}d,to:now))&_a=(columns:!(message),filters:!(),index:'2617f110-75d1-11eb-9dd7-dbbc2ca98a4b',interval:auto,query:(language:kuery,query:'$QUERY'),sort:!(!('@timestamp',desc)))"
-}
 
 function logs_by_request_uuid {
-  local ID=$1;
-  local DAYS="${2:-1}"; # default to 1 day
-  local query="etsy_request_uuid:$ID";
-  logs $query $DAYS
+  local REQUEST_UUID=$1;
+  #local DAYS="${2:-1}"; # default to 1 day
+  open "https://console.cloud.google.com/logs/query;query=jsonPayload.etsy_request_uuid%20%3D%20%22$REQUEST_UUID%22%0A;storageScope=storage,projects%2Fetsy-sdmonitoring-prod%2Flocations%2Fglobal%2Fbuckets%2Fapi_access_logs%2Fviews%2F_AllLogs,projects%2Fetsy-sdmonitoring-prod%2Flocations%2Fglobal%2Fbuckets%2Fcompapi_access_logs%2Fviews%2F_AllLogs,projects%2Fetsy-sdmonitoring-prod%2Flocations%2Fglobal%2Fbuckets%2Fweb_access_logs%2Fviews%2F_AllLogs;cursorTimestamp=2024-02-16T15:06:04Z;duration=PT1H?project=etsy-sdmonitoring-prod&rapt=AEjHL4M1UJBTpM6MEzVk1lsrCGsSJNghNVjJ9MVMMMdpklFh8O2-ej76zxUf9SvdHjZwu3Y8iXtQvhBqqP8jWpUnQCBR2LCLvVU1ANQ1lylpmH_BsquSrpg&pli=1"
 }
 
 function cov {
@@ -482,3 +487,116 @@ function cov {
   open "https://quality-ng.etsycloud.com/job/php-coverage-compilation/lastSuccessfulBuild/clover-report/$1/index.html";
 }
 
+# ---
+
+# FFMPEG things
+function ffmpeg_loop {
+  ffmpeg -stream_loop $1 -i $2 -c copy $3
+  #ffmpeg -stream_loop $1 -i $2 -vf "setpts=N/FRAME_RATE/TB" -c copy $3
+}
+
+function ffmpeg_merge {
+  # don't create input file if it exists
+  #if [ -f input.txt ]; then
+    find *.mp4 | xargs -n1 -I{} echo "file {}" > input.txt;
+  #fi
+  ffmpeg -f concat -safe 0 -i input.txt -c copy $1.mp4;
+}
+
+function ffmpeg_125x {
+  ffmpeg -i $1 -filter:v "setpts=0.8*PTS" -an $2
+}
+
+function ffmpeg_halfx {
+  ffmpeg -i $1 -filter:v "setpts=1.25*PTS" -an $2
+}
+
+# ---
+
+function save_chrome_tabs() {
+    osascript <<EOF
+    -- Save all open Chrome tabs to text files
+    tell application "Google Chrome"
+        set windowCount to count windows
+        repeat with i from 1 to windowCount
+            set tabData to ""
+            set theWindow to window i
+            set tabCount to count tabs of theWindow
+            
+            -- Iterate over each tab in the window
+            repeat with j from 1 to tabCount
+                set theTab to tab j of theWindow
+                set tabTitle to title of theTab
+                set tabURL to URL of theTab
+                set tabData to tabData & tabTitle & " - " & tabURL & linefeed
+            end repeat
+            
+            -- Write tab data to a file
+            set fileName to "chrome_tabs_" & i & ".txt"
+            set desktopPath to POSIX file (POSIX path of (path to desktop)) as text
+            set filePath to desktopPath & fileName
+            set fileID to open for access file filePath with write permission
+            try
+                set eof fileID to 0
+                write tabData to fileID
+            on error errMsg
+                display dialog "Error writing file: " & errMsg
+            end try
+            close access fileID
+        end repeat
+    end tell
+EOF
+}
+
+
+function bash_urlencode() {
+  local str="$1"
+  local encoded=""
+  for (( i=0; i<${#str}; i++ )); do
+    local c="${str:i:1}"
+    case "$c" in
+      [a-zA-Z0-9.~_-]) encoded+="$c" ;;
+      " ") encoded+="+"
+          ;;
+      *) encoded+=$(printf '%%%02X' "'$c") ;;
+    esac
+  done
+  echo "$encoded"
+}
+
+function quotes ()
+{
+# Get the command line arguments
+  q=$(printf "%s" "$1" | jq -s -R -r @uri)
+page=$2
+
+# Construct the URL
+url="https://www.goodreads.com/quotes/search?commit=Search&page=$page&q=$q"
+
+# Fetch the page content
+content=$(curl -s "$url")
+
+  # Parse out each quote and related author
+  quotes=$(echo "$content" | xmllint --html --xpath '//div[@class="quoteText"]' - 2>/dev/null | sed -e 's/<[^>]*>//g' -e 's/^[ \t]*//;s/[ \t]*$//' -e 's/&ldquo;//g' -e 's/&rdquo;//g' -e 's/&mdash;/--/g')
+   authors=$(echo "$content" | xmllint --html --xpath '//span[@class="authorOrTitle"]/text()' - 2>/dev/null | sed 's/^[ \t]*//;s/[ \t]*$//' | awk -F', <span id="quote_book_link_"' '{print $1}') 
+
+  # Combine quotes and authors into an array
+  IFS=$'\n' read -r -d '' -a quotes_array <<< "$quotes"
+  IFS=$'\n' read -r -d '' -a authors_array <<< "$authors"
+
+  # Print each quote and related author
+  for i in "${!quotes[@]}"; do
+    echo "Quote: ${quotes[$i]} ${authors[$i]}"
+    echo
+  done
+}
+
+function open_drone() {
+  local dir="${DRONE_DIR:-${HOME}/Music/Drone}"
+
+  if [[ ! -d "${dir}" ]]; then
+    echo "Directory not found: ${dir}"; return 1
+  fi
+
+	open -a "Google Chrome" "${dir}"
+}

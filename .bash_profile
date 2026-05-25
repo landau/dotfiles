@@ -6,6 +6,7 @@ export PATH=/usr/local/bin:$PATH
 
 # For brew
 export PATH="/usr/local/sbin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # Some bits I don't use so much anymore
@@ -128,3 +129,5 @@ if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/path.bash.inc' ]; then . 
 if [ -f '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc' ]; then . '/Users/tlandau/Downloads/dev/google-cloud-sdk/completion.bash.inc'; fi
 
 eval "$(/opt/homebrew/bin/brew shellenv)"
+
+. "$HOME/.local/bin/env"

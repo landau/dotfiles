@@ -125,6 +125,8 @@
 	name = Trevor Landau
 	email = landau@users.noreply.github.com
   # For GPG only
-	#signingkey = F3A4DE9E85DD5E6C
+	signingkey = /Users/tlandau/.ssh/id_ed25519.pub
 [commit]
 	gpgsign = false
+[gpg]
+	format = ssh
