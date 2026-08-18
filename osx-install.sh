@@ -27,22 +27,6 @@ vim +PluginInstall +qall
 ############################################
 
 ############################################
-# --- Install hub
-#echo "Installing hub..."
-#HUB_FILENAME=hub-darwin-amd64-2.14.2
-#git clone \
-#  --config transfer.fsckobjects=false \
-#  --config receive.fsckobjects=false \
-#  --config fetch.fsckobjects=false \
-#  https://github.com/github/hub.git
-#pushd hub
-#sudo make install prefix=/usr/local
-#popd
-#rm -rf hub
-#echo "Finished installing hub"
-############################################
-
-############################################
 # --- Install nvm
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.36.0/install.sh | bash
 ############################################

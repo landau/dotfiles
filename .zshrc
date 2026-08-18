@@ -86,7 +86,6 @@ function weather {
   curl http://wttr.in/$1
 }
 
-alias git="hub"
 alias brw="brew"
 alias cljs='cd ~/clojurescript && ./script/noderepljs'
 alias cljsbuild="lein trampoline cljsbuild $@"

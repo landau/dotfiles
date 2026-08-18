@@ -33,7 +33,6 @@ formulae=(
 
     # git / github
     gh
-    hub
 
     # dev
     golangci-lint
