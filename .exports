@@ -28,7 +28,9 @@ export LESS_TERMCAP_md="${yellow}";
 # Hide the “default interactive shell is now zsh” warning on macOS.
 export BASH_SILENCE_DEPRECATION_WARNING=1;
 
-export GOPATH=$(go env GOPATH)
+# Hardcoded rather than `$(go env GOPATH)`: launching the go binary cost ~14ms
+# on every shell, and this is go's own default anyway.
+export GOPATH="$HOME/go"
 export GOROOT=/usr/local/go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 

@@ -1,10 +1,22 @@
 #export PERL5LIB="/Applications/Xcode.app/Contents/Developer/Library/Perl/5.12/darwin-thread-multi-2level"
 
 # Homebrew has to come first. /opt/homebrew is not in /etc/paths, so nothing
-# below here can find `brew` (or $HOMEBREW_PREFIX) until shellenv has run.
+# below here can find `brew` (or $HOMEBREW_PREFIX) until this has run.
+#
+# These are `brew shellenv`'s own exports, inlined. `eval "$(brew shellenv)"`
+# cost ~20ms per shell because it spawns brew *and* path_helper (shellenv now
+# delegates PATH to `path_helper -s` with PATH_HELPER_ROOT set). All that
+# path_helper contributes here is /opt/homebrew/{bin,sbin} from
+# /opt/homebrew/etc/paths, so prepending them directly is equivalent. MANPATH
+# needs no entry: macOS `man` derives share/man from each PATH directory.
 if [ -x /opt/homebrew/bin/brew ]; then
-	eval "$(/opt/homebrew/bin/brew shellenv)"
+	export HOMEBREW_PREFIX="/opt/homebrew"
+	export HOMEBREW_CELLAR="/opt/homebrew/Cellar"
+	export HOMEBREW_REPOSITORY="/opt/homebrew"
+	export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+	export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}"
 elif [ -x /usr/local/bin/brew ]; then
+	# Intel prefix. Left as the eval, since it's the untested path here.
 	eval "$(/usr/local/bin/brew shellenv)"
 fi
 
