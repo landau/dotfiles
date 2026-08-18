@@ -273,6 +273,20 @@ hs.audiodevice.watcher.setCallback(function(uid, event)
 end)
 hs.audiodevice.watcher.start()
 
+-- Auto-unmute when Google Meet opens, auto-mute when it closes
+local meetWatcher = hs.application.watcher.new(function(name, event)
+  if name ~= 'Google Meet' then return end
+  local mic = hs.audiodevice.defaultInputDevice()
+  if not mic then return end
+  if event == hs.application.watcher.launched then
+    mic:setMuted(false)
+  elseif event == hs.application.watcher.terminated then
+    mic:setMuted(true)
+  end
+  updateMicMenu()
+end)
+meetWatcher:start()
+
 updateMicMenu()
 
 -- ============================================================
