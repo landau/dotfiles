@@ -13,17 +13,19 @@ local function sortedScreens()
   return screens
 end
 
--- 0-based index, ordered left-to-right (matches Slate's screen numbering)
-local function screenAt(idx)
-  return sortedScreens()[idx + 1]
+-- Screen name constants used as keys in layout tables
+local LAPTOP   = 'laptop'
+local EXTERNAL = 'external'
+
+-- Fetch and resolve all screens once; callers get a name→screen map
+local function resolveScreens()
+  local sorted = sortedScreens()
+  return { [LAPTOP] = sorted[1], [EXTERNAL] = sorted[2] }
 end
 
-local function screenCount()
-  return #hs.screen.allScreens()
-end
-
-local function laptop()  return screenAt(0) end  -- built-in, always leftmost
-local function external() return screenAt(1) end  -- main external monitor
+-- Convenience accessors for hotkey handlers (single screen needed, not a layout)
+local function laptopScreen()   return sortedScreens()[1] end
+local function externalScreen() return sortedScreens()[2] end
 
 -- Place `win` on `screen` using a unit rect (values 0..1 relative to usable area)
 local function place(win, screen, unit)
@@ -71,48 +73,49 @@ end
 -- Layouts
 -- ============================================================
 
--- Each entry: { 'App Name', screenFn, unitRect [, frameFn] }
--- frameFn(screen) overrides unitRect for pixel-precise positioning
+-- Each entry: { 'App Name', SCREEN_CONSTANT, unitRect [, frameFn] }
+-- Screens are resolved once per layout run via resolveScreens().
 
 local twoMonLayout = {
-  { 'Maschine 2',    external,   Pos.full        },
-  { 'Logic Pro',     external,   Pos.full        },
-  { 'iTerm2',        laptop,    Pos.full        },
-  { 'Logseq',        external,   Pos.full        },
-  { 'Blender',       external,   Pos.full        },
-  { 'Code',          external,   Pos.full        },  -- VS Code; rename to 'Visual Studio Code' if needed
-  { 'Cursor',        external,   Pos.full        },
-  { 'Google Chrome', external,   Pos.browser     },
-  { 'Firefox',       external,   Pos.browser     },
-  { 'Safari',        external,   Pos.browser     },
-  { 'Messages',      laptop,    nil,            messagesFrame },
-  { 'Slack',         external,   Pos.slackExt    },
-  { 'TIDAL',         laptop,    Pos.full        },
-  { 'Sonos',         laptop,    Pos.full        },
-  { 'Google Meet',   laptop,    Pos.full        },
+  { 'Maschine 2',    EXTERNAL, Pos.full        },
+  { 'Logic Pro',     EXTERNAL, Pos.full        },
+  { 'iTerm2',        LAPTOP,   Pos.full        },
+  { 'Logseq',        EXTERNAL, Pos.full        },
+  { 'Blender',       EXTERNAL, Pos.full        },
+  { 'Code',          EXTERNAL, Pos.full        },  -- VS Code; rename to 'Visual Studio Code' if needed
+  { 'Cursor',        EXTERNAL, Pos.full        },
+  { 'Google Chrome', EXTERNAL, Pos.browser     },
+  { 'Firefox',       EXTERNAL, Pos.browser     },
+  { 'Safari',        EXTERNAL, Pos.browser     },
+  { 'Messages',      LAPTOP,   nil,            messagesFrame },
+  { 'Slack',         EXTERNAL, Pos.slackExt    },
+  { 'TIDAL',         LAPTOP,   Pos.full        },
+  { 'Sonos',         LAPTOP,   Pos.full        },
+  { 'Google Meet',   LAPTOP,   Pos.full        },
 }
 
 local oneMonLayout = {
-  { 'iTerm2',        laptop,    Pos.full        },
-  { 'Logseq',        laptop,    Pos.full        },
-  { 'Logic Pro',     laptop,    Pos.full        },
-  { 'Code',          laptop,    Pos.full        },
-  { 'Cursor',        laptop,    Pos.full        },
-  { 'Google Chrome', laptop,    Pos.full        },
-  { 'Firefox',       laptop,    Pos.full        },
-  { 'TIDAL',         laptop,    Pos.full        },
-  { 'Sonos',         laptop,    Pos.full        },
-  { 'Messages',      laptop,    nil,            messagesFrame },
-  { 'Slack',         laptop,    Pos.slackLaptop },
-  { 'Google Meet',   laptop,    Pos.full        },
+  { 'iTerm2',        LAPTOP,   Pos.full        },
+  { 'Logseq',        LAPTOP,   Pos.full        },
+  { 'Logic Pro',     LAPTOP,   Pos.full        },
+  { 'Code',          LAPTOP,   Pos.full        },
+  { 'Cursor',        LAPTOP,   Pos.full        },
+  { 'Google Chrome', LAPTOP,   Pos.full        },
+  { 'Firefox',       LAPTOP,   Pos.full        },
+  { 'TIDAL',         LAPTOP,   Pos.full        },
+  { 'Sonos',         LAPTOP,   Pos.full        },
+  { 'Messages',      LAPTOP,   nil,            messagesFrame },
+  { 'Slack',         LAPTOP,   Pos.slackLaptop },
+  { 'Google Meet',   LAPTOP,   Pos.full        },
 }
 
 local function applyLayout(layout)
+  local screens = resolveScreens()  -- one fetch + sort for the whole layout
   for _, entry in ipairs(layout) do
-    local appName, screenFn, unit, frameFn = entry[1], entry[2], entry[3], entry[4]
+    local appName, screenKey, unit, frameFn = entry[1], entry[2], entry[3], entry[4]
     local app = hs.application.get(appName)
     if app then
-      local screen = screenFn()
+      local screen = screens[screenKey]
       if screen then
         for _, win in ipairs(app:allWindows()) do
           if frameFn then
@@ -127,7 +130,7 @@ local function applyLayout(layout)
 end
 
 local function universalLayout()
-  if screenCount() >= 2 then
+  if #hs.screen.allScreens() >= 2 then
     applyLayout(twoMonLayout)
   else
     applyLayout(oneMonLayout)
@@ -141,12 +144,12 @@ end
 -- Apply layout (ctrl+esc)
 hs.hotkey.bind({'ctrl'}, 'escape', universalLayout)
 
--- Move focused window to screen, preserve size (ctrl+cmd+1/2/3)
+-- Move focused window to screen, preserve size (ctrl+cmd+1/2)
 hs.hotkey.bind({'ctrl','cmd'}, '1', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, laptop()) end
+  local w = hs.window.focusedWindow(); if w then moveToScreen(w, laptopScreen()) end
 end)
 hs.hotkey.bind({'ctrl','cmd'}, '2', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, external()) end
+  local w = hs.window.focusedWindow(); if w then moveToScreen(w, externalScreen()) end
 end)
 
 -- Resize focused window on its current screen (ctrl+alt+arrow / 0 / -)
