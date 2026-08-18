@@ -55,6 +55,7 @@ formulae=(
 
 casks=(
     1password-cli
+    hammerspoon
     ngrok
     shortcat
 )
