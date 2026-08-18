@@ -338,7 +338,7 @@ pomUpdateMenu()
 -- Auto-reload config when any .lua file in ~/.hammerspoon/ is saved
 -- ============================================================
 
-local configWatcher = hs.pathwatcher.new(os.getenv('HOME') .. '/.hammerspoon/', function(files)
+local configWatcher = hs.pathwatcher.new(hs.configdir, function(files)
   for _, f in ipairs(files) do
     if f:sub(-4) == '.lua' then
       hs.reload()
