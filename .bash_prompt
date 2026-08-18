@@ -4,10 +4,15 @@
 # Screenshot: http://i.imgur.com/EkEtphC.png
 # Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
 # iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
-if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
-	export TERM='gnome-256color';
-elif infocmp xterm-256color >/dev/null 2>&1; then
-	export TERM='xterm-256color';
+# Promote a bare `xterm` to its 256-colour variant. Guarded on `xterm`
+# specifically: the old unguarded `elif` clobbered every $TERM, including
+# `dumb` (emacs shell-mode) and terminals already reporting something richer.
+if [[ $TERM = xterm ]]; then
+	if [[ $COLORTERM = gnome-* ]] && infocmp gnome-256color >/dev/null 2>&1; then
+		export TERM='gnome-256color';
+	elif infocmp xterm-256color >/dev/null 2>&1; then
+		export TERM='xterm-256color';
+	fi;
 fi;
 
 prompt_git() {
