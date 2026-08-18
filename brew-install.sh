@@ -17,9 +17,13 @@ brew update
 
 formulae=(
     # shell
-    # v1, not @2: @2 needs bash >= 4.2 and pulls in brew's bash as a dependency,
-    # while macOS ships bash 3.2.
-    bash-completion
+    # macOS ships bash 3.2.57 (2007) because Apple won't ship GPLv3. That
+    # version silently ignores bracketed paste (pasted multi-line text
+    # self-executes), globstar/`**`, autocd, skip-completed-text and
+    # colored-stats, and bash-completion@2 refuses to load on it at all.
+    # bash 5 + @2 is the whole point; see the /etc/shells step below.
+    bash
+    bash-completion@2
 
     # search / files
     ripgrep
@@ -58,5 +62,20 @@ casks=(
 
 brew install "${formulae[@]}"
 brew install --cask "${casks[@]}"
+
+# Register brew's bash as a legal login shell. chsh refuses any shell not
+# listed in /etc/shells, and none of the bash 5 features above reach a login
+# shell until it is the login shell. Left as a printed instruction rather than
+# run automatically -- changing someone's login shell should be deliberate.
+brew_bash="$(brew --prefix)/bin/bash"
+if [ -x "${brew_bash}" ] && ! grep -qxF "${brew_bash}" /etc/shells; then
+    echo "Adding ${brew_bash} to /etc/shells (sudo)..."
+    echo "${brew_bash}" | sudo tee -a /etc/shells > /dev/null
+fi
+if [ "${SHELL}" != "${brew_bash}" ]; then
+    echo
+    echo "To finish, make it your login shell:  chsh -s ${brew_bash}"
+    echo "Then open a new terminal tab."
+fi
 
 brew cleanup
