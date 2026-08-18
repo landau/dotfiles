@@ -343,6 +343,69 @@ end)
 updatePomMenu()
 
 -- ============================================================
+-- UTC clock (menubar)
+-- ============================================================
+
+local utcMenu = hs.menubar.new()
+local function updateUTCClock()
+  utcMenu:setTitle(os.date('!%H:%M UTC'))
+end
+updateUTCClock()
+hs.timer.doEvery(30, updateUTCClock)
+
+-- ============================================================
+-- Caps Lock as Hyper modal key
+-- Requires: System Settings → Keyboard → Modifier Keys → Caps Lock: No Action
+-- Press Caps Lock to enter mode, then the action key. Press Caps Lock or Escape to cancel.
+-- ============================================================
+
+local hyperModal  = hs.hotkey.modal.new()
+local hyperActive = false
+
+local capsWatcher = hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
+  if event:getKeyCode() ~= 57 then return end  -- 57 = Caps Lock
+  hyperActive = not hyperActive
+  if hyperActive then hyperModal:enter() else hyperModal:exit() end
+  return true  -- consume event so Caps Lock never types capitals
+end)
+capsWatcher:start()
+
+hyperModal:bind({}, 'escape', function()
+  hyperActive = false
+  hyperModal:exit()
+end)
+
+-- Hyper+a: morning routine — open apps then apply layout
+hyperModal:bind({}, 'a', function()
+  hyperActive = false
+  hyperModal:exit()
+  local apps = {'Logseq', 'Google Chrome', 'Slack', 'Messages', 'iTerm2', 'TIDAL'}
+  for _, app in ipairs(apps) do hs.application.launchOrFocus(app) end
+  hs.timer.doAfter(2, universalLayout)
+end)
+
+-- ============================================================
+-- Screenshots → ~/Pictures/Screenshots/YYYY-MM/
+-- ============================================================
+
+local SCREENSHOT_DEST = os.getenv('HOME') .. '/Desktop/Screenshots'
+hs.execute('mkdir -p "' .. SCREENSHOT_DEST .. '"')
+
+local screenshotSrc = hs.execute('defaults read com.apple.screencapture location 2>/dev/null'):gsub('%s+$', '')
+if screenshotSrc == '' then screenshotSrc = os.getenv('HOME') .. '/Desktop' end
+
+local screenshotWatcher = hs.pathwatcher.new(screenshotSrc, function(files)
+  for _, f in ipairs(files) do
+    if f:match('/Screenshot%s.+%.png$') then
+      hs.timer.doAfter(0.5, function()  -- brief delay so the file is fully written
+        hs.execute(string.format('mv %q %q/', f, SCREENSHOT_DEST))
+      end)
+    end
+  end
+end)
+screenshotWatcher:start()
+
+-- ============================================================
 -- Auto-reload config when any .lua file in ~/.hammerspoon/ is saved
 -- ============================================================
 
