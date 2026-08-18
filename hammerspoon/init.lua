@@ -203,4 +203,41 @@ local screenWatcher = hs.screen.watcher.new(function()
 end)
 screenWatcher:start()
 
+-- ============================================================
+-- Caffeinate menubar item
+-- ============================================================
+
+local caffMenu = hs.menubar.new()
+
+local function updateCaffMenu()
+  local on = hs.caffeinate.get('displayIdle')
+  caffMenu:setTitle(on and '☕' or '😴')
+  caffMenu:setTooltip(on and 'Caffeinated (click to sleep normally)' or 'Click to prevent sleep')
+end
+
+caffMenu:setClickCallback(function()
+  if hs.caffeinate.get('displayIdle') then
+    hs.caffeinate.set('displayIdle', false)
+  else
+    hs.caffeinate.set('displayIdle', true)
+  end
+  updateCaffMenu()
+end)
+
+updateCaffMenu()
+
+-- ============================================================
+-- Auto-reload config when init.lua is saved
+-- ============================================================
+
+local configWatcher = hs.pathwatcher.new(os.getenv('HOME') .. '/.hammerspoon/', function(files)
+  for _, f in ipairs(files) do
+    if f:sub(-4) == '.lua' then
+      hs.reload()
+      return
+    end
+  end
+end)
+configWatcher:start()
+
 hs.alert.show('Hammerspoon config loaded')
