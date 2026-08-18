@@ -146,12 +146,31 @@ hs.window.animationDuration = 0  -- disable animation so window moves are instan
 -- Apply layout (ctrl+esc)
 hs.hotkey.bind({'ctrl'}, 'escape', universalLayout)
 
--- Move focused window to screen, preserve size (ctrl+cmd+1/2)
+-- Move focused window to screen (ctrl+cmd+1/2).
+-- If the app has a layout entry for the target screen, applies that position.
+-- Falls back to preserving current size if no layout entry matches.
+local function moveWindowToScreen(win, screen, screenKey)
+  if not win or not screen then return end
+  local app = win:application()
+  local appName = app and app:name()
+  local layout = #hs.screen.allScreens() >= 2 and twoMonLayout or oneMonLayout
+  for _, entry in ipairs(layout) do
+    if entry[1] == appName and entry[2] == screenKey then
+      local unit, frameFn = entry[3], entry[4]
+      if frameFn then win:setFrame(frameFn(screen)) else place(win, screen, unit) end
+      return
+    end
+  end
+  moveToScreen(win, screen)  -- fallback: preserve size
+end
+
 hs.hotkey.bind({'ctrl','cmd'}, '1', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, laptopScreen()) end
+  local w = hs.window.focusedWindow()
+  if w then moveWindowToScreen(w, laptopScreen(), LAPTOP) end
 end)
 hs.hotkey.bind({'ctrl','cmd'}, '2', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, externalScreen()) end
+  local w = hs.window.focusedWindow()
+  if w then moveWindowToScreen(w, externalScreen(), EXTERNAL) end
 end)
 
 -- Resize focused window on its current screen (ctrl+alt+arrow / 0 / -)
