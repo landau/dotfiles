@@ -16,66 +16,73 @@ if [[ $TERM = xterm ]]; then
 fi;
 
 prompt_git() {
-	local s='';
-	local branchName='';
+	local s='' branchName='' gitDir='' line='';
+	local staged='' unstaged='' untracked='' stashed='';
 
-	# Check if the current directory is in a Git repository.
-	git rev-parse --is-inside-work-tree &>/dev/null || return;
+	# One rev-parse does double duty: it fails outside a repository (so we
+	# return), and it reports where .git lives, which lets the stash check
+	# below be a file test instead of another git invocation.
+	gitDir="$(git rev-parse --git-dir 2>/dev/null)" || return;
 
-	# Check for what branch we’re on.
-	# Get the short symbolic ref. If HEAD isn’t a symbolic ref, get a
-	# tracking remote branch or tag. Otherwise, get the
-	# short SHA for the latest commit, or give up.
-	branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
-		git describe --all --exact-match HEAD 2> /dev/null || \
-		git rev-parse --short HEAD 2> /dev/null || \
-		echo '(unknown)')";
+	# `--porcelain --branch` reports branch, staged, unstaged and untracked
+	# state in a SINGLE call. This used to be six separate git commands
+	# (symbolic-ref, config, diff, diff-files, ls-files, rev-parse), costing
+	# ~140ms on every prompt.
+	while IFS= read -r line; do
+		case "$line" in
+			'## No commits yet on '*)
+				branchName="${line#\#\# No commits yet on }" ;;
+			'## HEAD '*)
+				branchName='HEAD' ;; # detached; resolved below
+			'## '*)
+				branchName="${line#\#\# }";
+				branchName="${branchName%%...*}" ;; # strip upstream + [ahead N]
+			'??'*)
+				untracked='?' ;;
+			*)
+				# XY status: X is the index column, Y the working tree.
+				[ "${line:0:1}" != ' ' ] && staged='+';
+				[ "${line:1:1}" != ' ' ] && unstaged='!' ;;
+		esac;
+	done < <(git status --porcelain --branch 2>/dev/null);
 
-	# Early exit for Chromium & Blink repo, as the dirty check takes too long.
-	# Thanks, @paulirish!
-	# https://github.com/paulirish/dotfiles/blob/dd33151f/.bash_prompt#L110-L123
-	repoUrl="$(git config --get remote.origin.url)";
-	if grep -q 'chromium/src.git' <<< "${repoUrl}"; then
-		s+='*';
-	else
-		# Check for uncommitted changes in the index.
-		if ! $(git diff --quiet --ignore-submodules --cached); then
-			s+='+';
-		fi;
-		# Check for unstaged changes.
-		if ! $(git diff-files --quiet --ignore-submodules --); then
-			s+='!';
-		fi;
-		# Check for untracked files.
-		if [ -n "$(git ls-files --others --exclude-standard)" ]; then
-			s+='?';
-		fi;
-		# Check for stashed files.
-		if $(git rev-parse --verify refs/stash &>/dev/null); then
-			s+='$';
-		fi;
+	# Detached HEAD: fall back to an exact tag, then a short SHA. Only pays for
+	# the extra call in the rare detached case.
+	if [ "$branchName" = 'HEAD' ]; then
+		branchName="$(git describe --all --exact-match HEAD 2>/dev/null || \
+			git rev-parse --short HEAD 2>/dev/null || \
+			echo '(unknown)')";
 	fi;
 
+	# `git rev-parse --verify refs/stash` was one more subprocess; the ref is
+	# just a file on disk.
+	[ -f "${gitDir}/refs/stash" ] && stashed='$';
+
+	s="${staged}${unstaged}${untracked}${stashed}";
 	[ -n "${s}" ] && s=" [${s}]";
 
 	echo -e "${1}${branchName}${2}${s}";
 }
 
+# The `tput setaf 1` probe stays -- it's how we detect 256-colour support -- but
+# the values below are hardcoded rather than 14 more `tput` calls. Each was a
+# subprocess, ~32ms of every shell's startup between them. The equivalent tput
+# command is noted after each value. Bash expands these escapes in PS1, and
+# prompt_git passes them through `echo -e`, so the \e form works in both places.
 if tput setaf 1 &> /dev/null; then
-	tput sgr0; # reset colors
-	bold=$(tput bold);
-	reset=$(tput sgr0);
+	bold="\e[1m";          # tput bold
+	reset="\e(B\e[m";      # tput sgr0
 	# Solarized colors, taken from http://git.io/solarized-colors.
-	black=$(tput setaf 0);
-	blue=$(tput setaf 33);
-	cyan=$(tput setaf 37);
-	green=$(tput setaf 64);
-	orange=$(tput setaf 166);
-	purple=$(tput setaf 125);
-	red=$(tput setaf 124);
-	violet=$(tput setaf 61);
-	white=$(tput setaf 15);
-	yellow=$(tput setaf 136);
+	black="\e[38;5;0m";    # tput setaf 0
+	blue="\e[38;5;33m";    # tput setaf 33
+	cyan="\e[38;5;37m";    # tput setaf 37
+	green="\e[38;5;64m";   # tput setaf 64
+	orange="\e[38;5;166m"; # tput setaf 166
+	purple="\e[38;5;125m"; # tput setaf 125
+	red="\e[38;5;124m";    # tput setaf 124
+	violet="\e[38;5;61m";  # tput setaf 61
+	white="\e[38;5;15m";   # tput setaf 15
+	yellow="\e[38;5;136m"; # tput setaf 136
 else
 	bold='';
 	reset="\e[0m";
