@@ -22,9 +22,8 @@ local function screenCount()
   return #hs.screen.allScreens()
 end
 
-local function lap()   return screenAt(0) end  -- laptop / leftmost
-local function mid()   return screenAt(1) end  -- primary external
-local function right() return screenAt(2) end  -- third monitor
+local function laptop()  return screenAt(0) end  -- built-in, always leftmost
+local function external() return screenAt(1) end  -- main external monitor
 
 -- Place `win` on `screen` using a unit rect (values 0..1 relative to usable area)
 local function place(win, screen, unit)
@@ -50,16 +49,16 @@ end
 -- Position unit rects
 -- ============================================================
 
-local P = {
-  full       = { x=0,    y=0,   w=1,      h=1   },
-  halfLeft   = { x=0,    y=0,   w=0.5,    h=1   },
-  halfRight  = { x=0.5,  y=0,   w=0.5,    h=1   },
-  halfTop    = { x=0,    y=0,   w=1,      h=0.5 },
-  halfBot    = { x=0,    y=0.5, w=1,      h=0.5 },
-  centerHalf = { x=0.25, y=0,   w=0.5,    h=1   },  -- resizeMidHalf: x=screenSizeX/4
-  browser    = { x=0,    y=0,   w=1/1.15, h=1   },  -- moveMidBrowser
-  slackMid   = { x=0,    y=0,   w=0.55,   h=1   },  -- moveSlackOp: (screenW/2 + 100) / screenW
-  slackLap   = { x=0,    y=0,   w=1/1.5,  h=1   },  -- moveLapSlackOp: screenSizeX/1.5; x=screenOriginX/2.15=0
+local Pos = {
+  full        = { x=0,    y=0,   w=1,      h=1   },
+  halfLeft    = { x=0,    y=0,   w=0.5,    h=1   },
+  halfRight   = { x=0.5,  y=0,   w=0.5,    h=1   },
+  halfTop     = { x=0,    y=0,   w=1,      h=0.5 },
+  halfBot     = { x=0,    y=0.5, w=1,      h=0.5 },
+  centerHalf  = { x=0.25, y=0,   w=0.5,    h=1   },
+  browser     = { x=0,    y=0,   w=1/1.15, h=1   },
+  slackExt    = { x=0,    y=0,   w=0.55,   h=1   },  -- (screenW/2 + 100) / screenW
+  slackLaptop = { x=0,    y=0,   w=1/1.5,  h=1   },
 }
 
 -- Messages uses absolute pixel offsets from .slate.js (tuned for 16" MBP)
@@ -76,36 +75,36 @@ end
 -- frameFn(screen) overrides unitRect for pixel-precise positioning
 
 local twoMonLayout = {
-  { 'Maschine 2',    mid,   P.full     },
-  { 'Logic Pro',     mid,   P.full     },
-  { 'iTerm2',        lap,   P.full     },
-  { 'Logseq',        mid,   P.full     },
-  { 'Blender',       mid,   P.full     },
-  { 'Code',          mid,   P.full     },  -- VS Code; rename to 'Visual Studio Code' if needed
-  { 'Cursor',        mid,   P.full     },
-  { 'Google Chrome', mid,   P.browser  },
-  { 'Firefox',       mid,   P.browser  },
-  { 'Safari',        mid,   P.browser  },
-  { 'Messages',      lap,   nil,       messagesFrame },
-  { 'Slack',         mid,   P.slackMid },
-  { 'TIDAL',         lap,   P.full     },
-  { 'Sonos',         lap,   P.full     },
-  { 'Google Meet',   lap,   P.full     },
+  { 'Maschine 2',    external,   Pos.full        },
+  { 'Logic Pro',     external,   Pos.full        },
+  { 'iTerm2',        laptop,    Pos.full        },
+  { 'Logseq',        external,   Pos.full        },
+  { 'Blender',       external,   Pos.full        },
+  { 'Code',          external,   Pos.full        },  -- VS Code; rename to 'Visual Studio Code' if needed
+  { 'Cursor',        external,   Pos.full        },
+  { 'Google Chrome', external,   Pos.browser     },
+  { 'Firefox',       external,   Pos.browser     },
+  { 'Safari',        external,   Pos.browser     },
+  { 'Messages',      laptop,    nil,            messagesFrame },
+  { 'Slack',         external,   Pos.slackExt    },
+  { 'TIDAL',         laptop,    Pos.full        },
+  { 'Sonos',         laptop,    Pos.full        },
+  { 'Google Meet',   laptop,    Pos.full        },
 }
 
 local oneMonLayout = {
-  { 'iTerm2',        lap,   P.full     },
-  { 'Logseq',        lap,   P.full     },
-  { 'Logic Pro',     lap,   P.full     },
-  { 'Code',          lap,   P.full     },
-  { 'Cursor',        lap,   P.full     },
-  { 'Google Chrome', lap,   P.full     },
-  { 'Firefox',       lap,   P.full     },
-  { 'TIDAL',         lap,   P.full     },
-  { 'Sonos',         lap,   P.full     },
-  { 'Messages',      lap,   nil,       messagesFrame },
-  { 'Slack',         lap,   P.slackLap },
-  { 'Google Meet',   lap,   P.full     },
+  { 'iTerm2',        laptop,    Pos.full        },
+  { 'Logseq',        laptop,    Pos.full        },
+  { 'Logic Pro',     laptop,    Pos.full        },
+  { 'Code',          laptop,    Pos.full        },
+  { 'Cursor',        laptop,    Pos.full        },
+  { 'Google Chrome', laptop,    Pos.full        },
+  { 'Firefox',       laptop,    Pos.full        },
+  { 'TIDAL',         laptop,    Pos.full        },
+  { 'Sonos',         laptop,    Pos.full        },
+  { 'Messages',      laptop,    nil,            messagesFrame },
+  { 'Slack',         laptop,    Pos.slackLaptop },
+  { 'Google Meet',   laptop,    Pos.full        },
 }
 
 local function applyLayout(layout)
@@ -144,33 +143,30 @@ hs.hotkey.bind({'ctrl'}, 'escape', universalLayout)
 
 -- Move focused window to screen, preserve size (ctrl+cmd+1/2/3)
 hs.hotkey.bind({'ctrl','cmd'}, '1', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, lap()) end
+  local w = hs.window.focusedWindow(); if w then moveToScreen(w, laptop()) end
 end)
 hs.hotkey.bind({'ctrl','cmd'}, '2', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, mid()) end
-end)
-hs.hotkey.bind({'ctrl','cmd'}, '3', function()
-  local w = hs.window.focusedWindow(); if w then moveToScreen(w, right()) end
+  local w = hs.window.focusedWindow(); if w then moveToScreen(w, external()) end
 end)
 
 -- Resize focused window on its current screen (ctrl+alt+arrow / 0 / -)
 hs.hotkey.bind({'ctrl','alt'}, 'left',  function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.halfLeft) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.halfLeft) end
 end)
 hs.hotkey.bind({'ctrl','alt'}, 'right', function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.halfRight) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.halfRight) end
 end)
 hs.hotkey.bind({'ctrl','alt'}, 'up', function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.halfTop) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.halfTop) end
 end)
 hs.hotkey.bind({'ctrl','alt'}, 'down', function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.halfBot) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.halfBot) end
 end)
 hs.hotkey.bind({'ctrl','alt'}, '0', function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.centerHalf) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.centerHalf) end
 end)
 hs.hotkey.bind({'ctrl','alt'}, '-', function()
-  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), P.full) end
+  local w = hs.window.focusedWindow(); if w then place(w, w:screen(), Pos.full) end
 end)
 
 -- Window hints: show lettered overlays on all windows (cmd+esc)
@@ -263,10 +259,10 @@ local POM_BREAK =  5 * 60
 
 local pomMenu     = hs.menubar.new()
 local pomTimer    = nil
-local pomState    = 'idle'     -- 'idle' | 'work' | 'break'
+local pomState    = 'idle'   -- 'idle' | 'work' | 'break'
 local pomSecsLeft = POM_WORK
 
-local function pomFmt()
+local function pomTimeStr()
   return string.format('%d:%02d', math.floor(pomSecsLeft / 60), pomSecsLeft % 60)
 end
 
@@ -274,15 +270,15 @@ local function pomStop()
   if pomTimer then pomTimer:stop(); pomTimer = nil end
 end
 
-local function pomUpdateMenu()
+local function updatePomMenu()
   if pomState == 'idle' then
     pomMenu:setTitle('🍅')
     pomMenu:setTooltip('Click to start 25-min Pomodoro')
   elseif pomState == 'work' then
-    pomMenu:setTitle('🍅 ' .. pomFmt())
+    pomMenu:setTitle('🍅 ' .. pomTimeStr())
     pomMenu:setTooltip('Working — click to reset')
   else
-    pomMenu:setTitle('☕ ' .. pomFmt())
+    pomMenu:setTitle('☕ ' .. pomTimeStr())
     pomMenu:setTooltip('Break — click to reset')
   end
 end
@@ -303,7 +299,7 @@ local function pomTick()
       pomSecsLeft = POM_WORK
     end
   end
-  pomUpdateMenu()
+  updatePomMenu()
 end
 
 pomMenu:setClickCallback(function()
@@ -316,10 +312,10 @@ pomMenu:setClickCallback(function()
     pomState    = 'idle'
     pomSecsLeft = POM_WORK
   end
-  pomUpdateMenu()
+  updatePomMenu()
 end)
 
-pomUpdateMenu()
+updatePomMenu()
 
 -- ============================================================
 -- Auto-reload config when any .lua file in ~/.hammerspoon/ is saved
