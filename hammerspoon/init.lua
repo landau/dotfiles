@@ -82,7 +82,7 @@ local twoMonLayout = {
   { 'iTerm2',        LAPTOP,   Pos.full        },
   { 'Logseq',        EXTERNAL, Pos.full        },
   { 'Blender',       EXTERNAL, Pos.full        },
-  { 'Code',          EXTERNAL, Pos.full        },  -- VS Code; rename to 'Visual Studio Code' if needed
+  { 'Code',          EXTERNAL, Pos.full        },
   { 'Cursor',        EXTERNAL, Pos.full        },
   { 'Google Chrome', EXTERNAL, Pos.browser     },
   { 'Firefox',       EXTERNAL, Pos.browser     },
