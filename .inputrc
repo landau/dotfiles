@@ -29,6 +29,13 @@ set visible-stats on
 # the cursor is on the "z", pressing Tab will not autocomplete it to "cd
 # ~/src/mozillail", but to "cd ~/src/mozilla". (This is supported by the
 # Readline used by Bash 4.)
+#
+# NB, as of 2026-08-18 on macOS 15.7.9 / bash 3.2.57: this is a no-op. Apple's
+# bash predates the variable, and Readline ignores unknown `set` names with no
+# warning -- confirmed absent from `bind -v`, while the other 10 settings in
+# this file are present. Re-check if /bin/bash ever moves past 3.2, or if a
+# brew-installed bash 4+/5+ becomes the login shell; `colored-stats` and
+# .bash_profile's `autocd`/`globstar` are dead for the same reason.
 set skip-completed-text on
 
 # Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
@@ -38,3 +45,24 @@ set convert-meta off
 
 # Use Alt/Meta + Delete to delete the preceding word
 "\e[3;3~": kill-word
+
+# Don't beep on an ambiguous completion (readline defaults to `audible`).
+set bell-style none
+
+# With show-all-if-ambiguous above, list the matches immediately when Tab can't
+# insert anything, rather than requiring a second Tab.
+set show-all-if-unmodified on
+
+# Keep the cursor where it was when walking history, instead of jumping to
+# end-of-line on every entry. Matters because Up/Down are bound to prefix
+# search above, so history is walked mid-line.
+set history-preserve-point on
+
+# Word-wise movement on Ctrl/Alt + arrows. Only \eb and \ef (Alt-b/Alt-f) were
+# bound; the arrow combos were unbound entirely. iTerm sends xterm-style
+# modifiers -- ;2 Shift, ;3 Alt, ;5 Ctrl -- as the kill-word binding above
+# already relies on. To check a key's sequence, press Ctrl-V then the key.
+"\e[1;5D": backward-word  # Ctrl+Left
+"\e[1;5C": forward-word   # Ctrl+Right
+"\e[1;3D": backward-word  # Alt+Left
+"\e[1;3C": forward-word   # Alt+Right
