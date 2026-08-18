@@ -240,16 +240,32 @@ logicWatcher:start()
 updateCaffMenu()
 
 -- ============================================================
--- Mic mute toggle (ctrl+shift+m)
+-- Mic mute menubar item
 -- ============================================================
 
-hs.hotkey.bind({'ctrl','shift'}, 'm', function()
+local micMenu = hs.menubar.new()
+
+local function updateMicMenu()
+  local mic = hs.audiodevice.defaultInputDevice()
+  local muted = mic and mic:muted()
+  micMenu:setTitle(muted and '🔇' or '🎙')
+  micMenu:setTooltip(muted and 'Mic muted — click to unmute' or 'Mic active — click to mute')
+end
+
+micMenu:setClickCallback(function()
   local mic = hs.audiodevice.defaultInputDevice()
   if not mic then return end
-  local muted = not mic:muted()
-  mic:setMuted(muted)
-  hs.alert.show(muted and '🎙 Muted' or '🎙 Unmuted')
+  mic:setMuted(not mic:muted())
+  updateMicMenu()
 end)
+
+-- Keep icon in sync when another app changes mute state
+hs.audiodevice.watcher.setCallback(function(uid, event)
+  if event == 'dIn ' then updateMicMenu() end
+end)
+hs.audiodevice.watcher.start()
+
+updateMicMenu()
 
 -- ============================================================
 -- Pomodoro timer (menubar item; click to start / click again to reset)
