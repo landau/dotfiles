@@ -137,6 +137,8 @@ local function universalLayout()
   end
 end
 
+hs.window.animationDuration = 0  -- disable animation so window moves are instant
+
 -- ============================================================
 -- Key bindings
 -- ============================================================
