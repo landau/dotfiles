@@ -354,31 +354,10 @@ updateUTCClock()
 hs.timer.doEvery(30, updateUTCClock)
 
 -- ============================================================
--- Caps Lock as Hyper modal key
--- Requires: System Settings → Keyboard → Modifier Keys → Caps Lock: No Action
--- Press Caps Lock to enter mode, then the action key. Press Caps Lock or Escape to cancel.
+-- Morning routine (ctrl+cmd+0): open core apps and apply layout
 -- ============================================================
 
-local hyperModal  = hs.hotkey.modal.new()
-local hyperActive = false
-
-local capsWatcher = hs.eventtap.new({hs.eventtap.event.types.flagsChanged}, function(event)
-  if event:getKeyCode() ~= 57 then return end  -- 57 = Caps Lock
-  hyperActive = not hyperActive
-  if hyperActive then hyperModal:enter() else hyperModal:exit() end
-  return true  -- consume event so Caps Lock never types capitals
-end)
-capsWatcher:start()
-
-hyperModal:bind({}, 'escape', function()
-  hyperActive = false
-  hyperModal:exit()
-end)
-
--- Hyper+a: morning routine — open apps then apply layout
-hyperModal:bind({}, 'a', function()
-  hyperActive = false
-  hyperModal:exit()
+hs.hotkey.bind({'ctrl','cmd'}, '0', function()
   local apps = {'Logseq', 'Google Chrome', 'Slack', 'Messages', 'iTerm2', 'TIDAL'}
   for _, app in ipairs(apps) do hs.application.launchOrFocus(app) end
   hs.timer.doAfter(2, universalLayout)
