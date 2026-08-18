@@ -30,13 +30,19 @@ set visible-stats on
 # ~/src/mozillail", but to "cd ~/src/mozilla". (This is supported by the
 # Readline used by Bash 4.)
 #
-# NB, as of 2026-08-18 on macOS 15.7.9 / bash 3.2.57: this is a no-op. Apple's
-# bash predates the variable, and Readline ignores unknown `set` names with no
-# warning -- confirmed absent from `bind -v`, while the other 10 settings in
-# this file are present. Re-check if /bin/bash ever moves past 3.2, or if a
-# brew-installed bash 4+/5+ becomes the login shell; `colored-stats` and
-# .bash_profile's `autocd`/`globstar` are dead for the same reason.
+# History: this was inert under Apple's /bin/bash 3.2.57, whose Readline
+# predates the variable -- and Readline ignores unknown `set` names silently,
+# so it looked fine. Live since 2026-08-18, when the login shell became
+# brew's bash 5.3.15 (`chsh -s /opt/homebrew/bin/bash`). Reverting the login
+# shell to /bin/bash makes this, and the two `colored-*` settings below, quietly
+# stop working again.
 set skip-completed-text on
+
+# Colourise completion listings by file type, and highlight the matched prefix.
+# Both need Readline 6+/8.1+ respectively, so both require the brew bash noted
+# above -- inert on Apple's 3.2.
+set colored-stats on
+set colored-completion-prefix on
 
 # Allow UTF-8 input and output, instead of showing stuff like $'\0123\0456'
 set input-meta on

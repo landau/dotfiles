@@ -98,9 +98,11 @@ shopt -s cdspell;
 # Enable some Bash 4 features when possible:
 # * `autocd` — a bare directory name acts as `cd` into it
 # * `globstar` — recursive globbing, e.g. `echo **/*.txt`
-# macOS ships bash 3.2 (Apple won't ship GPLv3), where both of these are
-# "invalid shell option name" — the 2>/dev/null is what hides that. They only
-# take effect under a brew-installed bash 4+/5+ set as the login shell.
+# Both live since 2026-08-18, when the login shell became brew's bash 5.3.15.
+# Under Apple's /bin/bash 3.2.57 (they won't ship GPLv3) these are "invalid
+# shell option name" and the 2>/dev/null silently swallows the error -- which is
+# why the redirect stays: this file still has to run under 3.2 on a fresh
+# machine, before brew-install.sh has installed bash 5.
 for option in autocd globstar; do
 	shopt -s "$option" 2> /dev/null;
 done;
