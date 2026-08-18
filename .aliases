@@ -92,7 +92,6 @@ alias reload="exec ${SHELL} -l"
 alias path='echo -e ${PATH//:/\\n}'
 
 # Git shortcuts
-alias git="hub"
 alias grb='git rebase -i head~'
 
 # Node and NPM shortcuts
