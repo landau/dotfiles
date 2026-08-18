@@ -1,7 +1,16 @@
 #!/usr/bin/env bash
 
-# Shell prompt based on the Solarized Dark theme.
-# Screenshot: http://i.imgur.com/EkEtphC.png
+# Shell prompt using Solarized's 256-colour approximations
+# (http://git.io/solarized-colors) -- but the terminal itself is NOT running a
+# Solarized theme. The iTerm profile ("Default") has a pure black background,
+# not Solarized's base03 (#002b36), and the prefs contain no Solarized profile.
+#
+# That's fine, and better than the alternative: measured against #000 every
+# colour here has *higher* contrast than on base03 (green 4.95:1 vs 3.54:1,
+# blue 5.91 vs 4.22, yellow 6.29 vs 4.50). Only 0 (black) and 15 (white) are
+# ANSI slots the terminal theme can remap; 16-231 are fixed cube values, so
+# these render identically whatever theme is set.
+#
 # Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
 # iTerm → Profiles → Text → use 13pt Monaco with 1.1 vertical spacing.
 # Promote a bare `xterm` to its 256-colour variant. Guarded on `xterm`
@@ -105,7 +114,10 @@ if tput setaf 1 &> /dev/null; then
 	orange="\e[38;5;166m"; # tput setaf 166
 	purple="\e[38;5;125m"; # tput setaf 125
 	red="\e[38;5;124m";    # tput setaf 124
-	violet="\e[38;5;61m";  # tput setaf 61
+	# 99 (#875fff), not Solarized's own 61 (#5f5faf): 61 measures 3.74:1 on this
+	# black background, under the 4.5:1 threshold, and it colours the branch
+	# name. 99 is the nearest same-family value that clears it, at 5.11:1.
+	violet="\e[38;5;99m";  # tput setaf 99
 	white="\e[38;5;15m";   # tput setaf 15
 	yellow="\e[38;5;136m"; # tput setaf 136
 else
