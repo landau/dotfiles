@@ -309,16 +309,23 @@ local function pomStop()
   if pomTimer then pomTimer:stop(); pomTimer = nil end
 end
 
+local pomLastTitle = ''  -- skip setTitle when text hasn't changed to avoid menubar flicker
+
 local function updatePomMenu()
+  local title
   if pomState == 'idle' then
-    pomMenu:setTitle('🍅')
+    title = '🍅'
     pomMenu:setTooltip('Click to start 25-min Pomodoro')
   elseif pomState == 'work' then
-    pomMenu:setTitle('🍅 ' .. pomTimeStr())
+    title = '🍅 ' .. pomTimeStr()
     pomMenu:setTooltip('Working — click to reset')
   else
-    pomMenu:setTitle('☕ ' .. pomTimeStr())
+    title = '☕ ' .. pomTimeStr()
     pomMenu:setTooltip('Break — click to reset')
+  end
+  if title ~= pomLastTitle then
+    pomLastTitle = title
+    pomMenu:setTitle(title)
   end
 end
 
@@ -360,12 +367,14 @@ updatePomMenu()
 -- UTC clock (menubar)
 -- ============================================================
 
-local utcMenu = hs.menubar.new()
+local utcMenu  = hs.menubar.new()
+local utcTimer = nil  -- stored to prevent garbage collection
+
 local function updateUTCClock()
   utcMenu:setTitle(os.date('!%H:%M UTC'))
 end
 updateUTCClock()
-hs.timer.doEvery(30, updateUTCClock)
+utcTimer = hs.timer.doEvery(30, updateUTCClock)
 
 -- ============================================================
 -- Morning routine (ctrl+cmd+0): open core apps and apply layout
