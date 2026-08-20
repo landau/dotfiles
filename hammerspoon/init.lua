@@ -273,19 +273,23 @@ hs.audiodevice.watcher.setCallback(function(uid, event)
 end)
 hs.audiodevice.watcher.start()
 
--- Auto-unmute when Google Meet opens, auto-mute when it closes
-local meetWatcher = hs.application.watcher.new(function(name, event)
-  if name ~= 'Google Meet' then return end
+-- Auto-unmute when a Google Meet window appears, auto-mute when the last one closes.
+-- Uses window filter instead of app watcher so it fires even when Meet was already
+-- running in the background (e.g. clicking a Meet link re-opens a window, not a cold launch).
+local meetWindowFilter = hs.window.filter.new({'Google Meet'})
+meetWindowFilter:subscribe(hs.window.filter.windowCreated, function()
   local mic = hs.audiodevice.defaultInputDevice()
-  if not mic then return end
-  if event == hs.application.watcher.launched then
-    mic:setMuted(false)
-  elseif event == hs.application.watcher.terminated then
-    mic:setMuted(true)
-  end
+  if mic then mic:setMuted(false) end
   updateMicMenu()
 end)
-meetWatcher:start()
+meetWindowFilter:subscribe(hs.window.filter.windowDestroyed, function()
+  local app = hs.application.get('Google Meet')
+  if not app or #app:allWindows() == 0 then
+    local mic = hs.audiodevice.defaultInputDevice()
+    if mic then mic:setMuted(true) end
+    updateMicMenu()
+  end
+end)
 
 updateMicMenu()
 
